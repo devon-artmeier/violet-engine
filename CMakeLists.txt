@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(violet-engine LANGUAGES C CXX)
 
 add_library(violet-engine
-	"source/main.cpp"
+	"source/violet_main.cpp"
 )
 
 find_package(SDL3 QUIET)
@@ -11,7 +11,7 @@ if(SDL3_FOUND)
 elseif(EXISTS "dependencies/SDL/CMakeLists.txt")
 	add_subdirectory("dependencies/SDL" EXCLUDE_FROM_ALL)
 	target_include_directories(violet-engine PRIVATE "dependencies/SDL/include")
-	target_link_libraries(violet-engine PRIVATE SDL3::SDL3-static)
+	target_link_libraries(violet-engine PRIVATE SDL3::SDL3)
 else()
 	message(FATAL_ERROR "\nSDL3 not found!\nPlease initialize the submodules or download SDL3 and put the files in dependencies/SDL\nhttps://github.com/libsdl-org/SDL")
 endif()
