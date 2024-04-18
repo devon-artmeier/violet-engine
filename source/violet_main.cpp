@@ -16,7 +16,9 @@ int main(int argc, char** argv)
 
     try {
         Violet::Initialize();
-        while (Violet::Update());
+        while (Violet::IsWindowOpen()) {
+            Violet::Update();
+        }
     } catch (std::exception& e) {
         MessageLog(Violet::MessageType::Fatal, e.what());
         MessageBox(Violet::MessageType::Fatal, e.what());
