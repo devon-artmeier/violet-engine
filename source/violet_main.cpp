@@ -11,6 +11,9 @@
 
 int main(int argc, char** argv)
 {
+#ifdef VIOLET_DEBUG
+#endif
+
     try {
         Violet::Initialize();
         while (Violet::Update());
@@ -20,7 +23,7 @@ int main(int argc, char** argv)
     }
     Violet::Close();
 
-#if VIOLET_DEBUG==1 && defined(_MSC_VER)
+#if defined(VIOLET_DEBUG) && defined(_MSC_VER)
     if (_CrtDumpMemoryLeaks()) {
         Violet::MessageBoxWarn("Memory leaks detected.");
     }

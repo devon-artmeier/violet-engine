@@ -10,7 +10,7 @@ list(APPEND VIOLET_SRC
 
 add_library(violet-engine STATIC ${VIOLET_SRC})
 
-target_compile_definitions(violet-engine PRIVATE VIOLET_DEBUG=$<CONFIG:Debug>)
+target_compile_definitions(violet-engine PRIVATE $<$<CONFIG:Debug>:VIOLET_DEBUG>)
 
 find_package(SDL3 QUIET)
 if(SDL3_FOUND)
