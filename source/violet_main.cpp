@@ -19,8 +19,8 @@ int main(int argc, char** argv)
         MessageBox(Violet::MessageType::Fatal, e.what());
     }
     Violet::Close();
-    
-#if defined(_DEBUG) && defined(_MSC_VER)
+
+#if VIOLET_DEBUG==1 && defined(_MSC_VER)
     if (_CrtDumpMemoryLeaks()) {
         Violet::MessageBoxWarn("Memory leaks detected.");
     }

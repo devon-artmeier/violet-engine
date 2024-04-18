@@ -1,3 +1,4 @@
+#include "glad/glad.h"
 #include "violet_internal.hpp"
 
 namespace Violet
@@ -21,9 +22,17 @@ namespace Violet
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         
-        window = SDL_CreateWindow("", 640, 480, 0);
+        window = SDL_CreateWindow("", 640, 480, SDL_WINDOW_OPENGL);
         if (window == nullptr) {
             Fatal((std::string)"Failed to create window: " + SDL_GetError());
+        }
+
+        gl = SDL_GL_CreateContext(window);
+        SDL_GL_MakeCurrent(window, gl);
+        SDL_GL_SetSwapInterval(0);
+
+        if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+            Fatal("Failed to initialize OpenGL.");
         }
     }
 
