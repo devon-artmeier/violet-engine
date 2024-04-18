@@ -5,3 +5,6 @@
 [submodule "dependencies/dr_libs"]
 	path = dependencies/dr_libs
 	url = https://github.com/mackron/dr_libs.git
+[submodule "dependencies/SDL"]
+	path = dependencies/SDL
+	url = https://github.com/libsdl-org/SDL.git
