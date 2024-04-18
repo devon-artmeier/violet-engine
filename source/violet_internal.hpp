@@ -14,14 +14,15 @@ namespace Violet
     };
     
     extern void         Initialize();
-    extern void         Update();
     extern void         Close();
+    extern void         Update();
     
     extern void         MessageLog(const MessageType type, const std::string& message);
     extern void         MessageBox(const MessageType type, const std::string& message);
     
     extern void         InitVideo();
     extern void         CloseVideo();
+    extern void         UpdateVideo();
 
     extern void         InitAudio();
     extern void         CloseAudio();
@@ -31,6 +32,7 @@ namespace Violet
     extern void         ProcessWindowEvents();
     extern SDL_Window*  GetWindow();
     extern bool         IsWindowOpen();
+    extern void         SwapWindowBuffer();
 
     extern void         GameInit();
     extern void         GameUpdate();

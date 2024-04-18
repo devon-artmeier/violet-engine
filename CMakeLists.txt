@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 project(violet-engine LANGUAGES C CXX)
 
 list(APPEND VIOLET_SRC
-	"source/glad/glad.c"
+    "source/glad/glad.c"
 	"source/violet_audio.cpp"
 	"source/violet_core.cpp"
 	"source/violet_main.cpp"
 	"source/violet_message.cpp"
-	"source/violet_video.cpp"
+    "source/violet_video.cpp"
 	"source/violet_window.cpp"
 )
 

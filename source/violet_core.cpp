@@ -14,12 +14,6 @@ namespace Violet
         InitAudio();
     }
 
-    void Update()
-    {
-        ProcessWindowEvents();
-        if (IsWindowOpen()) return;
-    }
-
     void Close()
     {
         CloseAudio();
@@ -27,5 +21,13 @@ namespace Violet
         CloseWindow();
 
         SDL_Quit();
+    }
+
+    void Update()
+    {
+        ProcessWindowEvents();
+        if (!IsWindowOpen()) return;
+
+        UpdateVideo();
     }
 }
