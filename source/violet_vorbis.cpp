@@ -22,41 +22,19 @@ namespace Violet
                 return file != nullptr;
             }
 
-            void Render(short* stream, short* read_buffer, const size_t length)
+            void Restart()
             {
-                size_t  read_count      = 0;
-                size_t  samples_left    = length;
-                short*  read_buffer_pos = read_buffer;
-                bool    looped          = false;
+                stb_vorbis_seek(file, 0);
+            }
 
-                while (read_count < length) {
-                    int samples_read    = stb_vorbis_get_samples_short_interleaved(file, 2, read_buffer_pos, samples_left * 2);
-                    read_count          += samples_read;
-                    samples_left        -= samples_read;
-                    read_buffer_pos     += samples_read * 2;
+            void Seek(int sample)
+            {
+                stb_vorbis_seek(file, sample);
+            }
 
-                    if (samples_read == 0) {
-                        if (looped || loop_count == 0) {
-                            break;
-                        } else {
-                            if (loop_count > 0) {
-                                loop_count--;
-                            }
-                            looped = true;
-                        }
-                    } else {
-                        looped = false;
-                    }
-
-                    if (looped) {
-                        stb_vorbis_seek(file, 0);
-                    }
-                }
-
-                for (int i = 0; i < length; i++) {
-                    *(stream++) += *(read_buffer++);
-                    *(stream++) += *(read_buffer++);
-                }
+            int ReadSamples(short* read_buffer, const size_t length)
+            {
+                return stb_vorbis_get_samples_short_interleaved(file, 2, read_buffer, length * 2);
             }
 
         private:

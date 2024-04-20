@@ -11,12 +11,16 @@ namespace Violet
         public:
             virtual         Sound::~Sound() { }
 
-            virtual void    Render(short* stream, short* read_buffer, const size_t length) = 0;
-            virtual bool    IsOpened() = 0;
-
-            void            Play(const int loop_count);
-            void            Stop();
             bool            IsPlaying();
+            void            Play(const int loop_count);
+            bool            IsLooping();
+            void            StepLoopCount();
+            void            Stop();
+
+            virtual bool    IsOpened() = 0;
+            virtual void    Restart() = 0;
+            virtual void    Seek(int sample) = 0;
+            virtual int     ReadSamples(short* read_buffer, const size_t length) = 0;
 
         protected:
             bool            playing{ false };
