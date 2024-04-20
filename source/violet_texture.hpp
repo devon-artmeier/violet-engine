@@ -29,6 +29,8 @@ namespace Violet
 
             bool          IsLoaded ();
             void          Bind     ();
+            int           GetWidth ();
+            int           GetHeight();
             TextureFilter GetFilter();
             void          SetFilter(const TextureFilter filter);
             TextureWrap   GetWrapX ();
@@ -39,6 +41,9 @@ namespace Violet
         private:
             std::string   id    { "" };
             GLuint        gl_id { 0 };
+            bool          loaded{false };
+            int           width { 0 };
+            int           height{ 0 };
             TextureFilter filter{ TextureFilter::Nearest };
             TextureWrap   wrap_x{ TextureWrap::Repeat };
             TextureWrap   wrap_y{ TextureWrap::Repeat };

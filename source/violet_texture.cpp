@@ -1,5 +1,7 @@
 #include "violet_engine.hpp"
 #include "violet_texture.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace Violet
 {
@@ -69,12 +71,23 @@ namespace Violet
 #ifdef VIOLET_DEBUG
         LogInfo("Loading texture \"" + path + "\" with ID \"" + id + "\"");
 #endif
-        this->id = id;
-        glGenTextures(1, &this->gl_id);
-
-        if (this->gl_id != 0) {
+        stbi_set_flip_vertically_on_load(1);
+        unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
+        
+        if (data != nullptr) {
+            this->id = id;
+            glGenTextures(1, &this->gl_id);
+            
             this->Bind();
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
+            
+            stbi_image_free(data);
+            loaded = true;
+        } else {
+#ifdef VIOLET_DEBUG
+            LogInfo("Failed to load texture \"" + path + "\" with ID \"" + id + "\"");
+#endif
         }
     }
 
@@ -83,7 +96,7 @@ namespace Violet
         if (current_texture == this) {
             current_texture = nullptr;
         }
-        if (this->gl_id != 0) {
+        if (this->loaded) {
 #ifdef VIOLET_DEBUG
             LogInfo("Destroying texture \"" + id + "\"");
 #endif
@@ -93,7 +106,7 @@ namespace Violet
 
     bool Texture::IsLoaded()
     {
-        return this->gl_id != 0;
+        return this->loaded;
     }
 
     void Texture::Bind()
@@ -104,6 +117,16 @@ namespace Violet
         }
     }
     
+    int Texture::GetWidth()
+    {
+        return this->width;
+    }
+    
+    int Texture::GetHeight()
+    {
+        return this->height;
+    }
+
     TextureFilter Texture::GetFilter()
     {
         return this->filter;
@@ -164,7 +187,7 @@ namespace Violet
         if (this->wrap_y != wrap) {
             this->wrap_y = wrap;
             this->Bind();
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetGlWrapValue(wrap));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGlWrapValue(wrap));
         }
     }
 
