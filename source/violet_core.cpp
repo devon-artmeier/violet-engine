@@ -3,6 +3,7 @@
 #include "violet_engine.hpp"
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
+#include "violet_game_internal.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 
@@ -18,12 +19,13 @@ namespace Violet
         InitVideo();
         InitAudio();
 
-        OpenSound("test", "test.ogg");
-        LoopSound("test", 1);
+        GameInit();
     }
 
     void Close()
     {
+        GameClose();
+
         CloseAudio();
         CloseVideo();
         CloseWindow();
@@ -35,6 +37,8 @@ namespace Violet
     {
         ProcessWindowEvents();
         if (!IsWindowOpen()) return;
+
+        GameUpdate();
 
         UpdateVideo();
     }
