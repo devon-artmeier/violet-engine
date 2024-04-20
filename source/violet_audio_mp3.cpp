@@ -8,40 +8,39 @@ namespace Violet
     class Mp3Sound: public Sound
     {
         public:
-            Mp3Sound(const std::string& id, const std::string& path)
+            Mp3Sound(const std::string& id, const std::string& path) : Sound(id)
             {
-                this->id = id;
-                if (drmp3_init_file(&file, path.c_str(), nullptr) != 0) {
-                    if (file.channels != 2 || file.sampleRate != 44100) {
-                        drmp3_uninit(&file);
+                if (drmp3_init_file(&this->file, path.c_str(), nullptr) != 0) {
+                    if (this->file.channels != 2 || this->file.sampleRate != 44100) {
+                        drmp3_uninit(&this->file);
                     } else {
-                        open = true;
+                        this->loaded = true;
                     }
                 }
             }
 
             ~Mp3Sound()
             {
-                if (open) {
-                    drmp3_uninit(&file);
+                if (this->loaded) {
+                    drmp3_uninit(&this->file);
                 }
             }
 
             void Seek(const unsigned int sample)
             {
-                drmp3_seek_to_pcm_frame(&file, sample);
+                drmp3_seek_to_pcm_frame(&this->file, sample);
             }
 
             int Read(short* read_buffer, const size_t length)
             {
-                return drmp3_read_pcm_frames_s16(&file, length, read_buffer);
+                return drmp3_read_pcm_frames_s16(&this->file, length, read_buffer);
             }
 
         private:
             drmp3 file{ { 0 } };
     };
 
-    Sound* OpenMp3Sound(const std::string& id, const std::string& path)
+    Sound* LoadMp3Sound(const std::string& id, const std::string& path)
     {
         return new Mp3Sound(id, path);
     }

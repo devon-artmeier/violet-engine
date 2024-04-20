@@ -8,40 +8,39 @@ namespace Violet
     class WavSound: public Sound
     {
         public:
-            WavSound(const std::string& id, const std::string& path)
+            WavSound(const std::string& id, const std::string& path) : Sound(id)
             {
-                this->id = id;
-                if (drwav_init_file(&file, path.c_str(), nullptr) != 0) {
-                    if (file.channels != 2 || file.sampleRate != 44100) {
-                        drwav_uninit(&file);
+                if (drwav_init_file(&this->file, path.c_str(), nullptr) != 0) {
+                    if (this->file.channels != 2 || this->file.sampleRate != 44100) {
+                        drwav_uninit(&this->file);
                     } else {
-                        open = true;
+                        this->loaded = true;
                     }
                 }
             }
 
             ~WavSound()
             {
-                if (open) {
-                    drwav_uninit(&file);
+                if (this->loaded) {
+                    drwav_uninit(&this->file);
                 }
             }
 
             void Seek(const unsigned int sample)
             {
-                drwav_seek_to_pcm_frame(&file, sample);
+                drwav_seek_to_pcm_frame(&this->file, sample);
             }
 
             int Read(short* read_buffer, const size_t length)
             {
-                return drwav_read_pcm_frames_s16(&file, length, read_buffer);
+                return drwav_read_pcm_frames_s16(&this->file, length, read_buffer);
             }
 
         private:
             drwav file{ { 0 } };
     };
 
-    Sound* OpenWavSound(const std::string& id, const std::string& path)
+    Sound* LoadWavSound(const std::string& id, const std::string& path)
     {
         return new WavSound(id, path);
     }

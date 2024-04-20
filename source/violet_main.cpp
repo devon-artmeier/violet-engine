@@ -14,9 +14,6 @@
 
 int main(int argc, char** argv)
 {
-#ifdef VIOLET_DEBUG
-#endif
-
     try {
         Violet::Initialize();
         while (Violet::IsWindowOpen()) {

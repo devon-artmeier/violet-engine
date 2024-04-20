@@ -3,8 +3,8 @@
 
 namespace Violet
 {
-    extern void InitVideo();
-    extern void CloseVideo();
+    extern void InitVideo  ();
+    extern void CloseVideo ();
     extern void UpdateVideo();
 }
 

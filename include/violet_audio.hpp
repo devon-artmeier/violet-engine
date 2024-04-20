@@ -5,10 +5,10 @@
 
 namespace Violet
 {
-    extern void OpenSound(const std::string& id, const std::string& path);
-    extern void CloseSound(const std::string& id);
-    extern void PlaySound(const std::string& id, const unsigned int loop_count);
-    extern void StopSound(const std::string& id);
+    extern void LoadSound      (const std::string& id, const std::string& path);
+    extern void DestroySound   (const std::string& id);
+    extern void PlaySound      (const std::string& id, const unsigned int loop_count);
+    extern void StopSound      (const std::string& id);
     extern int  GetMasterVolume();
     extern void SetMasterVolume(const int volume);
 }

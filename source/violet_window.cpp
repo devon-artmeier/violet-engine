@@ -5,8 +5,8 @@
 
 namespace Violet
 {
-    static SDL_Window*      window  { nullptr };
-    static SDL_GLContext    gl      { nullptr };
+    static SDL_Window*   window{ nullptr };
+    static SDL_GLContext gl    { nullptr };
 
     void InitWindow()
     {

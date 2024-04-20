@@ -4,7 +4,7 @@
 
 namespace Violet
 {
-    static SDL_AudioStream* audio_stream{ nullptr };
+    static SDL_AudioStream* audio_stream { nullptr };
     static SoundManager*    sound_manager{ nullptr };
     static int              master_volume{ 100 };
 
@@ -31,10 +31,10 @@ namespace Violet
 
     void InitAudio()
     {
-        SDL_AudioSpec audio_spec = { 0 };
-        audio_spec.freq     = 44100;
-        audio_spec.format   = SDL_AUDIO_S16;
-        audio_spec.channels = 2;
+        SDL_AudioSpec audio_spec  = { 0 };
+        audio_spec.freq           = 44100;
+        audio_spec.format         = SDL_AUDIO_S16;
+        audio_spec.channels       = 2;
 
         audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &audio_spec, AudioCallback, nullptr);
         if (audio_stream == nullptr) {
@@ -55,26 +55,25 @@ namespace Violet
         delete sound_manager;
     }
 
-    void OpenSound(const std::string& id, const std::string& path)
+    void LoadSound(const std::string& id, const std::string& path)
     {
 #ifdef VIOLET_DEBUG
         LogInfo("Loading sound \"" + path + "\" with ID \"" + id + "\"");
 #endif
-
-        Sound* sound = OpenWavSound(id, path);
-        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        Sound* sound = LoadWavSound(id, path);
+        if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
         delete sound;
 
-        sound = OpenMp3Sound(id, path);
-        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        sound = LoadMp3Sound(id, path);
+        if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
         delete sound;
 
-        sound = OpenOggSound(id, path);
-        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        sound = LoadOggSound(id, path);
+        if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
         delete sound;
 
-        sound = OpenFlacSound(id, path);
-        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        sound = LoadFlacSound(id, path);
+        if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
         delete sound;
 
 #ifdef VIOLET_DEBUG
@@ -82,9 +81,9 @@ namespace Violet
 #endif
     }
 
-    void CloseSound(const std::string& id)
+    void DestroySound(const std::string& id)
     {
-        sound_manager->CloseSound(id);
+        sound_manager->DestroySound(id);
     }
 
     void PlaySound(const std::string& id, const unsigned int play_count)
@@ -113,51 +112,58 @@ namespace Violet
         master_volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
     }
 
-    Sound::~Sound()
+    Sound::Sound(const std::string& id)
     {
-#ifdef VIOLET_DEBUG
-        if (open) {
-            LogInfo("Closing sound \"" + id + "\"");
-        }
-#endif
+        this->id = id;
     }
 
-    bool Sound::IsOpen()
+    Sound::~Sound()
     {
-       return open;
+        if (this->loaded) {
+#ifdef VIOLET_DEBUG
+            LogInfo("Destroying sound \"" + id + "\"");
+#endif
+            this->Stop();
+        }
+    }
+
+    bool Sound::IsLoaded()
+    {
+       return this->loaded;
     }
 
     bool Sound::IsPlaying()
     {
-        return playing;
+        return this->playing;
     }
 
     void Sound::Play(const unsigned int play_count)
     {
-        if (open) {
 #ifdef VIOLET_DEBUG
-            LogInfo("Playing sound \"" + id + "\" " + ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
+        LogInfo("Playing sound \"" + this->id + "\" " +
+            ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
 #endif
-            this->play_count = play_count;
-            play_position = 0;
-            Seek(0);
-            playing = true;
-        }
+        Seek(0);
+        this->play_count    = play_count;
+        this->play_position = 0;
+        this->playing       = true;
     }
 
     void Sound::Stop()
     {
+        if (this->playing) {
 #ifdef VIOLET_DEBUG
-        LogInfo("Stopping sound \"" + id + "\"");
+            LogInfo("Stopping sound \"" + this->id + "\"");
 #endif
-        playing = false;
-        play_position = 0;
-        play_count = 0;
+            this->playing       = false;
+            this->play_position = 0;
+            this->play_count    = 0;
+        }
     }
 
     int Sound::GetVolume()
     {
-        return volume;
+        return this->volume;
     }
 
     void Sound::SetVolume(const int volume)
@@ -165,26 +171,26 @@ namespace Violet
         this->volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
     }
 
-    static inline int ApplyVolume(const int sample, const int volume)
+    static inline int ApplySampleVolume(const int sample, const int volume)
     {
         return (sample * volume) / 100;
     }
 
     void Sound::Render(short* stream, short* read_buffer, const size_t length)
     {
-        if (open && playing) {
+        if (this->playing) {
             size_t  read_count      = 0;
             short*  read_buffer_pos = read_buffer;
             bool    loop            = false;
 
             while (read_count < length) {
                 size_t samples_to_read = length - read_count;
-                if (play_count != 1 && loop_end != 0 && (loop_end - play_position) < samples_to_read) {
-                    samples_to_read = loop_end - play_position;
+                if (this->play_count != 1 && this->loop_end != 0 && (this->loop_end - this->play_position) < samples_to_read) {
+                    samples_to_read = this->loop_end - this->play_position;
                 }
 
-                int samples_read    = Read(read_buffer_pos, samples_to_read);
-                play_position       += samples_read;
+                int samples_read     = Read(read_buffer_pos, samples_to_read);
+                this->play_position += samples_read;
                 read_count          += samples_read;
                 read_buffer_pos     += samples_read * 2;
 
@@ -192,23 +198,23 @@ namespace Violet
                     if (loop) break;
                     loop = true;
                 } else {
-                    loop = (loop_end != 0 && play_position >= loop_end);
+                    loop = (this->loop_end != 0 && this->play_position >= this->loop_end);
                 }
 
                 if (loop) {
-                    if (play_count == 1) break;
-                    if (play_count > 1) {
-                        play_count--;
+                    if (this->play_count == 1) break;
+                    if (this->play_count > 1) {
+                        this->play_count--;
                     }
-                    play_position = loop_start;
-                    Seek(loop_start);
+                    this->play_position = this->loop_start;
+                    Seek(this->loop_start);
                 }
             }
 
             for (int i = 0; i < length * 2; i++) {
-                int sample = ApplyVolume(ApplyVolume(*(read_buffer++), master_volume), volume);
-                sample += *(stream);
-                sample = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
+                int sample  = ApplySampleVolume(ApplySampleVolume(*(read_buffer++), master_volume), this->volume);
+                sample     += *(stream);
+                sample      = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
                 *(stream++) = sample;
             }
         }
@@ -216,12 +222,12 @@ namespace Violet
 
     SoundManager::~SoundManager()
     {
-        CloseAllSounds();
+        this->DestroyAllSounds();
     }
 
     void SoundManager::Render(short* stream, short* read_buffer, const size_t length)
     {
-        for (auto sound_entry : sounds) {
+        for (auto sound_entry : this->sounds) {
             memset(read_buffer, 0, length);
             sound_entry.second->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
@@ -229,8 +235,8 @@ namespace Violet
 
     Sound* SoundManager::GetSound(const std::string& id)
     {
-        auto sound = sounds.find(id);
-        if (sound != sounds.end()) {
+        auto sound = this->sounds.find(id);
+        if (sound != this->sounds.end()) {
             return sound->second;
         }
         return nullptr;
@@ -238,25 +244,24 @@ namespace Violet
 
     void SoundManager::AddSound(const std::string& id, Sound* sound)
     {
-        CloseSound(id);
-        sounds.insert({id, sound});
+        this->DestroySound(id);
+        this->sounds.insert({id, sound});
     }
 
-    void SoundManager::CloseSound(const std::string& id)
+    void SoundManager::DestroySound(const std::string& id)
     {
         Sound* sound = GetSound(id);
         if (sound != nullptr) {
-            sound->Stop();
             delete sound;
-            sounds.erase(id);
+            this->sounds.erase(id);
         }
     }
 
-    void SoundManager::CloseAllSounds()
+    void SoundManager::DestroyAllSounds()
     {
-        for (auto sound : sounds) {
+        for (auto sound : this->sounds) {
             delete sound.second;
         }
-        sounds.clear();
+        this->sounds.clear();
     }
 }
