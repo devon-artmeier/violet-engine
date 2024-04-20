@@ -4,11 +4,14 @@ project(violet-engine LANGUAGES C CXX)
 list(APPEND VIOLET_SRC
     "source/glad/glad.c"
 	"source/violet_audio.cpp"
+    "source/violet_audio_flac.cpp"
+    "source/violet_audio_mp3.cpp"
+    "source/violet_audio_ogg.cpp"
+    "source/violet_audio_wav.cpp"
 	"source/violet_core.cpp"
 	"source/violet_main.cpp"
 	"source/violet_message.cpp"
     "source/violet_video.cpp"
-    "source/violet_vorbis.cpp"
 	"source/violet_window.cpp"
 )
 

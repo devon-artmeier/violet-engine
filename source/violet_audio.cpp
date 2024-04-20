@@ -47,17 +47,38 @@ namespace Violet
 
     void CloseAudio()
     {
-        delete sound_manager;
-
         if (audio_stream != nullptr) {
             SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
             SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
         }
+        delete sound_manager;
     }
 
     void OpenSound(const std::string& id, const std::string& path)
     {
-        sound_manager->AddSound(id, OpenVorbisSound(path));
+#ifdef VIOLET_DEBUG
+        LogInfo("Loading sound \"" + path + "\" with ID \"" + id + "\"");
+#endif
+
+        Sound* sound = OpenWavSound(id, path);
+        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        delete sound;
+
+        sound = OpenMp3Sound(id, path);
+        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        delete sound;
+
+        sound = OpenOggSound(id, path);
+        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        delete sound;
+
+        sound = OpenFlacSound(id, path);
+        if (sound->IsOpen()) { sound_manager->AddSound(id, sound); return; }
+        delete sound;
+
+#ifdef VIOLET_DEBUG
+        LogError("Failed to load sound \"" + path + "\" with ID \"" + id + "\"");
+#endif
     }
 
     void CloseSound(const std::string& id)
@@ -73,6 +94,23 @@ namespace Violet
         }
     }
 
+    void StopSound(const std::string& id)
+    {
+        Sound* sound = sound_manager->GetSound(id);
+        if (sound != nullptr) {
+            sound->Stop();
+        }
+    }
+
+    Sound::~Sound()
+    {
+#ifdef VIOLET_DEBUG
+        if (open) {
+            LogInfo("Closing sound \"" + id + "\"");
+        }
+#endif
+    }
+
     bool Sound::IsOpen()
     {
        return open;
@@ -85,7 +123,10 @@ namespace Violet
 
     void Sound::Play(const unsigned int play_count)
     {
-        if (IsOpen()) {
+        if (open) {
+#ifdef VIOLET_DEBUG
+            LogInfo("Playing sound \"" + id + "\" " + ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
+#endif
             this->play_count = play_count;
             play_position = 0;
             Seek(0);
@@ -95,6 +136,9 @@ namespace Violet
 
     void Sound::Stop()
     {
+#ifdef VIOLET_DEBUG
+        LogInfo("Stopping sound \"" + id + "\"");
+#endif
         playing = false;
         play_position = 0;
         play_count = 0;
@@ -135,9 +179,11 @@ namespace Violet
                 }
             }
 
-            for (int i = 0; i < length; i++) {
-                *(stream++) += *(read_buffer++);
-                *(stream++) += *(read_buffer++);
+            for (int i = 0; i < length * 2; i++) {
+                int sample = *stream;
+                sample += *(read_buffer++);
+                sample = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
+                *(stream++) = sample;
             }
         }
     }
@@ -174,6 +220,7 @@ namespace Violet
     {
         Sound* sound = GetSound(id);
         if (sound != nullptr) {
+            sound->Stop();
             delete sound;
             sounds.erase(id);
         }

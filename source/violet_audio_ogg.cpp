@@ -7,15 +7,18 @@ namespace Violet
     class OggSound: public Sound
     {
         public:
-            OggSound(const std::string& path)
+            OggSound(const std::string& id, const std::string& path)
             {
+                this->id = id;
                 file = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
                 open = file != nullptr;
             }
 
             ~OggSound()
             {
-                stb_vorbis_close(file);
+                if (open) {
+                    stb_vorbis_close(file);
+                }
             }
 
             void Seek(const unsigned int sample)
@@ -32,8 +35,8 @@ namespace Violet
             stb_vorbis* file{ nullptr };
     };
 
-    Sound* OpenVorbisSound(const std::string& path)
+    Sound* OpenOggSound(const std::string& id, const std::string& path)
     {
-        return new OggSound(path);
+        return new OggSound(id, path);
     }
 }

@@ -8,6 +8,7 @@ namespace Violet
 {
     void MessageLog(const MessageType type, const std::string& message)
     {
+#ifdef VIOLET_DEBUG
         std::string build = "";
         switch (type) {
             case MessageType::Info:
@@ -26,6 +27,7 @@ namespace Violet
         build += message;
         
         std::cout << build << std::endl;
+#endif
     }
     
     void MessageBox(const MessageType type, const std::string& message)
@@ -64,19 +66,25 @@ namespace Violet
     
     void MessageBoxInfo(const std::string& message)
     {
+#ifdef VIOLET_DEBUG
         MessageLog(MessageType::Info, message);
+#endif
         MessageBox(MessageType::Info, message);
     }
             
     void MessageBoxWarn(const std::string& message)
     {
+#ifdef VIOLET_DEBUG
         MessageLog(MessageType::Warn, message);
+#endif
         MessageBox(MessageType::Warn, message);
     }
 
     void MessageBoxError(const std::string& message)
     {
+#ifdef VIOLET_DEBUG
         MessageLog(MessageType::Error, message);
+#endif
         MessageBox(MessageType::Error, message);
     }
     

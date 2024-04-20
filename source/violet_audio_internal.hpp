@@ -9,7 +9,7 @@ namespace Violet
     class Sound
     {
         public:
-            virtual         Sound::~Sound() { }
+            virtual         Sound::~Sound();
 
             bool            IsOpen();
             bool            IsPlaying();
@@ -21,6 +21,7 @@ namespace Violet
             virtual void    Seek(const unsigned int sample) = 0;
             virtual int     Read(short* read_buffer, const size_t length) = 0;
 
+            std::string     id{ "" };
             bool            open{ false };
             bool            playing{ false };
             unsigned int    play_position{ 0 };
@@ -46,7 +47,10 @@ namespace Violet
     
     extern void     InitAudio();
     extern void     CloseAudio();
-    extern Sound*   OpenVorbisSound(const std::string& path);
+    extern Sound*   OpenWavSound(const std::string& id, const std::string& path);
+    extern Sound*   OpenMp3Sound(const std::string& id, const std::string& path);
+    extern Sound*   OpenOggSound(const std::string& id, const std::string& path);
+    extern Sound*   OpenFlacSound(const std::string& id, const std::string& path);
 }
 
 #endif // VIOLET_ENGINE_AUDIO_INTERNAL_HPP

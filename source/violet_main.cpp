@@ -23,7 +23,9 @@ int main(int argc, char** argv)
             Violet::Update();
         }
     } catch (std::exception& e) {
+#ifdef VIOLET_DEBUG
         MessageLog(Violet::MessageType::Fatal, e.what());
+#endif
         MessageBox(Violet::MessageType::Fatal, e.what());
     }
     Violet::Close();
