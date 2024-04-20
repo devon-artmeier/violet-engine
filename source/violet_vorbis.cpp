@@ -54,8 +54,8 @@ namespace Violet
                 }
 
                 for (int i = 0; i < length; i++) {
-                    *(stream++) = *(read_buffer++);
-                    *(stream++) = *(read_buffer++);
+                    *(stream++) += *(read_buffer++);
+                    *(stream++) += *(read_buffer++);
                 }
             }
 
