@@ -38,7 +38,7 @@ namespace Violet
             }
 
         private:
-            drwav file{ { 0 }};
+            drwav file{ { 0 } };
     };
 
     Sound* OpenWavSound(const std::string& id, const std::string& path)

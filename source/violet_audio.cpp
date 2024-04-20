@@ -6,6 +6,7 @@ namespace Violet
 {
     static SDL_AudioStream* audio_stream{ nullptr };
     static SoundManager*    sound_manager{ nullptr };
+    static int              master_volume{ 100 };
 
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
@@ -102,6 +103,16 @@ namespace Violet
         }
     }
 
+    int GetMasterVolume()
+    {
+        return master_volume;
+    }
+
+    void SetMasterVolume(const int volume)
+    {
+        master_volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
+    }
+
     Sound::~Sound()
     {
 #ifdef VIOLET_DEBUG
@@ -144,6 +155,21 @@ namespace Violet
         play_count = 0;
     }
 
+    int Sound::GetVolume()
+    {
+        return volume;
+    }
+
+    void Sound::SetVolume(const int volume)
+    {
+        this->volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
+    }
+
+    static inline int ApplyVolume(const int sample, const int volume)
+    {
+        return (sample * volume) / 100;
+    }
+
     void Sound::Render(short* stream, short* read_buffer, const size_t length)
     {
         if (open && playing) {
@@ -180,8 +206,8 @@ namespace Violet
             }
 
             for (int i = 0; i < length * 2; i++) {
-                int sample = *stream;
-                sample += *(read_buffer++);
+                int sample = ApplyVolume(ApplyVolume(*(read_buffer++), master_volume), volume);
+                sample += *(stream);
                 sample = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
                 *(stream++) = sample;
             }

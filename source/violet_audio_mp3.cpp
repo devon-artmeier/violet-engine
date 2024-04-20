@@ -38,7 +38,7 @@ namespace Violet
             }
 
         private:
-            drmp3 file{ { 0 }};
+            drmp3 file{ { 0 } };
     };
 
     Sound* OpenMp3Sound(const std::string& id, const std::string& path)

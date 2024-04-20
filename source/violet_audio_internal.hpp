@@ -15,6 +15,8 @@ namespace Violet
             bool            IsPlaying();
             void            Play(const unsigned int play_count);
             void            Stop();
+            int             GetVolume();
+            void            SetVolume(const int volume);
             void            Render(short* stream, short* read_buffer, const size_t length);
 
         protected:
@@ -28,6 +30,7 @@ namespace Violet
             unsigned int    play_count{ 0 };
             unsigned int    loop_start{ 0 };
             unsigned int    loop_end{ 0 };
+            int             volume{ 100 };
     };
 
     class SoundManager
