@@ -10,6 +10,7 @@ namespace Violet
             OggSound(const std::string& path)
             {
                 file = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
+                open = file != nullptr;
             }
 
             ~OggSound()
@@ -17,22 +18,12 @@ namespace Violet
                 stb_vorbis_close(file);
             }
 
-            bool IsOpened()
-            {
-                return file != nullptr;
-            }
-
-            void Restart()
-            {
-                stb_vorbis_seek(file, 0);
-            }
-
-            void Seek(int sample)
+            void Seek(const unsigned int sample)
             {
                 stb_vorbis_seek(file, sample);
             }
 
-            int ReadSamples(short* read_buffer, const size_t length)
+            int Read(short* read_buffer, const size_t length)
             {
                 return stb_vorbis_get_samples_short_interleaved(file, 2, read_buffer, length * 2);
             }

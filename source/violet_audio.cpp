@@ -15,11 +15,10 @@ namespace Violet
 
             if (stream_data != nullptr && read_buffer != nullptr) {
                 memset(stream_data, 0, additional_amount);
-                memset(read_buffer, 0, additional_amount);
 
                 sound_manager->Render(reinterpret_cast<short*>(stream_data),
                                       reinterpret_cast<short*>(read_buffer),
-                                      additional_amount / (sizeof(short) * 2));
+                                      additional_amount);
 
                 SDL_PutAudioStreamData(stream, stream_data, additional_amount);
             }
@@ -66,20 +65,17 @@ namespace Violet
         sound_manager->CloseSound(id);
     }
 
-    void PlaySound(const std::string& id)
+    void PlaySound(const std::string& id, const unsigned int play_count)
     {
         Sound* sound = sound_manager->GetSound(id);
         if (sound != nullptr) {
-            sound->Play(0);
+            sound->Play(play_count);
         }
     }
 
-    void LoopSound(const std::string& id, const int loop_count)
+    bool Sound::IsOpen()
     {
-        Sound* sound = sound_manager->GetSound(id);
-        if (sound != nullptr) {
-            sound->Play(loop_count);
-        }
+       return open;
     }
 
     bool Sound::IsPlaying()
@@ -87,31 +83,63 @@ namespace Violet
         return playing;
     }
 
-    void Sound::Play(const int loop_count)
+    void Sound::Play(const unsigned int play_count)
     {
-        if (IsOpened()) {
-            this->playing = true;
-            this->loop_count = loop_count;
-            Restart();
-        }
-    }
-
-    bool Sound::IsLooping()
-    {
-        return loop_count != 0;
-    }
-
-    void Sound::StepLoopCount()
-    {
-        if (loop_count > 0) {
-            loop_count--;
+        if (IsOpen()) {
+            this->play_count = play_count;
+            play_position = 0;
+            Seek(0);
+            playing = true;
         }
     }
 
     void Sound::Stop()
     {
         playing = false;
-        loop_count = 0;
+        play_position = 0;
+        play_count = 0;
+    }
+
+    void Sound::Render(short* stream, short* read_buffer, const size_t length)
+    {
+        if (open && playing) {
+            size_t  read_count      = 0;
+            short*  read_buffer_pos = read_buffer;
+            bool    loop            = false;
+
+            while (read_count < length) {
+                size_t samples_to_read = length - read_count;
+                if (play_count != 1 && loop_end != 0 && (loop_end - play_position) < samples_to_read) {
+                    samples_to_read = loop_end - play_position;
+                }
+
+                int samples_read    = Read(read_buffer_pos, samples_to_read);
+                play_position       += samples_read;
+                read_count          += samples_read;
+                read_buffer_pos     += samples_read * 2;
+
+                if (samples_read == 0) {
+                    if (loop) break;
+                    loop = true;
+                } else {
+                    loop = (loop_end != 0 && play_position >= loop_end);
+                }
+
+                if (loop) {
+                    if (play_count == 1) break;
+                    if (play_count > 1) {
+                        play_count--;
+                    }
+                    play_position = loop_start;
+                    Seek(loop_start);
+                }
+            }
+
+            for (int i = 0; i < length; i++) {
+                *(stream++) += *(read_buffer++);
+                *(stream++) += *(read_buffer++);
+            }
+        }
     }
 
     SoundManager::~SoundManager()
@@ -122,44 +150,8 @@ namespace Violet
     void SoundManager::Render(short* stream, short* read_buffer, const size_t length)
     {
         for (auto sound_entry : sounds) {
-            Sound* sound = sound_entry.second;
-            
-            if (sound->IsOpened() && sound->IsPlaying()) {
-                size_t  read_count      = 0;
-                size_t  samples_left    = length;
-                short*  read_buffer_pos = read_buffer;
-                bool    looped          = false;
-
-                while (read_count < length) {
-                    int samples_read    = sound->ReadSamples(read_buffer_pos, samples_left);
-                    read_count          += samples_read;
-                    samples_left        -= samples_read;
-                    read_buffer_pos     += samples_read * 2;
-
-                    if (samples_read == 0) {
-                        if (looped || !sound->IsLooping()) {
-                            break;
-                        } else {
-                            sound->StepLoopCount();
-                            looped = true;
-                        }
-                    } else {
-                        looped = false;
-                    }
-
-                    if (looped) {
-                        sound->Seek(0);
-                    }
-                }
-
-                short* stream_pos   = stream;
-                read_buffer_pos     = read_buffer;
-
-                for (int i = 0; i < length; i++) {
-                    *(stream_pos++) += *(read_buffer_pos++);
-                    *(stream_pos++) += *(read_buffer_pos++);
-                }
-            }
+            memset(read_buffer, 0, length);
+            sound_entry.second->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
     }
 

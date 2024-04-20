@@ -7,8 +7,7 @@ namespace Violet
 {
     extern void OpenSound(const std::string& id, const std::string& path);
     extern void CloseSound(const std::string& id);
-    extern void PlaySound(const std::string& id);
-    extern void LoopSound(const std::string& id, int loop_count = -1);
+    extern void PlaySound(const std::string& id, const unsigned int loop_count);
 }
 
 #endif // VIOLET_ENGINE_AUDIO_HPP

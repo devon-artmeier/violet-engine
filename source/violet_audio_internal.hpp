@@ -11,20 +11,22 @@ namespace Violet
         public:
             virtual         Sound::~Sound() { }
 
+            bool            IsOpen();
             bool            IsPlaying();
-            void            Play(const int loop_count);
-            bool            IsLooping();
-            void            StepLoopCount();
+            void            Play(const unsigned int play_count);
             void            Stop();
-
-            virtual bool    IsOpened() = 0;
-            virtual void    Restart() = 0;
-            virtual void    Seek(int sample) = 0;
-            virtual int     ReadSamples(short* read_buffer, const size_t length) = 0;
+            void            Render(short* stream, short* read_buffer, const size_t length);
 
         protected:
+            virtual void    Seek(const unsigned int sample) = 0;
+            virtual int     Read(short* read_buffer, const size_t length) = 0;
+
+            bool            open{ false };
             bool            playing{ false };
-            int             loop_count{ 0 };
+            unsigned int    play_position{ 0 };
+            unsigned int    play_count{ 0 };
+            unsigned int    loop_start{ 0 };
+            unsigned int    loop_end{ 0 };
     };
 
     class SoundManager
