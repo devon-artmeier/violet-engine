@@ -1,5 +1,10 @@
+#include <SDL3/SDL.h>
 #include "glad/glad.h"
-#include "violet_internal.hpp"
+#include "violet_engine.hpp"
+#include "violet_audio_internal.hpp"
+#include "violet_core_internal.hpp"
+#include "violet_video_internal.hpp"
+#include "violet_window_internal.hpp"
 
 namespace Violet
 {
@@ -12,6 +17,9 @@ namespace Violet
         InitWindow();
         InitVideo();
         InitAudio();
+
+        OpenSound("test", "test.ogg");
+        LoopSound("test", 1);
     }
 
     void Close()

@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <iostream>
-#include "violet_internal.hpp"
+#include <SDL3/SDL.h>
+#include "violet_engine.hpp"
+#include "violet_message_internal.hpp"
 
 namespace Violet
 {

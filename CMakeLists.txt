@@ -8,6 +8,7 @@ list(APPEND VIOLET_SRC
 	"source/violet_main.cpp"
 	"source/violet_message.cpp"
     "source/violet_video.cpp"
+    "source/violet_vorbis.cpp"
 	"source/violet_window.cpp"
 )
 
