@@ -47,12 +47,12 @@ namespace Violet
         if (this->attribute_lengths != nullptr) delete[] this->attribute_lengths;
     }
 
-    float* const Mesh::GetVertexBuffer() const
+    float* Mesh::GetVertexBuffer() const
     {
         return this->vertex_buffer;
     }
 
-    uint* const Mesh::GetElementBuffer() const
+    uint* Mesh::GetElementBuffer() const
     {
         return this->element_buffer;
     }
@@ -122,6 +122,16 @@ namespace Violet
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
         glBindVertexArray(0);
+    }
+    
+    void Mesh::AddVertexBufferSpace(const uint count, const bool before)
+    {
+        this->ResizeVertexBuffer(this->vertex_count + count, before ? count : 0);
+    }
+
+    void Mesh::AddElementBufferSpace(const uint count, const bool before)
+    {
+        this->ResizeElementBuffer(this->element_count + count, before ? count : 0);
     }
 
     void Mesh::ClearVertexBuffer()
