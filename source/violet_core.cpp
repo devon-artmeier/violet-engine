@@ -27,8 +27,6 @@ namespace Violet
 
     void Close()
     {
-        delete mesh;
-
         GameClose();
 
         CloseAudio();
