@@ -1,7 +1,7 @@
 #ifndef VIOLET_ENGINE_TEXTURE_HPP
 #define VIOLET_ENGINE_TEXTURE_HPP
 
-#include <string.h>
+#include <string>
 #include <unordered_map>
 #include "glad/glad.h"
 
@@ -27,14 +27,14 @@ namespace Violet
             Texture(const std::string& id, const std::string& path);
             ~Texture();
 
-            bool          IsLoaded ();
-            void          Bind     ();
-            int           GetWidth ();
-            int           GetHeight();
-            TextureFilter GetFilter();
+            bool          IsLoaded () const;
+            void          Bind     () const;
+            int           GetWidth () const;
+            int           GetHeight() const;
+            TextureFilter GetFilter() const;
             void          SetFilter(const TextureFilter filter);
-            TextureWrap   GetWrapX ();
-            TextureWrap   GetWrapY ();
+            TextureWrap   GetWrapX () const;
+            TextureWrap   GetWrapY () const;
             void          SetWrapX (const TextureWrap wrap);
             void          SetWrapY (const TextureWrap wrap);
 
@@ -54,7 +54,7 @@ namespace Violet
         public:
             ~TextureManager();
 
-            Texture* GetTexture        (const std::string& id);
+            Texture* GetTexture        (const std::string& id) const;
             void     AddTexture        (const std::string& id, Texture* texture);
             void     DestroyTexture    (const std::string& id);
             void     DestroyAllTextures();

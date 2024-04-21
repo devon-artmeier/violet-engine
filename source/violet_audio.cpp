@@ -55,7 +55,7 @@ namespace Violet
     void LoadSound(const std::string& id, const std::string& path)
     {
 #ifdef VIOLET_DEBUG
-        LogInfo("Loading sound \"" + path + "\" with ID \"" + id + "\"");
+        LogInfo("Creating sound \"" + id + "\" from \"" + path + "\"");
 #endif
         Sound* sound = LoadWavSound(id, path);
         if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
@@ -74,7 +74,7 @@ namespace Violet
         delete sound;
 
 #ifdef VIOLET_DEBUG
-        LogError("Failed to load sound \"" + path + "\" with ID \"" + id + "\"");
+        LogError("Failed to load sound \"" + id + "\" from \"" + path + "\"");
 #endif
     }
 
@@ -120,12 +120,12 @@ namespace Violet
         }
     }
 
-    bool Sound::IsLoaded()
+    bool Sound::IsLoaded() const
     {
        return this->loaded;
     }
 
-    bool Sound::IsPlaying()
+    bool Sound::IsPlaying() const
     {
         return this->playing;
     }
@@ -154,7 +154,7 @@ namespace Violet
         }
     }
 
-    int Sound::GetVolume()
+    int Sound::GetVolume() const
     {
         return this->volume;
     }
@@ -218,7 +218,7 @@ namespace Violet
         this->DestroyAllSounds();
     }
 
-    void SoundManager::Render(short* stream, short* read_buffer, const size_t length)
+    void SoundManager::Render(short* stream, short* read_buffer, const size_t length) const
     {
         for (auto sound_entry : this->sounds) {
             memset(read_buffer, 0, length);
@@ -226,7 +226,7 @@ namespace Violet
         }
     }
 
-    Sound* SoundManager::GetSound(const std::string& id)
+    Sound* SoundManager::GetSound(const std::string& id) const
     {
         auto sound = this->sounds.find(id);
         if (sound != this->sounds.end()) {

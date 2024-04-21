@@ -12,11 +12,11 @@ namespace Violet
             Sound::Sound(const std::string& id);
             virtual Sound::~Sound();
 
-            bool IsLoaded ();
-            bool IsPlaying();
+            bool IsLoaded () const;
+            bool IsPlaying() const;
             void Play     (const unsigned int play_count);
             void Stop     ();
-            int  GetVolume();
+            int  GetVolume() const;
             void SetVolume(const int volume);
             void Render   (short* stream, short* read_buffer, const size_t length);
 
@@ -39,8 +39,8 @@ namespace Violet
         public:
             SoundManager::~SoundManager();
 
-            void   Render          (short* stream, short* read_buffer, const size_t length);
-            Sound* GetSound        (const std::string& id);
+            void   Render          (short* stream, short* read_buffer, const size_t length) const;
+            Sound* GetSound        (const std::string& id) const;
             void   AddSound        (const std::string& id, Sound* sound);
             void   DestroySound    (const std::string& id);
             void   DestroyAllSounds();

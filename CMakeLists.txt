@@ -12,6 +12,7 @@ list(APPEND VIOLET_SRC
 	"source/violet_main.cpp"
 	"source/violet_mesh.cpp"
 	"source/violet_message.cpp"
+    "source/violet_shader.cpp"
     "source/violet_texture.cpp"
     "source/violet_video.cpp"
 	"source/violet_window.cpp"

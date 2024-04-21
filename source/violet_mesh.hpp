@@ -17,13 +17,13 @@ namespace Violet
             void SetElementData     (const unsigned int* const data, const int offset, const int count);
             void FlushVertexData    ();
             void FlushElementData   ();
-            int  GetVertexDataCount ();
-            int  GetElementDataCount();
-            int  GetVertexDataStride();
-            int  GetVertexCount     ();
-            int  GetPolygonCount    ();
-            void Draw               ();
-            void DrawPartial        (int count, const int offset = 0);
+            int  GetVertexDataCount () const;
+            int  GetElementDataCount() const;
+            int  GetVertexDataStride() const;
+            int  GetVertexCount     () const;
+            int  GetPolygonCount    () const;
+            void Draw               () const;
+            void DrawPartial        (int count, const int offset = 0) const;
 
         private:
             void CreateVBO();
@@ -50,7 +50,7 @@ namespace Violet
         public:
             ~MeshManager();
 
-            Mesh* GetMesh         (const std::string& id);
+            Mesh* GetMesh         (const std::string& id) const;
             void  AddMesh         (const std::string& id, Mesh* Mesh);
             void  DestroyMesh     (const std::string& id);
             void  DestroyAllMeshes();
@@ -61,6 +61,7 @@ namespace Violet
 
     extern void InitMeshManager        ();
     extern void CloseMeshManager       ();
+    extern void CreateMesh             (const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths);
     extern void DestroyMesh            (const std::string& id);
     extern void SetMeshVertexData      (const std::string& id, const float* const data, const int offset, const int count);
     extern void SetMeshElementData     (const std::string& id, const float* const data, const int offset, const int count);

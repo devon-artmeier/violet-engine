@@ -6,7 +6,7 @@
 namespace Violet
 {
     static TextureManager* texture_manager{ nullptr };
-    static Texture*        current_texture{ nullptr };
+    static const Texture*  current_texture{ nullptr };
 
     void InitTextureManager()
     {
@@ -23,10 +23,6 @@ namespace Violet
         Texture* texture = new Texture(id, path);
         if (texture->IsLoaded()) { texture_manager->AddTexture(id, texture); return; }
         delete texture;
-
-#ifdef VIOLET_DEBUG
-        LogError("Failed to load texture \"" + path + "\" with ID \"" + id + "\"");
-#endif
     }
 
     void DestroyTexture(const std::string& id)
@@ -97,7 +93,7 @@ namespace Violet
     Texture::Texture(const std::string& id, const std::string& path)
     {
 #ifdef VIOLET_DEBUG
-        LogInfo("Loading texture \"" + path + "\" with ID \"" + id + "\"");
+        LogInfo("Creating texture \"" + id + "\" from \"" + path + "\"");
 #endif
         stbi_set_flip_vertically_on_load(1);
         unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
@@ -114,7 +110,7 @@ namespace Violet
             loaded = true;
         } else {
 #ifdef VIOLET_DEBUG
-            LogInfo("Failed to load texture \"" + path + "\" with ID \"" + id + "\"");
+            LogInfo("Failed to load texture \"" + id + "\" from file \"" + path + "\"");
 #endif
         }
     }
@@ -132,12 +128,12 @@ namespace Violet
         }
     }
 
-    bool Texture::IsLoaded()
+    bool Texture::IsLoaded() const
     {
         return this->loaded;
     }
 
-    void Texture::Bind()
+    void Texture::Bind() const
     {
         if (current_texture != this) {
             current_texture = this;
@@ -145,17 +141,17 @@ namespace Violet
         }
     }
     
-    int Texture::GetWidth()
+    int Texture::GetWidth() const
     {
         return this->width;
     }
     
-    int Texture::GetHeight()
+    int Texture::GetHeight() const
     {
         return this->height;
     }
 
-    TextureFilter Texture::GetFilter()
+    TextureFilter Texture::GetFilter() const
     {
         return this->filter;
     }
@@ -191,12 +187,12 @@ namespace Violet
         return GL_REPEAT;
     }
 
-    TextureWrap Texture::GetWrapX()
+    TextureWrap Texture::GetWrapX() const
     {
         return this->wrap_x;
     }
     
-    TextureWrap Texture::GetWrapY()
+    TextureWrap Texture::GetWrapY() const
     {
         return this->wrap_y;
     }
@@ -224,7 +220,7 @@ namespace Violet
         this->DestroyAllTextures();
     }
 
-    Texture* TextureManager::GetTexture(const std::string& id)
+    Texture* TextureManager::GetTexture(const std::string& id) const
     {
         auto texture = this->textures.find(id);
         if (texture != this->textures.end()) {

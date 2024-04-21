@@ -1,4 +1,5 @@
 #include "violet_mesh.hpp"
+#include "violet_message.hpp"
 
 namespace Violet
 {
@@ -12,6 +13,11 @@ namespace Violet
     void CloseMeshManager()
     {
         delete mesh_manager;
+    }
+
+    void CreateMesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
+    {
+        mesh_manager->AddMesh(id, new Mesh(id, dynamic, attribute_lengths));
     }
 
     void DestroyMesh(const std::string& id)
@@ -92,6 +98,9 @@ namespace Violet
 
     Mesh::Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
     {
+#ifdef VIOLET_DEBUG
+        LogInfo("Creating mesh \"" + id + "\"");
+#endif
         this->id                = id;
         this->attribute_count   = attribute_lengths.size();
         this->attribute_lengths = new int[this->attribute_count];
@@ -107,6 +116,9 @@ namespace Violet
 
     Mesh::~Mesh()
     {
+#ifdef VIOLET_DEBUG
+        LogInfo("Destroying mesh \"" + id + "\"");
+#endif
         glDeleteVertexArrays(1, &this->vao);
         glDeleteBuffers(1, &this->vbo);
         glDeleteBuffers(1, &this->ebo);
@@ -156,8 +168,7 @@ namespace Violet
     }
 
     template<typename T>
-    static void SetData(const T* const src_data, T*& dest_data, const int offset,
-                        const int src_count, int& dest_count, const int stride)
+    static void SetData(const T* const src_data, T*& dest_data, const int offset, const int src_count, int& dest_count, const int stride)
     {
         int mem_stride = stride * sizeof(T);
 
@@ -197,8 +208,7 @@ namespace Violet
         SetData<unsigned int>(data, this->elements, offset, count, this->element_count, 1);
     }
 
-    static void FlushData(GLuint& object, const GLenum type, const void* const data, const int count,
-                          int& prev_count, const int stride, const bool dynamic)
+    static void FlushData(GLuint& object, const GLenum type, const void* const data, const int count, int& prev_count, const int stride, const bool dynamic)
     {
         if (object != 0) {
             if (count > 0) {
@@ -231,37 +241,37 @@ namespace Violet
         this->CreateEBO();
     }
 
-    int Mesh::GetVertexDataCount()
+    int Mesh::GetVertexDataCount() const
     {
         return this->vertex_count;
     }
 
-    int Mesh::GetElementDataCount()
+    int Mesh::GetElementDataCount() const
     {
         return this->element_count;
     }
 
-    int Mesh::GetVertexDataStride()
+    int Mesh::GetVertexDataStride() const
     {
         return this->vertex_stride;
     }
 
-    int Mesh::GetVertexCount()
+    int Mesh::GetVertexCount() const
     {
         return (this->ebo != 0) ? this->element_count : this->vertex_count;
     }
 
-    int Mesh::GetPolygonCount()
+    int Mesh::GetPolygonCount() const
     {
         return GetVertexCount() / 3;
     }
 
-    void Mesh::Draw()
+    void Mesh::Draw() const
     {
         this->DrawPartial(0);
     }
 
-    void Mesh::DrawPartial(int count, const int offset)
+    void Mesh::DrawPartial(int count, const int offset) const
     {
         int max_count = this->GetPolygonCount();
         if (offset >= 0 && offset < max_count) {
@@ -290,7 +300,7 @@ namespace Violet
         this->DestroyAllMeshes();
     }
 
-    Mesh* MeshManager::GetMesh(const std::string& id)
+    Mesh* MeshManager::GetMesh(const std::string& id) const
     {
         auto Mesh = this->meshes.find(id);
         if (Mesh != this->meshes.end()) {
