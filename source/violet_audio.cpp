@@ -134,8 +134,13 @@ namespace Violet
         this->play_position = 0;
         this->playing       = true;
 #ifdef VIOLET_DEBUG
-        LogInfo("Playing sound \"" + this->id + "\" " +
-            ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
+        if (play_count == 0) {
+            LogInfo("Started looping sound \"" + this->id + "\"");
+        } else if (play_count == 1) {
+            LogInfo("Playing looping sound \"" + this->id + "\"");
+        } else {
+            LogInfo("Started playing sound \"" + this->id + "\" " + std::to_string(play_count) + " times");
+        }
 #endif
     }
 
