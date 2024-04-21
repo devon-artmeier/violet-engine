@@ -13,12 +13,17 @@ namespace Violet
             Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths);
             ~Mesh();
 
-            void SetVertexData   (const float* const data, const int offset, const int count);
-            void SetElementData  (const unsigned int* const data, const int offset, const int count);
-            void FlushVertexData ();
-            void FlushElementData();
-            void Draw();
-            void DrawPartial     (const int offset, int count = 0);
+            void SetVertexData      (const float* const data, const int offset, const int count);
+            void SetElementData     (const unsigned int* const data, const int offset, const int count);
+            void FlushVertexData    ();
+            void FlushElementData   ();
+            int  GetVertexDataCount ();
+            int  GetElementDataCount();
+            int  GetVertexDataStride();
+            int  GetVertexCount     ();
+            int  GetPolygonCount    ();
+            void Draw               ();
+            void DrawPartial        (int count, const int offset = 0);
 
         private:
             void CreateVBO();
@@ -30,7 +35,7 @@ namespace Violet
             int*          attribute_lengths{ nullptr };
             float*        vertices         { nullptr };
             int           vertex_count     { 0 };
-            int           vertex_size      { 0 };
+            int           vertex_stride    { 0 };
             unsigned int* elements         { nullptr };
             int           element_count    { 0 };
             GLuint        vbo              { 0 };

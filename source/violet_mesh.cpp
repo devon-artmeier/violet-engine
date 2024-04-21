@@ -11,7 +11,7 @@ namespace Violet
         int i = 0;
         for (int it : attribute_lengths) {
             this->attribute_lengths[i++]  = it;
-            this->vertex_size            += it;
+            this->vertex_stride          += it;
         }
 
         glGenVertexArrays(1, &this->vao);
@@ -19,11 +19,6 @@ namespace Violet
 
     Mesh::~Mesh()
     {
-        glBindVertexArray(this->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-
         glDeleteVertexArrays(1, &this->vao);
         glDeleteBuffers(1, &this->vbo);
         glDeleteBuffers(1, &this->ebo);
@@ -40,13 +35,13 @@ namespace Violet
 
             glGenBuffers(1, &this->vbo);
             glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-            glBufferData(GL_ARRAY_BUFFER, this->vertex_count * this->vertex_size * sizeof(float),
+            glBufferData(GL_ARRAY_BUFFER, this->vertex_count * this->vertex_stride * sizeof(float),
                          this->vertices, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
             intptr_t offset = 0;
             for (int i = 0; i < this->attribute_count; i++) {
                 int length = this->attribute_lengths[i];
-                glVertexAttribPointer(i, length, GL_FLOAT, GL_FALSE, this->vertex_size * sizeof(float),
+                glVertexAttribPointer(i, length, GL_FLOAT, GL_FALSE, this->vertex_stride * sizeof(float),
                                       reinterpret_cast<void*>(offset));
                 glEnableVertexAttribArray(i);
                 offset += length * sizeof(float);
@@ -106,7 +101,7 @@ namespace Violet
 
     void Mesh::SetVertexData(const float* const data, const int offset, const int count)
     {
-        SetData<float>(data, this->vertices, offset, count, this->vertex_count, this->vertex_size);
+        SetData<float>(data, this->vertices, offset, count, this->vertex_count, this->vertex_stride);
     }
 
     void Mesh::SetElementData(const unsigned int* const data, const int offset, const int count)
@@ -137,7 +132,7 @@ namespace Violet
     void Mesh::FlushVertexData()
     {
         FlushData(this->vbo, GL_ARRAY_BUFFER, this->vertices, this->vertex_count,
-                  this->prev_vbo_count, this->vertex_size * sizeof(float), dynamic);
+                  this->prev_vbo_count, this->vertex_stride * sizeof(float), dynamic);
         this->CreateVBO();
     }
 
@@ -148,14 +143,39 @@ namespace Violet
         this->CreateEBO();
     }
 
+    int Mesh::GetVertexDataCount()
+    {
+        return this->vertex_count;
+    }
+
+    int Mesh::GetElementDataCount()
+    {
+        return this->element_count;
+    }
+
+    int Mesh::GetVertexDataStride()
+    {
+        return this->vertex_stride;
+    }
+
+    int Mesh::GetVertexCount()
+    {
+        return (this->ebo != 0) ? this->element_count : this->vertex_count;
+    }
+
+    int Mesh::GetPolygonCount()
+    {
+        return GetVertexCount() / 3;
+    }
+
     void Mesh::Draw()
     {
         this->DrawPartial(0);
     }
 
-    void Mesh::DrawPartial(const int offset, int count)
+    void Mesh::DrawPartial(int count, const int offset)
     {
-        int max_count = ((this->ebo != 0) ? this->element_count : this->vertex_count) / 3;
+        int max_count = this->GetPolygonCount();
         if (offset >= 0 && offset < max_count) {
             if (count <= 0) {
                 count = max_count;
