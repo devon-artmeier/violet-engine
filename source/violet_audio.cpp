@@ -86,17 +86,13 @@ namespace Violet
     void PlaySound(const std::string& id, const unsigned int play_count)
     {
         Sound* sound = sound_manager->GetSound(id);
-        if (sound != nullptr) {
-            sound->Play(play_count);
-        }
+        if (sound != nullptr) sound->Play(play_count);
     }
 
     void StopSound(const std::string& id)
     {
         Sound* sound = sound_manager->GetSound(id);
-        if (sound != nullptr) {
-            sound->Stop();
-        }
+        if (sound != nullptr) sound->Stop();
     }
 
     int GetMasterVolume()

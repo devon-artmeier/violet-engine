@@ -44,6 +44,35 @@ namespace Violet
             int           prev_vbo_count   { 0 };
             int           prev_ebo_count   { 0 };
     };
+
+    class MeshManager
+    {
+        public:
+            ~MeshManager();
+
+            Mesh* GetMesh         (const std::string& id);
+            void  AddMesh         (const std::string& id, Mesh* Mesh);
+            void  DestroyMesh     (const std::string& id);
+            void  DestroyAllMeshes();
+
+        private:
+            std::unordered_map<std::string, Mesh*> meshes;
+    };
+
+    extern void InitMeshManager        ();
+    extern void CloseMeshManager       ();
+    extern void DestroyMesh            (const std::string& id);
+    extern void SetMeshVertexData      (const std::string& id, const float* const data, const int offset, const int count);
+    extern void SetMeshElementData     (const std::string& id, const float* const data, const int offset, const int count);
+    extern void FlushMeshVertexData    (const std::string& id);
+    extern void FlushMeshElementData   (const std::string& id);
+    extern int  GetMeshVertexDataCount (const std::string& id);
+    extern int  GetMeshElementDataCount(const std::string& id);
+    extern int  GetMeshVertexDataStride(const std::string& id);
+    extern int  GetMeshVertexCount     (const std::string& id);
+    extern int  GetMeshPolygonCount    (const std::string& id);
+    extern void DrawMesh               (const std::string& id);
+    extern void DrawMeshPartial        (const std::string& id, int count, const int offset = 0);
 }
 
 #endif // VIOLET_ENGINE_MESH_HPP

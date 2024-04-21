@@ -2,6 +2,94 @@
 
 namespace Violet
 {
+    static MeshManager* mesh_manager{ nullptr };
+
+    void InitMeshManager()
+    {
+        mesh_manager = new MeshManager();
+    }
+
+    void CloseMeshManager()
+    {
+        delete mesh_manager;
+    }
+
+    void DestroyMesh(const std::string& id)
+    {
+        mesh_manager->DestroyMesh(id);
+    }
+
+    void SetMeshVertexData(const std::string& id, const float* const data, const int offset, const int count)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->SetVertexData(data, offset, count);
+    }
+
+    void SetMeshElementData(const std::string& id, const unsigned int* const data, const int offset, const int count)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->SetElementData(data, offset, count);
+    }
+
+    void FlushMeshVertexData(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->FlushVertexData();
+    }
+
+    void FlushMeshElementData(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->FlushElementData();
+    }
+    
+    int GetMeshVertexDataCount(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) return mesh->GetVertexDataCount();
+        return 0;
+    }
+
+    int GetMeshElementDataCount(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) return mesh->GetElementDataCount();
+        return 0;
+    }
+
+    int GetMeshVertexDataStride(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) return mesh->GetVertexDataStride();
+        return 0;
+    }
+
+    int GetMeshVertexCount(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) return mesh->GetVertexCount();
+        return 0;
+    }
+
+    int GetMeshPolygonCount(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) return mesh->GetPolygonCount();
+        return 0;
+    }
+
+    void DrawMesh(const std::string& id)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->Draw();
+    }
+
+    void DrawMeshPartial(const std::string& id, int count, const int offset)
+    {
+        Mesh* mesh = mesh_manager->GetMesh(id);
+        if (mesh != nullptr) mesh->DrawPartial(count, offset);
+    }
+
     Mesh::Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
     {
         this->id                = id;
@@ -195,5 +283,42 @@ namespace Violet
                 glBindVertexArray(0);
             }
         }
+    }
+
+    MeshManager::~MeshManager()
+    {
+        this->DestroyAllMeshes();
+    }
+
+    Mesh* MeshManager::GetMesh(const std::string& id)
+    {
+        auto Mesh = this->meshes.find(id);
+        if (Mesh != this->meshes.end()) {
+            return Mesh->second;
+        }
+        return nullptr;
+    }
+
+    void MeshManager::AddMesh(const std::string& id, Mesh* Mesh)
+    {
+        this->DestroyMesh(id);
+        this->meshes.insert({id, Mesh});
+    }
+    
+    void MeshManager::DestroyMesh(const std::string& id)
+    {
+        Mesh* Mesh = GetMesh(id);
+        if (Mesh != nullptr) {
+            delete Mesh;
+            this->meshes.erase(id);
+        }
+    }
+    
+    void MeshManager::DestroyAllMeshes()
+    {
+        for (auto Mesh : this->meshes) {
+            delete Mesh.second;
+        }
+        this->meshes.clear();
     }
 }
