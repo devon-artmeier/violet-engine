@@ -13,8 +13,8 @@ namespace Violet
             Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths);
             ~Mesh();
 
-            void SetVertexData      (const float* const data, const int offset, const int count);
-            void SetElementData     (const unsigned int* const data, const int offset, const int count);
+            void LoadVertexData     (const float* const data, const int offset, const int count);
+            void LoadElementData    (const unsigned int* const data, const int offset, const int count);
             void FlushVertexData    ();
             void FlushElementData   ();
             int  GetVertexDataCount () const;
@@ -63,8 +63,8 @@ namespace Violet
     extern void CloseMeshManager       ();
     extern void CreateMesh             (const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths);
     extern void DestroyMesh            (const std::string& id);
-    extern void SetMeshVertexData      (const std::string& id, const float* const data, const int offset, const int count);
-    extern void SetMeshElementData     (const std::string& id, const float* const data, const int offset, const int count);
+    extern void LoadMeshVertexData     (const std::string& id, const float* const data, const int offset, const int count);
+    extern void LoadMeshElementData    (const std::string& id, const unsigned int* const data, const int offset, const int count);
     extern void FlushMeshVertexData    (const std::string& id);
     extern void FlushMeshElementData   (const std::string& id);
     extern int  GetMeshVertexDataCount (const std::string& id);

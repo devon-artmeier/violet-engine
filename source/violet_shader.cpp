@@ -1,5 +1,6 @@
 #include "violet_message.hpp"
 #include "violet_shader.hpp"
+#include "violet_texture.hpp"
 
 namespace Violet
 {
@@ -232,6 +233,12 @@ namespace Violet
         if (shader != nullptr) shader->SetMatrix4x3(name, swap, count, value);
     }
 
+    void SetShaderTexture(const std::string& id, const std::string& name, const std::string& texture, const unsigned int slot)
+    {
+        Shader* shader = shader_manager->GetShader(id);
+        if (shader != nullptr) shader->SetTexture(name, texture, slot);
+    }
+
     Shader::Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
         char        log[512];
@@ -239,13 +246,8 @@ namespace Violet
         const char* vertex_code_c = vertex_code.c_str();
         const char* frag_code_c   = frag_code.c_str();
 
-#ifdef VIOLET_DEBUG
-        LogInfo("Creating shader \"" + id + "\"");
-#endif
+        this->id = id;
 
-#ifdef VIOLET_DEBUG
-        LogInfo("Compiling vertex shader code for shader \"" + id + "\"");
-#endif
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &vertex_code_c, nullptr);
         glCompileShader(vertex_shader);
@@ -253,14 +255,14 @@ namespace Violet
         if (success == 0) {
 #ifdef VIOLET_DEBUG
             glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
-            LogInfo("Failed to compile vertex shader code for shader \"" + id + "\":\n" + log);
+            LogInfo("Failed to compile vertex shader code for shader program \"" + id + "\":\n" + log);
 #endif
             return;
         }
-
 #ifdef VIOLET_DEBUG
-        LogInfo("Compiling fragment shader code for shader \"" + id + "\"");
+        LogInfo("Compiled vertex shader code for shader program \"" + id + "\"");
 #endif
+
         GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(frag_shader, 1, &frag_code_c, nullptr);
         glCompileShader(frag_shader);
@@ -268,14 +270,16 @@ namespace Violet
         if (success == 0) {
 #ifdef VIOLET_DEBUG
             glGetShaderInfoLog(frag_shader, 512, nullptr, log);
-            LogInfo("Failed to compile fragment shader code for shader \"" + id + "\":\n" + log);
+            LogInfo("Failed to compile fragment shader code for shader program \"" + id + "\":\n" + log);
 #endif 
             glDeleteShader(vertex_shader);
             return;
         }
+#ifdef VIOLET_DEBUG
+        LogInfo("Compiled fragment shader code for shader program \"" + id + "\"");
+#endif
 
 #ifdef VIOLET_DEBUG
-        LogInfo("Linking code for shader \"" + id + "\"");
 #endif
         this->gl_id = glCreateProgram();
         glAttachShader(this->gl_id, vertex_shader);
@@ -285,10 +289,13 @@ namespace Violet
         if (success == 0) {
 #ifdef VIOLET_DEBUG
             glGetProgramInfoLog(this->gl_id, 512, nullptr, log);
-            LogInfo("Failed to link code for shader \"" + id + "\":\n" + log);
+            LogInfo("Failed to link code for shader program \"" + id + "\":\n" + log);
 #endif
         } else {
             this->loaded = true;
+#ifdef VIOLET_DEBUG
+            LogInfo("Linked code for shader program \"" + id + "\"");
+#endif
         }
 
         glDeleteShader(vertex_shader);
@@ -300,10 +307,12 @@ namespace Violet
         if (current_shader == this) {
             current_shader = nullptr;
         }
+        if (this->loaded) {
+            glDeleteProgram(this->gl_id);
 #ifdef VIOLET_DEBUG
-        LogInfo("Destroying shader \"" + this->id + "\"");
+            LogInfo("Destroyed shader program \"" + this->id + "\"");
 #endif
-        glDeleteProgram(this->gl_id);
+        }
     }
 
     bool Shader::IsLoaded() const
@@ -515,6 +524,13 @@ namespace Violet
     {
         this->Use();
         glUniformMatrix4x3fv(this->GetUniformLocation(name), count, swap, value);
+    }
+
+    void Shader::SetTexture(const std::string& name, const std::string& texture, const unsigned int slot)
+    {
+        this->Use();
+        glActiveTexture(GL_TEXTURE0 + slot);
+        BindTexture(texture);
     }
 
     GLint Shader::GetUniformLocation(const std::string& name) const

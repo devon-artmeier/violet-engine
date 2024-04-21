@@ -16,6 +16,9 @@ namespace Violet
                         drflac_close(file);
                     } else {
                         this->loaded = true;
+#ifdef VIOLET_DEBUG
+                        LogInfo("Loaded FLAC sound \"" + id + "\" from \"" + path + "\"");
+#endif
                     }
                 }
             }

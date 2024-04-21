@@ -92,14 +92,11 @@ namespace Violet
 
     Texture::Texture(const std::string& id, const std::string& path)
     {
-#ifdef VIOLET_DEBUG
-        LogInfo("Creating texture \"" + id + "\" from \"" + path + "\"");
-#endif
+        this->id = id;
         stbi_set_flip_vertically_on_load(1);
         unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
         
         if (data != nullptr) {
-            this->id = id;
             glGenTextures(1, &this->gl_id);
             
             this->Bind();
@@ -108,6 +105,9 @@ namespace Violet
             
             stbi_image_free(data);
             loaded = true;
+#ifdef VIOLET_DEBUG
+            LogInfo("Loaded texture \"" + id + "\" from \"" + path + "\"");
+#endif
         } else {
 #ifdef VIOLET_DEBUG
             LogInfo("Failed to load texture \"" + id + "\" from file \"" + path + "\"");
@@ -121,10 +121,10 @@ namespace Violet
             current_texture = nullptr;
         }
         if (this->loaded) {
-#ifdef VIOLET_DEBUG
-            LogInfo("Destroying texture \"" + id + "\"");
-#endif
             glDeleteTextures(1, &this->gl_id);
+#ifdef VIOLET_DEBUG
+            LogInfo("Destroyed texture \"" + id + "\"");
+#endif
         }
     }
 

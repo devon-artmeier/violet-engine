@@ -25,16 +25,16 @@ namespace Violet
         mesh_manager->DestroyMesh(id);
     }
 
-    void SetMeshVertexData(const std::string& id, const float* const data, const int offset, const int count)
+    void LoadMeshVertexData(const std::string& id, const float* const data, const int offset, const int count)
     {
         Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->SetVertexData(data, offset, count);
+        if (mesh != nullptr) mesh->LoadVertexData(data, offset, count);
     }
 
-    void SetMeshElementData(const std::string& id, const unsigned int* const data, const int offset, const int count)
+    void LoadMeshElementData(const std::string& id, const unsigned int* const data, const int offset, const int count)
     {
         Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->SetElementData(data, offset, count);
+        if (mesh != nullptr) mesh->LoadElementData(data, offset, count);
     }
 
     void FlushMeshVertexData(const std::string& id)
@@ -98,9 +98,6 @@ namespace Violet
 
     Mesh::Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
     {
-#ifdef VIOLET_DEBUG
-        LogInfo("Creating mesh \"" + id + "\"");
-#endif
         this->id                = id;
         this->attribute_count   = attribute_lengths.size();
         this->attribute_lengths = new int[this->attribute_count];
@@ -112,13 +109,14 @@ namespace Violet
         }
 
         glGenVertexArrays(1, &this->vao);
+        
+#ifdef VIOLET_DEBUG
+        LogInfo("Created mesh \"" + id + "\"");
+#endif
     }
 
     Mesh::~Mesh()
     {
-#ifdef VIOLET_DEBUG
-        LogInfo("Destroying mesh \"" + id + "\"");
-#endif
         glDeleteVertexArrays(1, &this->vao);
         glDeleteBuffers(1, &this->vbo);
         glDeleteBuffers(1, &this->ebo);
@@ -126,6 +124,10 @@ namespace Violet
         if (this->vertices != nullptr)          delete[] this->vertices;
         if (this->elements != nullptr)          delete[] this->elements;
         if (this->attribute_lengths != nullptr) delete[] this->attribute_lengths;
+
+#ifdef VIOLET_DEBUG
+        LogInfo("Destroyed mesh \"" + id + "\"");
+#endif
     }
 
     void Mesh::CreateVBO()
@@ -198,12 +200,12 @@ namespace Violet
         }
     }
 
-    void Mesh::SetVertexData(const float* const data, const int offset, const int count)
+    void Mesh::LoadVertexData(const float* const data, const int offset, const int count)
     {
         SetData<float>(data, this->vertices, offset, count, this->vertex_count, this->vertex_stride);
     }
 
-    void Mesh::SetElementData(const unsigned int* const data, const int offset, const int count)
+    void Mesh::LoadElementData(const unsigned int* const data, const int offset, const int count)
     {
         SetData<unsigned int>(data, this->elements, offset, count, this->element_count, 1);
     }

@@ -12,19 +12,33 @@ namespace Violet
         std::string build = "";
         switch (type) {
             case MessageType::Info:
-                build += "[INFO]    ";
+                build += "[INFO]  ";
                 break;
             case MessageType::Warn:
-                build += "[Warn] ";
+                build += "[WARN]  ";
                 break;
             case MessageType::Error:
-                build += "[ERROR]   ";
+                build += "[ERROR] ";
                 break;
             case MessageType::Fatal:
-                build += "[FATAL]   ";
+                build += "[FATAL] ";
                 break;
         }
-        build += message;
+
+        size_t cursor = 0;
+        while (cursor < message.length()) {
+            size_t new_line = message.find('\r', cursor);
+            if (new_line != std::string::npos) new_line++;
+            else new_line = message.find('\n', cursor);
+
+            if (new_line == std::string::npos) {
+                build += message.substr(cursor);
+                cursor = message.length();
+            } else {
+                build += message.substr(cursor, (new_line - cursor) + 1) + "        ";
+                cursor = new_line + 1;
+            }
+        }
         
         std::cout << build << std::endl;
 #endif

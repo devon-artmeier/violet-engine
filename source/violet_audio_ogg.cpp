@@ -10,7 +10,12 @@ namespace Violet
             OggSound(const std::string& id, const std::string& path) : Sound(id)
             {
                 this->file   = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
-                this->loaded = this->file != nullptr;
+                if (this->file != nullptr) {
+                    this->loaded = true;
+#ifdef VIOLET_DEBUG
+                    LogInfo("Loaded OGG sound \"" + id + "\" from \"" + path + "\"");
+#endif
+                }
             }
 
             ~OggSound()

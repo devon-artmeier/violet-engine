@@ -48,6 +48,7 @@ namespace Violet
             void SetMatrix4x2  (const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const;
             void SetMatrix3x4  (const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const;
             void SetMatrix4x3  (const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const;
+            void SetTexture    (const std::string& name, const std::string& texture, const unsigned int slot);
 
         private:
             GLint GetUniformLocation(const std::string& name) const;
@@ -109,6 +110,7 @@ namespace Violet
     extern void SetShaderMatrix4x2  (const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value);
     extern void SetShaderMatrix3x4  (const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value);
     extern void SetShaderMatrix4x3  (const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value);
+    extern void SetShaderTexture    (const std::string& id, const std::string& name, const std::string& texture, const unsigned int slot);
 }
 
 #endif // VIOLET_ENGINE_SHADER_HPP

@@ -19,10 +19,10 @@ namespace Violet
         }
 
         InitWindow();
-        InitVideo();
         InitShaderManager();
         InitTextureManager();
         InitMeshManager();
+        InitVideo();
         InitAudio();
 
         GameInit();
@@ -33,10 +33,10 @@ namespace Violet
         GameClose();
 
         CloseAudio();
+        CloseVideo();
         CloseMeshManager();
         CloseTextureManager();
         CloseShaderManager();
-        CloseVideo();
         CloseWindow();
 
         SDL_Quit();

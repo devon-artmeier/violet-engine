@@ -54,9 +54,6 @@ namespace Violet
 
     void LoadSound(const std::string& id, const std::string& path)
     {
-#ifdef VIOLET_DEBUG
-        LogInfo("Creating sound \"" + id + "\" from \"" + path + "\"");
-#endif
         Sound* sound = LoadWavSound(id, path);
         if (sound->IsLoaded()) { sound_manager->AddSound(id, sound); return; }
         delete sound;
@@ -113,10 +110,10 @@ namespace Violet
     Sound::~Sound()
     {
         if (this->loaded) {
-#ifdef VIOLET_DEBUG
-            LogInfo("Destroying sound \"" + id + "\"");
-#endif
             this->Stop();
+#ifdef VIOLET_DEBUG
+            LogInfo("Destroyed sound \"" + id + "\"");
+#endif
         }
     }
 
@@ -132,25 +129,25 @@ namespace Violet
 
     void Sound::Play(const unsigned int play_count)
     {
-#ifdef VIOLET_DEBUG
-        LogInfo("Playing sound \"" + this->id + "\" " +
-            ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
-#endif
         Seek(0);
         this->play_count    = play_count;
         this->play_position = 0;
         this->playing       = true;
+#ifdef VIOLET_DEBUG
+        LogInfo("Playing sound \"" + this->id + "\" " +
+            ((play_count == 0) ? "infinite" : std::to_string(play_count) + " time(s)"));
+#endif
     }
 
     void Sound::Stop()
     {
         if (this->playing) {
-#ifdef VIOLET_DEBUG
-            LogInfo("Stopping sound \"" + this->id + "\"");
-#endif
             this->playing       = false;
             this->play_position = 0;
             this->play_count    = 0;
+#ifdef VIOLET_DEBUG
+            LogInfo("Stopped sound \"" + this->id + "\"");
+#endif
         }
     }
 
