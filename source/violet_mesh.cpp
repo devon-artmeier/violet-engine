@@ -1,5 +1,6 @@
-#include "violet_mesh.hpp"
-#include "violet_message.hpp"
+#include "violet_mesh_internal.hpp"
+#include "violet_message_internal.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {
@@ -31,7 +32,7 @@ namespace Violet
         if (mesh != nullptr) mesh->LoadVertexData(data, offset, count);
     }
 
-    void LoadMeshElementData(const std::string& id, const unsigned int* const data, const int offset, const int count)
+    void LoadMeshElementData(const std::string& id, const uint* const data, const int offset, const int count)
     {
         Mesh* mesh = mesh_manager->GetMesh(id);
         if (mesh != nullptr) mesh->LoadElementData(data, offset, count);
@@ -161,7 +162,7 @@ namespace Violet
 
             glGenBuffers(1, &this->ebo);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->element_count * sizeof(unsigned int),
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->element_count * sizeof(uint),
                          this->elements, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
             
             glBindVertexArray(0);
@@ -205,9 +206,9 @@ namespace Violet
         SetData<float>(data, this->vertices, offset, count, this->vertex_count, this->vertex_stride);
     }
 
-    void Mesh::LoadElementData(const unsigned int* const data, const int offset, const int count)
+    void Mesh::LoadElementData(const uint* const data, const int offset, const int count)
     {
-        SetData<unsigned int>(data, this->elements, offset, count, this->element_count, 1);
+        SetData<uint>(data, this->elements, offset, count, this->element_count, 1);
     }
 
     static void FlushData(GLuint& object, const GLenum type, const void* const data, const int count, int& prev_count, const int stride, const bool dynamic)
@@ -239,7 +240,7 @@ namespace Violet
     void Mesh::FlushElementData()
     {
         FlushData(this->ebo, GL_ELEMENT_ARRAY_BUFFER, this->elements, this->element_count,
-                  this->prev_ebo_count, sizeof(unsigned int), dynamic);
+                  this->prev_ebo_count, sizeof(uint), dynamic);
         this->CreateEBO();
     }
 
@@ -288,7 +289,7 @@ namespace Violet
                 glBindVertexArray(this->vao);
                 if (this->ebo != 0) {
                     glDrawElements(GL_TRIANGLES, count * 3, GL_UNSIGNED_INT,
-                                   reinterpret_cast<void*>(offset * 3 * sizeof(unsigned int)));
+                                   reinterpret_cast<void*>(offset * 3 * sizeof(uint)));
                 } else {
                     glDrawArrays(GL_TRIANGLES, offset * 3, count * 3);
                 }

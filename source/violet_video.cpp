@@ -1,8 +1,5 @@
 #include "glad/glad.h"
-#include "violet_engine.hpp"
-#include "violet_mesh.hpp"
-#include "violet_shader.hpp"
-#include "violet_texture.hpp"
+#include "violet_types.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 

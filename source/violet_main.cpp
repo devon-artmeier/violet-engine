@@ -1,9 +1,9 @@
 #include <stdexcept>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include "violet_engine.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_message_internal.hpp"
+#include "violet_types.hpp"
 #include "violet_window_internal.hpp"
 
 #if defined(_DEBUG) && defined(_MSC_VER)

@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
-#include "violet_engine.hpp"
 #include "violet_audio_internal.hpp"
+#include "violet_message_internal.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {
@@ -11,8 +12,8 @@ namespace Violet
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
         if (additional_amount > 0) {
-            Uint8 *stream_data = new Uint8[additional_amount];
-            Uint8 *read_buffer = new Uint8[additional_amount];
+            uchar *stream_data = new uchar[additional_amount];
+            uchar *read_buffer = new uchar[additional_amount];
             
             memset(stream_data, 0, additional_amount);
 
@@ -80,7 +81,7 @@ namespace Violet
         sound_manager->DestroySound(id);
     }
 
-    void PlaySound(const std::string& id, const unsigned int play_count)
+    void PlaySound(const std::string& id, const uint play_count)
     {
         Sound* sound = sound_manager->GetSound(id);
         if (sound != nullptr) sound->Play(play_count);
@@ -127,7 +128,7 @@ namespace Violet
         return this->playing;
     }
 
-    void Sound::Play(const unsigned int play_count)
+    void Sound::Play(const uint play_count)
     {
         Seek(0);
         this->play_count    = play_count;
@@ -135,11 +136,11 @@ namespace Violet
         this->playing       = true;
 #ifdef VIOLET_DEBUG
         if (play_count == 0) {
-            LogInfo("Started looping sound \"" + this->id + "\"");
+            LogInfo("Looped sound \"" + this->id + "\"");
         } else if (play_count == 1) {
-            LogInfo("Playing looping sound \"" + this->id + "\"");
+            LogInfo("Played sound \"" + this->id + "\"");
         } else {
-            LogInfo("Started playing sound \"" + this->id + "\" " + std::to_string(play_count) + " times");
+            LogInfo("Played sound \"" + this->id + "\" " + std::to_string(play_count) + " times");
         }
 #endif
     }

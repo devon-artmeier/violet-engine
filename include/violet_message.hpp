@@ -1,7 +1,7 @@
 #ifndef VIOLET_ENGINE_MESSAGE_HPP
 #define VIOLET_ENGINE_MESSAGE_HPP
 
-#include <string>
+#include "violet_types.hpp"
 
 namespace Violet
 {

@@ -1,26 +1,24 @@
-#ifndef VIOLET_ENGINE_TEXTURE_HPP
-#define VIOLET_ENGINE_TEXTURE_HPP
+#ifndef VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
+#define VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 
-#include <string>
-#include <unordered_map>
 #include "glad/glad.h"
+#include "violet_texture.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {
-    enum class TextureFilter
-    {
+    enum class TextureFilter {
         Nearest,
         Bilinear
     };
 
-    enum class TextureWrap
-    {
+    enum class TextureWrap {
         Repeat,
         Mirror,
         ClampEdge,
         ClampBorder
     };
-
+    
     class Texture
     {
         public:
@@ -65,8 +63,6 @@ namespace Violet
 
     extern void          InitTextureManager ();
     extern void          CloseTextureManager();
-    extern void          LoadTexture        (const std::string& id, const std::string& path);
-    extern void          DestroyTexture     (const std::string& id);
     extern void          BindTexture        (const std::string& id);
     extern int           GetTextureWidth    (const std::string& id);
     extern int           GetTextureHeight   (const std::string& id);
@@ -78,4 +74,4 @@ namespace Violet
     extern void          SetTextureWrapY    (const std::string& id, const TextureWrap wrap);
 }
 
-#endif // VIOLET_ENGINE_TEXTURE_HPP
+#endif // VIOLET_ENGINE_TEXTURE_INTERNAL_HPP

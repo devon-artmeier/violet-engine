@@ -1,7 +1,9 @@
+#include <string>
 #include <SDL3/SDL.h>
 #include "glad/glad.h"
-#include "violet_engine.hpp"
+#include "violet_message_internal.hpp"
 #include "violet_window_internal.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {

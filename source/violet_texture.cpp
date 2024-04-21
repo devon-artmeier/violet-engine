@@ -1,5 +1,6 @@
-#include "violet_engine.hpp"
-#include "violet_texture.hpp"
+#include "violet_message_internal.hpp"
+#include "violet_texture_internal.hpp"
+#include "violet_types.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -94,7 +95,7 @@ namespace Violet
     {
         this->id = id;
         stbi_set_flip_vertically_on_load(1);
-        unsigned char *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
+        uchar *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
         
         if (data != nullptr) {
             glGenTextures(1, &this->gl_id);
@@ -110,7 +111,7 @@ namespace Violet
 #endif
         } else {
 #ifdef VIOLET_DEBUG
-            LogInfo("Failed to load texture \"" + id + "\" from file \"" + path + "\"");
+            LogError("Failed to load texture \"" + id + "\" from \"" + path + "\"");
 #endif
         }
     }

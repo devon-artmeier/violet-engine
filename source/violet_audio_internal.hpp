@@ -1,8 +1,8 @@
 #ifndef VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 #define VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 
-#include <string>
-#include <unordered_map>
+#include "violet_audio.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {
@@ -14,23 +14,23 @@ namespace Violet
 
             bool IsLoaded () const;
             bool IsPlaying() const;
-            void Play     (const unsigned int play_count);
+            void Play     (const uint play_count);
             void Stop     ();
             int  GetVolume() const;
             void SetVolume(const int volume);
             void Render   (short* stream, short* read_buffer, const size_t length);
 
         protected:
-            virtual void Seek(const unsigned int sample) = 0;
+            virtual void Seek(const uint sample) = 0;
             virtual int  Read(short* read_buffer, const size_t length) = 0;
 
             std::string  id           { "" };
             bool         loaded       { false };
             bool         playing      { false };
-            unsigned int play_position{ 0 };
-            unsigned int play_count   { 0 };
-            unsigned int loop_start   { 0 };
-            unsigned int loop_end     { 0 };
+            uint         play_position{ 0 };
+            uint         play_count   { 0 };
+            uint         loop_start   { 0 };
+            uint         loop_end     { 0 };
             int          volume       { 100 };
     };
 

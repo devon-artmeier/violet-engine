@@ -1,6 +1,7 @@
-#include "violet_message.hpp"
-#include "violet_shader.hpp"
-#include "violet_texture.hpp"
+#include "violet_message_internal.hpp"
+#include "violet_shader_internal.hpp"
+#include "violet_texture_internal.hpp"
+#include "violet_types.hpp"
 
 namespace Violet
 {
@@ -20,8 +21,11 @@ namespace Violet
     void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
         Shader* shader = new Shader(id, vertex_code, frag_code);
-        if (shader->IsLoaded()) { shader_manager->AddShader(id, shader); return; }
-        delete shader;
+        if (shader->GetProgram() != 0) {
+            shader_manager->AddShader(id, shader);
+        } else {
+            delete shader;
+        }
     }
 
     void DestroyShader(const std::string& id)
@@ -29,214 +33,400 @@ namespace Violet
         shader_manager->DestroyShader(id);
     }
 
-    void UseShader(const std::string& id)
+    void AttachShader(const std::string& id)
     {
         Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->Use();
+        if (shader != nullptr) {
+            shader->Attach();
+        }
     }
 
-    void SetShaderFloat(const std::string& id, const std::string& name, const GLfloat value)
+    void DetachShader()
     {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetFloat(name, value);
-    }
-    
-    void SetShaderInt(const std::string& id, const std::string& name, const GLint value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetInt(name, value);
-    }
-    
-    void SetShaderUInt(const std::string& id, const std::string& name, const GLuint value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUInt(name, value);
-    }
-    
-    void SetShaderVec2(const std::string& id, const std::string& name, const GLfloat value[2])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec2(name, value);
-    }
-    
-    void SetShaderIVec2(const std::string& id, const std::string& name, const GLint value[2])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec2(name, value);
-    }
-    
-    void SetShaderUIVec2(const std::string& id, const std::string& name, const GLuint value[2])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec2(name, value);
-    }
-    
-    void SetShaderVec3(const std::string& id, const std::string& name, const GLfloat value[3])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec3(name, value);
-    }
-    
-    void SetShaderIVec3(const std::string& id, const std::string& name, const GLint value[3])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec3(name, value);
-    }
-    
-    void SetShaderUIVec3(const std::string& id, const std::string& name, const GLuint value[3])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec3(name, value);
-    }
-    
-    void SetShaderVec4(const std::string& id, const std::string& name, const GLfloat value[4])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec4(name, value);
-    }
-    
-    void SetShaderIVec4(const std::string& id, const std::string& name, const GLint value[4])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec4(name, value);
-    }
-    
-    void SetShaderUIVec4(const std::string& id, const std::string& name, const GLuint value[4])
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec4(name, value);
-    }
-    
-    void SetShaderFloatArray(const std::string& id, const std::string& name, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetFloatArray(name, count, value);
-    }
-    
-    void SetShaderIntArray(const std::string& id, const std::string& name, const GLsizei count, const GLint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIntArray(name, count, value);
-    }
-    
-    void SetShaderUIntArray(const std::string& id, const std::string& name, const GLsizei count, const GLuint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIntArray(name, count, value);
-    }
-    
-    void SetShaderVec2Array(const std::string& id, const std::string& name, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec2Array(name, count, value);
-    }
-    
-    void SetShaderIVec2Array(const std::string& id, const std::string& name, const GLsizei count, const GLint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec2Array(name, count, value);
-    }
-    
-    void SetShaderUIVec2Array(const std::string& id, const std::string& name, const GLsizei count, const GLuint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec2Array(name, count, value);
-    }
-    
-    void SetShaderVec3Array(const std::string& id, const std::string& name, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec3Array(name, count, value);
-    }
-    
-    void SetShaderIVec3Array(const std::string& id, const std::string& name, const GLsizei count, const GLint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec3Array(name, count, value);
-    }
-    
-    void SetShaderUIVec3Array(const std::string& id, const std::string& name, const GLsizei count, const GLuint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec3Array(name, count, value);
-    }
-    
-    void SetShaderVec4Array(const std::string& id, const std::string& name, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetVec4Array(name, count, value);
-    }
-    
-    void SetShaderIVec4Array(const std::string& id, const std::string& name, const GLsizei count, const GLint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetIVec4Array(name, count, value);
-    }
-    
-    void SetShaderUIVec4Array(const std::string& id, const std::string& name, const GLsizei count, const GLuint* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetUIVec4Array(name, count, value);
-    }
-    
-    void SetShaderMatrix2x2(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix2x2(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix3x3(const std::string& id, const std::string& name, const bool swap, const GLsizei count,  const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix3x3(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix4x4(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix4x4(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix2x3(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix2x3(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix3x2(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix3x2(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix2x4(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix2x4(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix4x2(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix4x2(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix3x4(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix3x4(name, swap, count, value);
-    }
-    
-    void SetShaderMatrix4x3(const std::string& id, const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value)
-    {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetMatrix4x3(name, swap, count, value);
+        current_shader = nullptr;
     }
 
-    void SetShaderTexture(const std::string& id, const std::string& name, const std::string& texture, const unsigned int slot)
+    static int GetUniformLocation(const std::string& name)
     {
-        Shader* shader = shader_manager->GetShader(id);
-        if (shader != nullptr) shader->SetTexture(name, texture, slot);
+        if (current_shader != nullptr) {
+            return current_shader->GetUniform(name);
+        }
+        return 0;
+    }
+
+    void SetShaderFloat(const std::string& name, const float value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderFloat: No shader is attached");
+#endif
+        } else {
+            glUniform1f(GetUniformLocation(name), value);
+        }
+    }
+    
+    void SetShaderInt(const std::string& name, const int value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderInt: No shader is attached");
+#endif
+        } else {
+            glUniform1i(GetUniformLocation(name), value);
+        }
+    }
+    
+    void SetShaderUInt(const std::string& name, const uint value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUInt: No shader is attached");
+#endif
+        } else {
+            glUniform1ui(GetUniformLocation(name), value);
+        }
+    }
+    
+    void SetShaderVec2(const std::string& name, const float value[2])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec2: No shader is attached");
+#endif
+        } else {
+            glUniform2f(GetUniformLocation(name), value[0], value[1]);
+        }
+    }
+    
+    void SetShaderIVec2(const std::string& name, const int value[2])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec2: No shader is attached");
+#endif
+        } else {
+            glUniform2i(GetUniformLocation(name), value[0], value[1]);
+        }
+    }
+    
+    void SetShaderUIVec2(const std::string& name, const uint value[2])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec2: No shader is attached");
+#endif
+        } else {
+            glUniform2ui(GetUniformLocation(name), value[0], value[1]);
+        }
+    }
+    
+    void SetShaderVec3(const std::string& name, const float value[3])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec3: No shader is attached");
+#endif
+        } else {
+            glUniform3f(GetUniformLocation(name), value[0], value[1], value[2]);
+        }
+    }
+    
+    void SetShaderIVec3(const std::string& name, const int value[3])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec3: No shader is attached");
+#endif
+        } else {
+            glUniform3i(GetUniformLocation(name), value[0], value[1], value[2]);
+        }
+    }
+    
+    void SetShaderUIVec3(const std::string& name, const uint value[3])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec3: No shader is attached");
+#endif
+        } else {
+            glUniform3ui(GetUniformLocation(name), value[0], value[1], value[2]);
+        }
+    }
+    
+    void SetShaderVec4(const std::string& name, const float value[4])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec4: No shader is attached");
+#endif
+        } else {
+            glUniform4f(GetUniformLocation(name), value[0], value[1], value[2], value[3]);
+        }
+    }
+    
+    void SetShaderIVec4(const std::string& name, const int value[4])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec4: No shader is attached");
+#endif
+        } else {
+            glUniform4i(GetUniformLocation(name), value[0], value[1], value[2], value[3]);
+        }
+    }
+    
+    void SetShaderUIVec4(const std::string& name, const uint value[4])
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec4: No shader is attached");
+#endif
+        } else {
+            glUniform4ui(GetUniformLocation(name), value[0], value[1], value[2], value[3]);
+        }
+    }
+    
+    void SetShaderFloatArray(const std::string& name, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderFloatArray: No shader is attached");
+#endif
+        } else {
+            glUniform1fv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderIntArray(const std::string& name, const uint count, const int* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIntArray: No shader is attached");
+#endif
+        } else {
+            glUniform1iv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderUIntArray(const std::string& name, const uint count, const uint* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIntArray: No shader is attached");
+#endif
+        } else {
+            glUniform1uiv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderVec2Array(const std::string& name, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec2Array: No shader is attached");
+#endif
+        } else {
+            glUniform2fv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderIVec2Array(const std::string& name, const uint count, const int* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec2Array: No shader is attached");
+#endif
+        } else {
+            glUniform2iv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderUIVec2Array(const std::string& name, const uint count, const uint* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec2Array: No shader is attached");
+#endif
+        } else {
+            glUniform2uiv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderVec3Array(const std::string& name, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec3Array: No shader is attached");
+#endif
+        } else {
+            glUniform3fv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderIVec3Array(const std::string& name, const uint count, const int* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec3Array: No shader is attached");
+#endif
+        } else {
+            glUniform3iv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderUIVec3Array(const std::string& name, const uint count, const uint* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec3Array: No shader is attached");
+#endif
+        } else {
+            glUniform3uiv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderVec4Array(const std::string& name, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderVec4Array: No shader is attached");
+#endif
+        } else {
+            glUniform4fv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderIVec4Array(const std::string& name, const uint count, const int* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderIVec4Array: No shader is attached");
+#endif
+        } else {
+            glUniform4iv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderUIVec4Array(const std::string& name, const uint count, const uint* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderUIVec4Array: No shader is attached");
+#endif
+        } else {
+            glUniform4uiv(GetUniformLocation(name), count, value);
+        }
+    }
+    
+    void SetShaderMatrix2x2(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix2x2: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix2fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix3x3(const std::string& name, const bool swap, const uint count,  const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix3x3: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix3fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix4x4(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix4x4: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix4fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix2x3(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix2x3: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix2x3fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix3x2(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix3x2: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix3x2fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix2x4(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix2x4: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix2x4fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix4x2(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix4x2: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix4x2fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix3x4(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix3x4: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix3x4fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+    
+    void SetShaderMatrix4x3(const std::string& name, const bool swap, const uint count, const float* const value)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderMatrix4x3: No shader is attached");
+#endif
+        } else {
+            glUniformMatrix4x3fv(GetUniformLocation(name), count, swap, value);
+        }
+    }
+
+    void SetShaderTexture(const std::string& texture, const uint slot)
+    {
+        if (current_shader == nullptr) {
+#ifdef VIOLET_DEBUG
+            LogError("SetShaderTexture: No shader is attached");
+#endif
+        } else {
+            glActiveTexture(GL_TEXTURE0 + slot);
+            BindTexture(texture);
+        }
     }
 
     Shader::Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
@@ -248,14 +438,15 @@ namespace Violet
 
         this->id = id;
 
-        GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        uint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &vertex_code_c, nullptr);
         glCompileShader(vertex_shader);
         glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+
         if (success == 0) {
 #ifdef VIOLET_DEBUG
             glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
-            LogInfo("Failed to compile vertex shader code for shader program \"" + id + "\":\n" + log);
+            LogError("Failed to compile vertex shader code for shader program \"" + id + "\":\n" + log);
 #endif
             return;
         }
@@ -263,14 +454,15 @@ namespace Violet
         LogInfo("Compiled vertex shader code for shader program \"" + id + "\"");
 #endif
 
-        GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        uint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(frag_shader, 1, &frag_code_c, nullptr);
         glCompileShader(frag_shader);
         glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
+
         if (success == 0) {
 #ifdef VIOLET_DEBUG
             glGetShaderInfoLog(frag_shader, 512, nullptr, log);
-            LogInfo("Failed to compile fragment shader code for shader program \"" + id + "\":\n" + log);
+            LogError("Failed to compile fragment shader code for shader program \"" + id + "\":\n" + log);
 #endif 
             glDeleteShader(vertex_shader);
             return;
@@ -279,20 +471,20 @@ namespace Violet
         LogInfo("Compiled fragment shader code for shader program \"" + id + "\"");
 #endif
 
-#ifdef VIOLET_DEBUG
-#endif
-        this->gl_id = glCreateProgram();
-        glAttachShader(this->gl_id, vertex_shader);
-        glAttachShader(this->gl_id, frag_shader);
-        glLinkProgram(this->gl_id);
-        glGetProgramiv(this->gl_id, GL_LINK_STATUS, &success);
+        this->program = glCreateProgram();
+        glAttachShader(this->program, vertex_shader);
+        glAttachShader(this->program, frag_shader);
+        glLinkProgram(this->program);
+        glGetProgramiv(this->program, GL_LINK_STATUS, &success);
+
         if (success == 0) {
 #ifdef VIOLET_DEBUG
-            glGetProgramInfoLog(this->gl_id, 512, nullptr, log);
-            LogInfo("Failed to link code for shader program \"" + id + "\":\n" + log);
+            glGetProgramInfoLog(this->program, 512, nullptr, log);
+            LogError("Failed to link code for shader program \"" + id + "\":\n" + log);
 #endif
+            glDeleteProgram(this->program);
+            this->program = 0;
         } else {
-            this->loaded = true;
 #ifdef VIOLET_DEBUG
             LogInfo("Linked code for shader program \"" + id + "\"");
 #endif
@@ -307,235 +499,35 @@ namespace Violet
         if (current_shader == this) {
             current_shader = nullptr;
         }
-        if (this->loaded) {
-            glDeleteProgram(this->gl_id);
+        if (this->program != 0) {
+            glDeleteProgram(this->program);
 #ifdef VIOLET_DEBUG
             LogInfo("Destroyed shader program \"" + this->id + "\"");
 #endif
         }
     }
 
-    bool Shader::IsLoaded() const
+    std::string Shader::GetId() const
     {
-        return this->loaded;
+        return this->id;
     }
 
-    void Shader::Use() const
+    GLuint Shader::GetProgram() const
+    {
+        return this->program;
+    }
+
+    void Shader::Attach() const
     {
         if (current_shader != this) {
             current_shader = this;
-            glUseProgram(this->gl_id);
+            glUseProgram(this->program);
         }
     }
 
-    void Shader::SetFloat(const std::string& name, const GLfloat value) const
+    GLint Shader::GetUniform(const std::string& name) const
     {
-        this->Use();
-        glUniform1f(this->GetUniformLocation(name), value);
-    }
-
-    void Shader::SetInt(const std::string& name, const GLint value) const
-    {
-        this->Use();
-        glUniform1i(this->GetUniformLocation(name), value);
-    }
-
-    void Shader::SetUInt(const std::string& name, const GLuint value) const
-    {
-        this->Use();
-        glUniform1ui(this->GetUniformLocation(name), value);
-    }
-
-    void Shader::SetVec2(const std::string& name, const GLfloat value[2]) const
-    {
-        this->Use();
-        glUniform2f(this->GetUniformLocation(name), value[0], value[1]);
-    }
-
-    void Shader::SetIVec2(const std::string& name, const GLint value[2]) const
-    {
-        this->Use();
-        glUniform2i(this->GetUniformLocation(name), value[0], value[1]);
-    }
-
-    void Shader::SetUIVec2(const std::string& name, const GLuint value[2]) const
-    {
-        this->Use();
-        glUniform2ui(this->GetUniformLocation(name), value[0], value[1]);
-    }
-
-    void Shader::SetVec3(const std::string& name, const GLfloat value[3]) const
-    {
-        this->Use();
-        glUniform3f(this->GetUniformLocation(name), value[0], value[1], value[2]);
-    }
-
-    void Shader::SetIVec3(const std::string& name, const GLint value[3]) const
-    {
-        this->Use();
-        glUniform3i(this->GetUniformLocation(name), value[0], value[1], value[2]);
-    }
-
-    void Shader::SetUIVec3(const std::string& name, const GLuint value[3]) const
-    {
-        this->Use();
-        glUniform3ui(this->GetUniformLocation(name), value[0], value[1], value[2]);
-    }
-
-    void Shader::SetVec4(const std::string& name, const GLfloat value[4]) const
-    {
-        this->Use();
-        glUniform4f(this->GetUniformLocation(name), value[0], value[1], value[2], value[3]);
-    }
-
-    void Shader::SetIVec4(const std::string& name, const GLint value[4]) const
-    {
-        this->Use();
-        glUniform4i(this->GetUniformLocation(name), value[0], value[1], value[2], value[3]);
-    }
-
-    void Shader::SetUIVec4(const std::string& name, const GLuint value[4]) const
-    {
-        this->Use();
-        glUniform4ui(this->GetUniformLocation(name), value[0], value[1], value[2], value[3]);
-    }
-
-    void Shader::SetFloatArray(const std::string& name, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniform1fv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetIntArray(const std::string& name, const GLsizei count, const GLint* const value) const
-    {
-        this->Use();
-        glUniform1iv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetUIntArray(const std::string& name, const GLsizei count, const GLuint* const value) const
-    {
-        this->Use();
-        glUniform1uiv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetVec2Array(const std::string& name, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniform2fv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetIVec2Array(const std::string& name, const GLsizei count, const GLint* const value) const
-    {
-        this->Use();
-        glUniform2iv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetUIVec2Array(const std::string& name, const GLsizei count, const GLuint* const value) const
-    {
-        this->Use();
-        glUniform2uiv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetVec3Array(const std::string& name, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniform3fv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetIVec3Array(const std::string& name, const GLsizei count, const GLint* const value) const
-    {
-        this->Use();
-        glUniform3iv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetUIVec3Array(const std::string& name, const GLsizei count, const GLuint* const value) const
-    {
-        this->Use();
-        glUniform3uiv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetVec4Array(const std::string& name, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniform4fv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetIVec4Array(const std::string& name, const GLsizei count, const GLint* const value) const
-    {
-        this->Use();
-        glUniform4iv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetUIVec4Array(const std::string& name, const GLsizei count, const GLuint* const value) const
-    {
-        this->Use();
-        glUniform4uiv(this->GetUniformLocation(name), count, value);
-    }
-
-    void Shader::SetMatrix2x2(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix2fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix3x3(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix3fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix4x4(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix4fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix2x3(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix2x3fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix3x2(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix3x2fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix2x4(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix2x4fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix4x2(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix4x2fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix3x4(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix3x4fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetMatrix4x3(const std::string& name, const bool swap, const GLsizei count, const GLfloat* const value) const
-    {
-        this->Use();
-        glUniformMatrix4x3fv(this->GetUniformLocation(name), count, swap, value);
-    }
-
-    void Shader::SetTexture(const std::string& name, const std::string& texture, const unsigned int slot)
-    {
-        this->Use();
-        glActiveTexture(GL_TEXTURE0 + slot);
-        BindTexture(texture);
-    }
-
-    GLint Shader::GetUniformLocation(const std::string& name) const
-    {
-        return glGetUniformLocation(this->gl_id, name.c_str());
+        return glGetUniformLocation(this->program, name.c_str());
     }
     
     ShaderManager::~ShaderManager()
