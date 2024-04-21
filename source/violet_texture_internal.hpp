@@ -3,7 +3,6 @@
 
 #include "glad/glad.h"
 #include "violet_texture.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {

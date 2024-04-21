@@ -1,6 +1,5 @@
 #include "violet_message_internal.hpp"
 #include "violet_texture_internal.hpp"
-#include "violet_types.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 

@@ -1,7 +1,6 @@
 #include "violet_message_internal.hpp"
 #include "violet_shader_internal.hpp"
 #include "violet_texture_internal.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {

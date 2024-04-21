@@ -3,11 +3,10 @@
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"
-#include "violet_mesh_internal.hpp"
 #include "violet_message_internal.hpp"
 #include "violet_shader_internal.hpp"
+#include "violet_sprite_internal.hpp"
 #include "violet_texture_internal.hpp"
-#include "violet_types.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 
@@ -22,7 +21,7 @@ namespace Violet
         InitWindow();
         InitShaderManager();
         InitTextureManager();
-        InitMeshManager();
+        InitSpriteSheetManager();
         InitVideo();
         InitAudio();
 
@@ -35,7 +34,7 @@ namespace Violet
 
         CloseAudio();
         CloseVideo();
-        CloseMeshManager();
+        CloseSpriteSheetManager();
         CloseTextureManager();
         CloseShaderManager();
         CloseWindow();

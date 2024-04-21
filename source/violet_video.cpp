@@ -1,5 +1,4 @@
 #include "glad/glad.h"
-#include "violet_types.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 

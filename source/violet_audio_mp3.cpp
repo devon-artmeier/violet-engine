@@ -1,6 +1,5 @@
 #include "violet_audio_internal.hpp"
 #include "violet_message_internal.hpp"
-#include "violet_types.hpp"
 #define DR_MP3_IMPLEMENTATION
 #include <dr_mp3.h>
 

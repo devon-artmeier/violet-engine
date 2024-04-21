@@ -1,7 +1,6 @@
 #include <SDL3/SDL.h>
 #include "violet_audio_internal.hpp"
 #include "violet_message_internal.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {

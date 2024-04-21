@@ -2,7 +2,6 @@
 #define VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 
 #include "violet_audio.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {

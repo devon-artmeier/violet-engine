@@ -2,7 +2,6 @@
 #define VIOLET_ENGINE_MESSAGE_INTERNAL_HPP
 
 #include "violet_message.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {

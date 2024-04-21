@@ -1,119 +1,39 @@
 #include "violet_mesh_internal.hpp"
 #include "violet_message_internal.hpp"
-#include "violet_types.hpp"
 
 namespace Violet
 {
-    static MeshManager* mesh_manager{ nullptr };
-
-    void InitMeshManager()
+    Mesh::Mesh(const bool dynamic, const uint vertex_count, const uint element_count, std::initializer_list<uint> attribute_lengths)
     {
-        mesh_manager = new MeshManager();
-    }
-
-    void CloseMeshManager()
-    {
-        delete mesh_manager;
-    }
-
-    void CreateMesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
-    {
-        mesh_manager->AddMesh(id, new Mesh(id, dynamic, attribute_lengths));
-    }
-
-    void DestroyMesh(const std::string& id)
-    {
-        mesh_manager->DestroyMesh(id);
-    }
-
-    void LoadMeshVertexData(const std::string& id, const float* const data, const int offset, const int count)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->LoadVertexData(data, offset, count);
-    }
-
-    void LoadMeshElementData(const std::string& id, const uint* const data, const int offset, const int count)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->LoadElementData(data, offset, count);
-    }
-
-    void FlushMeshVertexData(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->FlushVertexData();
-    }
-
-    void FlushMeshElementData(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->FlushElementData();
-    }
-    
-    int GetMeshVertexDataCount(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) return mesh->GetVertexDataCount();
-        return 0;
-    }
-
-    int GetMeshElementDataCount(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) return mesh->GetElementDataCount();
-        return 0;
-    }
-
-    int GetMeshVertexDataStride(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) return mesh->GetVertexDataStride();
-        return 0;
-    }
-
-    int GetMeshVertexCount(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) return mesh->GetVertexCount();
-        return 0;
-    }
-
-    int GetMeshPolygonCount(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) return mesh->GetPolygonCount();
-        return 0;
-    }
-
-    void DrawMesh(const std::string& id)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->Draw();
-    }
-
-    void DrawMeshPartial(const std::string& id, int count, const int offset)
-    {
-        Mesh* mesh = mesh_manager->GetMesh(id);
-        if (mesh != nullptr) mesh->DrawPartial(count, offset);
-    }
-
-    Mesh::Mesh(const std::string& id, const bool dynamic, std::initializer_list<int> attribute_lengths)
-    {
-        this->id                = id;
         this->attribute_count   = attribute_lengths.size();
-        this->attribute_lengths = new int[this->attribute_count];
+        this->attribute_lengths = new uint[this->attribute_count];
 
         int i = 0;
-        for (int it : attribute_lengths) {
+        for (uint it : attribute_lengths) {
             this->attribute_lengths[i++]  = it;
             this->vertex_stride          += it;
         }
 
         glGenVertexArrays(1, &this->vao);
+        glGenBuffers(1, &this->vbo);
+        glGenBuffers(1, &this->ebo);
         
-#ifdef VIOLET_DEBUG
-        LogInfo("Created mesh \"" + id + "\"");
-#endif
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
+    
+        intptr_t attribute_offset = 0;
+        for (int i = 0; i < this->attribute_count; i++) {
+            uint length = this->attribute_lengths[i];
+            glVertexAttribPointer(i, length, GL_FLOAT, GL_FALSE, this->vertex_stride * sizeof(float),
+                                  reinterpret_cast<void*>(attribute_offset));
+            glEnableVertexAttribArray(i);
+            attribute_offset += length * sizeof(float);
+        }
+        glBindVertexArray(0);
+
+        this->ResizeVertexBuffer(vertex_count, 0);
+        this->ResizeElementBuffer(element_count, 0);
     }
 
     Mesh::~Mesh()
@@ -121,217 +41,187 @@ namespace Violet
         glDeleteVertexArrays(1, &this->vao);
         glDeleteBuffers(1, &this->vbo);
         glDeleteBuffers(1, &this->ebo);
-
-        if (this->vertices != nullptr)          delete[] this->vertices;
-        if (this->elements != nullptr)          delete[] this->elements;
+        
+        if (this->vertex_buffer != nullptr)     delete[] this->vertex_buffer;
+        if (this->element_buffer != nullptr)    delete[] this->element_buffer;
         if (this->attribute_lengths != nullptr) delete[] this->attribute_lengths;
-
-#ifdef VIOLET_DEBUG
-        LogInfo("Destroyed mesh \"" + id + "\"");
-#endif
     }
 
-    void Mesh::CreateVBO()
+    float* const Mesh::GetVertexBuffer() const
     {
-        if (this->vbo == 0 && this->vertex_count > 0) {
-            glBindVertexArray(this->vao);
-
-            glGenBuffers(1, &this->vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-            glBufferData(GL_ARRAY_BUFFER, this->vertex_count * this->vertex_stride * sizeof(float),
-                         this->vertices, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-
-            intptr_t offset = 0;
-            for (int i = 0; i < this->attribute_count; i++) {
-                int length = this->attribute_lengths[i];
-                glVertexAttribPointer(i, length, GL_FLOAT, GL_FALSE, this->vertex_stride * sizeof(float),
-                                      reinterpret_cast<void*>(offset));
-                glEnableVertexAttribArray(i);
-                offset += length * sizeof(float);
-            }
-            
-            glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-        }
+        return this->vertex_buffer;
     }
 
-    void Mesh::CreateEBO()
+    uint* const Mesh::GetElementBuffer() const
     {
-        if (this->ebo == 0 && this->element_count > 0) {
-            glBindVertexArray(this->vao);
-
-            glGenBuffers(1, &this->ebo);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->element_count * sizeof(uint),
-                         this->elements, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            
-            glBindVertexArray(0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
+        return this->element_buffer;
     }
 
-    template<typename T>
-    static void SetData(const T* const src_data, T*& dest_data, const int offset, const int src_count, int& dest_count, const int stride)
+    void Mesh::RefreshVertexBuffer()
     {
-        int mem_stride = stride * sizeof(T);
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, this->GetVertexBufferLengthBytes(), this->vertex_buffer);
+        glBindVertexArray(0);
+    }
 
-        if (src_data != nullptr && offset >= 0) {
-            if (dest_data != nullptr) {
-                if ((offset + src_count) > dest_count) {
-                    int new_dest_count = offset + src_count;
-                    T*  new_dest_data  = new T[new_dest_count * stride];
+    void Mesh::RefreshElementBuffer()
+    {
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, this->GetElementBufferLengthBytes(), this->element_buffer);
+        glBindVertexArray(0);
+    }
 
-                    memset(new_dest_data, 0, new_dest_count * mem_stride);
-                    memcpy(new_dest_data, dest_data, ((offset > dest_count) ? dest_count : offset) * mem_stride);
-                    memcpy(new_dest_data + (offset * stride), src_data, src_count * mem_stride);
-                    
-                    delete[] dest_data;
-                    dest_data  = new_dest_data;
-                    dest_count = new_dest_count;
-                } else {
-                    memcpy(dest_data + (offset * stride), src_data, src_count * mem_stride);
+    void Mesh::ResizeVertexBuffer(const uint count, const uint offset)
+    {
+        if (count > 0) {
+            float* new_buffer = new float[count * this->vertex_stride];
+            memset(new_buffer, 0, count * this->vertex_stride * sizeof(float));
+            if (this->vertex_buffer != nullptr) {
+                if (offset < count) {
+                    uint space = ((count - offset) > this->vertex_count) ? this->vertex_count : (count - offset);
+                    memcpy(new_buffer + (offset * this->vertex_stride), this->vertex_buffer, space * this->vertex_stride * sizeof(float));
                 }
-            } else {
-                dest_count = offset + src_count;
-                dest_data = new T[dest_count * stride];
-                
-                memset(dest_data, 0, offset * mem_stride);
-                memcpy(dest_data + (offset * stride), src_data, src_count * mem_stride);
+                delete[] this->vertex_buffer;
             }
+            this->vertex_buffer = new_buffer;
+        } else if (this->vertex_buffer != nullptr) {
+            delete[] this->vertex_buffer;
+            this->vertex_buffer = nullptr;
         }
+        
+        this->vertex_count = count;
+
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+        glBufferData(GL_ARRAY_BUFFER, this->GetVertexBufferLengthBytes(), this->vertex_buffer, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     }
 
-    void Mesh::LoadVertexData(const float* const data, const int offset, const int count)
+    void Mesh::ResizeElementBuffer(const uint count, const uint offset)
     {
-        SetData<float>(data, this->vertices, offset, count, this->vertex_count, this->vertex_stride);
-    }
-
-    void Mesh::LoadElementData(const uint* const data, const int offset, const int count)
-    {
-        SetData<uint>(data, this->elements, offset, count, this->element_count, 1);
-    }
-
-    static void FlushData(GLuint& object, const GLenum type, const void* const data, const int count, int& prev_count, const int stride, const bool dynamic)
-    {
-        if (object != 0) {
-            if (count > 0) {
-                glBindBuffer(type, object);
-                if (count == prev_count) {
-                    glBufferSubData(type, 0, count * stride, data);
-                } else {
-                    glBufferData(type, count * stride, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        if (count > 0) {
+            uint* new_buffer = new uint[count];
+            memset(new_buffer, 0, count * sizeof(uint));
+            if (this->element_buffer != nullptr) {
+                if (offset < count) {
+                    uint space = ((count - offset) > this->element_count) ? this->element_count : (count - offset);
+                    memcpy(new_buffer + offset, this->element_buffer, space * sizeof(uint));
                 }
-                glBindBuffer(type, 0);
-            } else {
-                glDeleteBuffers(1, &object);
-                object = 0;
+                delete[] this->element_buffer;
             }
+            this->element_buffer = new_buffer;
+        } else if (this->element_buffer != nullptr) {
+            delete[] this->element_buffer;
+            this->element_buffer = nullptr;
         }
-        prev_count = count;
+
+        this->element_count = count;
+
+        glBindVertexArray(this->vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        glBindVertexArray(0);
     }
 
-    void Mesh::FlushVertexData()
+    void Mesh::ClearVertexBuffer()
     {
-        FlushData(this->vbo, GL_ARRAY_BUFFER, this->vertices, this->vertex_count,
-                  this->prev_vbo_count, this->vertex_stride * sizeof(float), dynamic);
-        this->CreateVBO();
+        if (this->vertex_buffer != nullptr) {
+            memset(this->vertex_buffer, 0, this->vertex_count * this->vertex_stride * sizeof(float));
+            this->RefreshVertexBuffer();
+        }
     }
 
-    void Mesh::FlushElementData()
+    void Mesh::ClearElementBuffer()
     {
-        FlushData(this->ebo, GL_ELEMENT_ARRAY_BUFFER, this->elements, this->element_count,
-                  this->prev_ebo_count, sizeof(uint), dynamic);
-        this->CreateEBO();
+        if (this->element_buffer != nullptr) {
+            memset(this->element_buffer, 0, this->element_count* sizeof(uint));
+            this->RefreshElementBuffer();
+        }
     }
 
-    int Mesh::GetVertexDataCount() const
+    uint Mesh::GetVertexCount() const
     {
         return this->vertex_count;
     }
 
-    int Mesh::GetElementDataCount() const
+    uint Mesh::GetVertexBufferLength() const
     {
-        return this->element_count;
+        return this->GetVertexCount() * this->vertex_stride;
     }
 
-    int Mesh::GetVertexDataStride() const
+    uint Mesh::GetVertexBufferLengthBytes() const
+    {
+        return this->GetVertexBufferLength() * sizeof(float);
+    }
+
+    uint Mesh::GetVertexStride() const
     {
         return this->vertex_stride;
     }
 
-    int Mesh::GetVertexCount() const
+    uint Mesh::GetVertexStrideBytes() const
     {
-        return (this->ebo != 0) ? this->element_count : this->vertex_count;
+        return this->GetVertexStride() * sizeof(float);
     }
 
-    int Mesh::GetPolygonCount() const
+    uint Mesh::GetElementCount() const
     {
-        return GetVertexCount() / 3;
+        return this->element_count;
+    }
+
+    uint Mesh::GetElementBufferLength() const
+    {
+        return this->GetElementCount();
+    }
+
+    uint Mesh::GetElementBufferLengthBytes() const
+    {
+        return this->GetElementBufferLength() * sizeof(uint);
+    }
+
+    uint Mesh::GetAttributeLength(const uint index) const
+    {
+        return (index < this->attribute_count) ? this->attribute_lengths[index] : 0;
+    }
+
+    uint Mesh::GetAttributeLengthBytes(const uint index) const
+    {
+        return this->GetAttributeLength(index) * sizeof(float);
+    }
+
+    uint Mesh::GetVertexDrawCount() const
+    {
+        return (this->element_count > 0) ? this->element_count : this->vertex_count;
+    }
+
+    uint Mesh::GetPolygonDrawCount() const
+    {
+        return this->GetVertexDrawCount() / 3;
     }
 
     void Mesh::Draw() const
     {
-        this->DrawPartial(0);
+        this->DrawPartial(this->GetPolygonDrawCount());
     }
 
-    void Mesh::DrawPartial(int count, const int offset) const
+    void Mesh::DrawPartial(uint count, const uint offset) const
     {
-        int max_count = this->GetPolygonCount();
-        if (offset >= 0 && offset < max_count) {
-            if (count <= 0) {
-                count = max_count;
-            }
-            if ((offset + count) > max_count) {
-                count = max_count - offset;
+        uint poly_count = this->GetPolygonDrawCount();
+        if (offset < poly_count) {
+            if ((offset + count) > poly_count) {
+                count = poly_count - offset;
             }
 
-            if (this->vbo != 0 && count > 0) {
+            if (count > 0) {
                 glBindVertexArray(this->vao);
-                if (this->ebo != 0) {
-                    glDrawElements(GL_TRIANGLES, count * 3, GL_UNSIGNED_INT,
-                                   reinterpret_cast<void*>(offset * 3 * sizeof(uint)));
+                if (this->element_count > 0) {
+                    glDrawElements(GL_TRIANGLES, count * 3, GL_UNSIGNED_INT, reinterpret_cast<void*>(offset * 3 * sizeof(uint)));
                 } else {
                     glDrawArrays(GL_TRIANGLES, offset * 3, count * 3);
                 }
                 glBindVertexArray(0);
             }
         }
-    }
-
-    MeshManager::~MeshManager()
-    {
-        this->DestroyAllMeshes();
-    }
-
-    Mesh* MeshManager::GetMesh(const std::string& id) const
-    {
-        auto Mesh = this->meshes.find(id);
-        if (Mesh != this->meshes.end()) {
-            return Mesh->second;
-        }
-        return nullptr;
-    }
-
-    void MeshManager::AddMesh(const std::string& id, Mesh* Mesh)
-    {
-        this->DestroyMesh(id);
-        this->meshes.insert({id, Mesh});
-    }
-    
-    void MeshManager::DestroyMesh(const std::string& id)
-    {
-        Mesh* Mesh = GetMesh(id);
-        if (Mesh != nullptr) {
-            delete Mesh;
-            this->meshes.erase(id);
-        }
-    }
-    
-    void MeshManager::DestroyAllMeshes()
-    {
-        for (auto Mesh : this->meshes) {
-            delete Mesh.second;
-        }
-        this->meshes.clear();
     }
 }
