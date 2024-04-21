@@ -11,21 +11,18 @@ namespace Violet
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
         if (additional_amount > 0) {
-            Uint8 *stream_data = SDL_stack_alloc(Uint8, additional_amount);
-            Uint8 *read_buffer = SDL_stack_alloc(Uint8, additional_amount);
-
-            if (stream_data != nullptr && read_buffer != nullptr) {
-                memset(stream_data, 0, additional_amount);
-
-                sound_manager->Render(reinterpret_cast<short*>(stream_data),
-                                      reinterpret_cast<short*>(read_buffer),
-                                      additional_amount);
-
-                SDL_PutAudioStreamData(stream, stream_data, additional_amount);
-            }
+            Uint8 *stream_data = new Uint8[additional_amount];
+            Uint8 *read_buffer = new Uint8[additional_amount];
             
-            if (stream_data != nullptr) SDL_stack_free(stream_data);
-            if (read_buffer != nullptr) SDL_stack_free(read_buffer);
+            memset(stream_data, 0, additional_amount);
+
+            sound_manager->Render(reinterpret_cast<short*>(stream_data),
+                                  reinterpret_cast<short*>(read_buffer),
+                                  additional_amount);
+            SDL_PutAudioStreamData(stream, stream_data, additional_amount);
+            
+            delete[] stream_data;
+            delete[] read_buffer;
         }
     }
 

@@ -4,6 +4,7 @@
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"
+#include "violet_mesh.hpp"
 #include "violet_texture.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
@@ -26,6 +27,8 @@ namespace Violet
 
     void Close()
     {
+        delete mesh;
+
         GameClose();
 
         CloseAudio();
