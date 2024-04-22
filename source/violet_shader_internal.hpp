@@ -2,11 +2,12 @@
 #define VIOLET_ENGINE_SHADER_INTERNAL_HPP
 
 #include <glad.h>
+#include "violet_resource.hpp"
 #include "violet_shader.hpp"
 
 namespace Violet
 {
-    class Shader
+    class Shader : public Resource
     {
         public:
             Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code);
@@ -19,22 +20,7 @@ namespace Violet
             GLint       GetUniform(const std::string& name) const;
 
         private:
-            std::string id     { "" };
-            GLuint      program{ 0 };
-    };
-
-    class ShaderGroup
-    {
-        public:
-            ~ShaderGroup();
-
-            Shader* GetShader        (const std::string& id) const;
-            void    AddShader        (const std::string& id, Shader* shader);
-            void    DestroyShader    (const std::string& id);
-            void    DestroyAllShaders();
-
-        private:
-            std::unordered_map<std::string, Shader*> shaders;
+            GLuint program{ 0 };
     };
 
     extern void InitShaderGroup ();

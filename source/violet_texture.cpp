@@ -5,12 +5,12 @@
 
 namespace Violet
 {
-    static TextureGroup*  texture_group  { nullptr };
+    static ResourceGroup* texture_group  { nullptr };
     static const Texture* current_texture{ nullptr };
 
     void InitTextureGroup()
     {
-        texture_group = new TextureGroup();
+        texture_group = new ResourceGroup();
     }
 
     void CloseTextureGroup()
@@ -21,58 +21,63 @@ namespace Violet
     void LoadTexture(const std::string& id, const std::string& path)
     {
         Texture* texture = new Texture(id, path);
-        if (texture->IsLoaded()) { texture_group->AddTexture(id, texture); return; }
+        if (texture->IsLoaded()) { texture_group->Add(id, texture); return; }
         delete texture;
     }
 
     void DestroyTexture(const std::string& id)
     {
-        texture_group->DestroyTexture(id);
+        texture_group->Destroy(id);
+    }
+    
+    static Texture* GetTexture(const std::string& id)
+    {
+        return reinterpret_cast<Texture*>(texture_group->Get(id));
     }
     
     void BindTexture(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->Bind();
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->GetWidth();
         return 0;
     }
 
     int GetTextureHeight(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->GetHeight();
         return 0;
     }
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->GetFilter();
         return TextureFilter::Nearest;
     }
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->SetFilter(filter);
     }
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->GetWrapX();
         return TextureWrap::Repeat;
     }
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->GetWrapY();
         return TextureWrap::Repeat;
     }
@@ -80,19 +85,18 @@ namespace Violet
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->SetWrapX(wrap);
     }
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = texture_group->GetTexture(id);
+        Texture* texture = GetTexture(id);
         if (texture != nullptr) texture->SetWrapY(wrap);
     }
 
-    Texture::Texture(const std::string& id, const std::string& path)
+    Texture::Texture(const std::string& id, const std::string& path) : Resource(id)
     {
-        this->id = id;
         stbi_set_flip_vertically_on_load(1);
         uchar *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
         
@@ -213,42 +217,5 @@ namespace Violet
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGlWrapValue(wrap));
         }
-    }
-
-    TextureGroup::~TextureGroup()
-    {
-        this->DestroyAllTextures();
-    }
-
-    Texture* TextureGroup::GetTexture(const std::string& id) const
-    {
-        auto texture = this->textures.find(id);
-        if (texture != this->textures.end()) {
-            return texture->second;
-        }
-        return nullptr;
-    }
-
-    void TextureGroup::AddTexture(const std::string& id, Texture* texture)
-    {
-        this->DestroyTexture(id);
-        this->textures.insert({id, texture});
-    }
-    
-    void TextureGroup::DestroyTexture(const std::string& id)
-    {
-        Texture* texture = GetTexture(id);
-        if (texture != nullptr) {
-            delete texture;
-            this->textures.erase(id);
-        }
-    }
-    
-    void TextureGroup::DestroyAllTextures()
-    {
-        for (auto texture : this->textures) {
-            delete texture.second;
-        }
-        this->textures.clear();
     }
 }

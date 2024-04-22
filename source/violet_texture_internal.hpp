@@ -2,6 +2,7 @@
 #define VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 
 #include <glad.h>
+#include "violet_resource.hpp"
 #include "violet_texture.hpp"
 
 namespace Violet
@@ -18,7 +19,7 @@ namespace Violet
         ClampBorder
     };
     
-    class Texture
+    class Texture : public Resource
     {
         public:
             Texture(const std::string& id, const std::string& path);
@@ -36,7 +37,6 @@ namespace Violet
             void          SetWrapY (const TextureWrap wrap);
 
         private:
-            std::string   id    { "" };
             GLuint        gl_id { 0 };
             bool          loaded{false };
             int           width { 0 };
@@ -44,20 +44,6 @@ namespace Violet
             TextureFilter filter{ TextureFilter::Nearest };
             TextureWrap   wrap_x{ TextureWrap::Repeat };
             TextureWrap   wrap_y{ TextureWrap::Repeat };
-    };
-
-    class TextureGroup
-    {
-        public:
-            ~TextureGroup();
-
-            Texture* GetTexture        (const std::string& id) const;
-            void     AddTexture        (const std::string& id, Texture* texture);
-            void     DestroyTexture    (const std::string& id);
-            void     DestroyAllTextures();
-
-        private:
-            std::unordered_map<std::string, Texture*> textures;
     };
 
     extern void          InitTextureGroup ();

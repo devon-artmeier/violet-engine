@@ -55,19 +55,19 @@ namespace Violet
     void LoadSound(const std::string& id, const std::string& path)
     {
         Sound* sound = LoadWavSound(id, path);
-        if (sound->IsLoaded()) { sound_group->AddSound(id, sound); return; }
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
         delete sound;
 
         sound = LoadMp3Sound(id, path);
-        if (sound->IsLoaded()) { sound_group->AddSound(id, sound); return; }
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
         delete sound;
 
         sound = LoadOggSound(id, path);
-        if (sound->IsLoaded()) { sound_group->AddSound(id, sound); return; }
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
         delete sound;
 
         sound = LoadFlacSound(id, path);
-        if (sound->IsLoaded()) { sound_group->AddSound(id, sound); return; }
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
         delete sound;
 
 #ifdef VIOLET_DEBUG
@@ -77,18 +77,23 @@ namespace Violet
 
     void DestroySound(const std::string& id)
     {
-        sound_group->DestroySound(id);
+        sound_group->Destroy(id);
+    }
+    
+    static Sound* GetSound(const std::string& id)
+    {
+        return reinterpret_cast<Sound*>(sound_group->Get(id));
     }
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        Sound* sound = sound_group->GetSound(id);
+        Sound* sound = GetSound(id);
         if (sound != nullptr) sound->Play(play_count);
     }
 
     void StopSound(const std::string& id)
     {
-        Sound* sound = sound_group->GetSound(id);
+        Sound* sound = GetSound(id);
         if (sound != nullptr) sound->Stop();
     }
 
@@ -100,11 +105,6 @@ namespace Violet
     void SetMasterVolume(const int volume)
     {
         master_volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
-    }
-
-    Sound::Sound(const std::string& id)
-    {
-        this->id = id;
     }
 
     Sound::~Sound()
@@ -215,48 +215,11 @@ namespace Violet
         }
     }
 
-    SoundGroup::~SoundGroup()
-    {
-        this->DestroyAllSounds();
-    }
-
     void SoundGroup::Render(short* stream, short* read_buffer, const size_t length) const
     {
-        for (auto sound_entry : this->sounds) {
+        for (auto sound_entry : this->resources) {
             memset(read_buffer, 0, length);
-            sound_entry.second->Render(stream, read_buffer, length / (sizeof(short) * 2));
+            reinterpret_cast<Sound*>(sound_entry.second)->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
-    }
-
-    Sound* SoundGroup::GetSound(const std::string& id) const
-    {
-        auto sound = this->sounds.find(id);
-        if (sound != this->sounds.end()) {
-            return sound->second;
-        }
-        return nullptr;
-    }
-
-    void SoundGroup::AddSound(const std::string& id, Sound* sound)
-    {
-        this->DestroySound(id);
-        this->sounds.insert({id, sound});
-    }
-
-    void SoundGroup::DestroySound(const std::string& id)
-    {
-        Sound* sound = GetSound(id);
-        if (sound != nullptr) {
-            delete sound;
-            this->sounds.erase(id);
-        }
-    }
-
-    void SoundGroup::DestroyAllSounds()
-    {
-        for (auto sound : this->sounds) {
-            delete sound.second;
-        }
-        this->sounds.clear();
     }
 }

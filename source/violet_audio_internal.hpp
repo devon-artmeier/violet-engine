@@ -2,14 +2,15 @@
 #define VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 
 #include "violet_audio.hpp"
+#include "violet_resource.hpp"
 
 namespace Violet
 {
-    class Sound
+    class Sound : public Resource
     {
         public:
-            Sound::Sound(const std::string& id);
-            virtual Sound::~Sound();
+            Sound(const std::string& id) : Resource(id) { }
+            virtual ~Sound();
 
             bool IsLoaded () const;
             bool IsPlaying() const;
@@ -23,7 +24,6 @@ namespace Violet
             virtual void Seek(const uint sample) = 0;
             virtual int  Read(short* read_buffer, const size_t length) = 0;
 
-            std::string  id           { "" };
             bool         loaded       { false };
             bool         playing      { false };
             uint         play_position{ 0 };
@@ -32,20 +32,11 @@ namespace Violet
             uint         loop_end     { 0 };
             int          volume       { 100 };
     };
-
-    class SoundGroup
+    
+    class SoundGroup : public ResourceGroup
     {
         public:
-            SoundGroup::~SoundGroup();
-
-            void   Render          (short* stream, short* read_buffer, const size_t length) const;
-            Sound* GetSound        (const std::string& id) const;
-            void   AddSound        (const std::string& id, Sound* sound);
-            void   DestroySound    (const std::string& id);
-            void   DestroyAllSounds();
-
-        private:
-            std::unordered_map<std::string, Sound*> sounds;
+            void Render(short* stream, short* read_buffer, const size_t length) const;
     };
     
     extern void   InitAudio    ();
