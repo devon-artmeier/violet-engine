@@ -1,5 +1,5 @@
 #include <SDL3/SDL.h>
-#include "glad/glad.h"
+#include <glad.h>
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"

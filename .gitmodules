@@ -8,3 +8,6 @@
 [submodule "dependencies/SDL"]
 	path = dependencies/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "dependencies/glad"]
+	path = dependencies/glad
+	url = https://github.com/devon-artmeier/glad-opengl-3.2.git

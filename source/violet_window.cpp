@@ -1,6 +1,6 @@
 #include <string>
 #include <SDL3/SDL.h>
-#include "glad/glad.h"
+#include <glad.h>
 #include "violet_message_internal.hpp"
 #include "violet_window_internal.hpp"
 

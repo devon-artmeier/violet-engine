@@ -1,4 +1,4 @@
-#include "glad/glad.h"
+#include <glad.h>
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 

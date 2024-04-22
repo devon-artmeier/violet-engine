@@ -1,7 +1,7 @@
 #ifndef VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 #define VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 
-#include "glad/glad.h"
+#include <glad.h>
 #include "violet_texture.hpp"
 
 namespace Violet

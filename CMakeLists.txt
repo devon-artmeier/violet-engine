@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(violet-engine LANGUAGES C CXX)
 
 list(APPEND VIOLET_SRC
-    "source/glad/glad.c"
+    "dependencies/glad/glad.c"
     "source/violet_audio.cpp"
     "source/violet_audio_flac.cpp"
     "source/violet_audio_mp3.cpp"
@@ -36,5 +36,6 @@ else()
 endif()
 
 target_include_directories(violet-engine PRIVATE "include")
-target_include_directories(violet-engine PRIVATE "dependencies/stb")
 target_include_directories(violet-engine PRIVATE "dependencies/dr_libs")
+target_include_directories(violet-engine PRIVATE "dependencies/glad")
+target_include_directories(violet-engine PRIVATE "dependencies/stb")
