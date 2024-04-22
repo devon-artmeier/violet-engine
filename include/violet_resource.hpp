@@ -9,7 +9,7 @@ namespace Violet
     {
         public:
             Resource(const std::string& id);
-            virtual ~Resource() { }
+            virtual ~Resource();
         
         protected:
             std::string id{ "" };

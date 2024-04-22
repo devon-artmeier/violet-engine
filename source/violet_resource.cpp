@@ -6,4 +6,9 @@ namespace Violet
     {
         this->id = id;
     }
+    
+    Resource::~Resource()
+    {
+        
+    }
 }
