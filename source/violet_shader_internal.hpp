@@ -23,10 +23,10 @@ namespace Violet
             GLuint      program{ 0 };
     };
 
-    class ShaderManager
+    class ShaderGroup
     {
         public:
-            ~ShaderManager();
+            ~ShaderGroup();
 
             Shader* GetShader        (const std::string& id) const;
             void    AddShader        (const std::string& id, Shader* shader);
@@ -37,10 +37,10 @@ namespace Violet
             std::unordered_map<std::string, Shader*> shaders;
     };
 
-    extern void InitShaderManager   ();
-    extern void CloseShaderManager  ();
-    extern void AttachShader        (const std::string& id);
-    extern void DetachShader        ();
+    extern void InitShaderGroup ();
+    extern void CloseShaderGroup();
+    extern void AttachShader    (const std::string& id);
+    extern void DetachShader    ();
 }
 
 #endif // VIOLET_ENGINE_SHADER_INTERNAL_HPP

@@ -4,24 +4,24 @@
 
 namespace Violet
 {
-    static ShaderManager* shader_manager{ nullptr };
-    static const Shader*  current_shader{ nullptr };
+    static ShaderGroup*  shader_group  { nullptr };
+    static const Shader* current_shader{ nullptr };
 
-    void InitShaderManager()
+    void InitShaderGroup()
     {
-        shader_manager = new ShaderManager();
+        shader_group = new ShaderGroup();
     }
 
-    void CloseShaderManager()
+    void CloseShaderGroup()
     {
-        delete shader_manager;
+        delete shader_group;
     }
 
     void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
         Shader* shader = new Shader(id, vertex_code, frag_code);
         if (shader->GetProgram() != 0) {
-            shader_manager->AddShader(id, shader);
+            shader_group->AddShader(id, shader);
         } else {
             delete shader;
         }
@@ -29,12 +29,12 @@ namespace Violet
 
     void DestroyShader(const std::string& id)
     {
-        shader_manager->DestroyShader(id);
+        shader_group->DestroyShader(id);
     }
 
     void AttachShader(const std::string& id)
     {
-        Shader* shader = shader_manager->GetShader(id);
+        Shader* shader = shader_group->GetShader(id);
         if (shader != nullptr) {
             shader->Attach();
         }
@@ -529,12 +529,12 @@ namespace Violet
         return glGetUniformLocation(this->program, name.c_str());
     }
     
-    ShaderManager::~ShaderManager()
+    ShaderGroup::~ShaderGroup()
     {
         this->DestroyAllShaders();
     }
 
-    Shader* ShaderManager::GetShader(const std::string& id) const
+    Shader* ShaderGroup::GetShader(const std::string& id) const
     {
         auto shader = this->shaders.find(id);
         if (shader != this->shaders.end()) {
@@ -543,13 +543,13 @@ namespace Violet
         return nullptr;
     }
 
-    void ShaderManager::AddShader(const std::string& id, Shader* shader)
+    void ShaderGroup::AddShader(const std::string& id, Shader* shader)
     {
         this->DestroyShader(id);
         this->shaders.insert({id, shader});
     }
     
-    void ShaderManager::DestroyShader(const std::string& id)
+    void ShaderGroup::DestroyShader(const std::string& id)
     {
         Shader* shader = GetShader(id);
         if (shader != nullptr) {
@@ -558,7 +558,7 @@ namespace Violet
         }
     }
     
-    void ShaderManager::DestroyAllShaders()
+    void ShaderGroup::DestroyAllShaders()
     {
         for (auto shader : this->shaders) {
             delete shader.second;

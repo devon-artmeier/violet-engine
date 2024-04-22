@@ -46,10 +46,10 @@ namespace Violet
             TextureWrap   wrap_y{ TextureWrap::Repeat };
     };
 
-    class TextureManager
+    class TextureGroup
     {
         public:
-            ~TextureManager();
+            ~TextureGroup();
 
             Texture* GetTexture        (const std::string& id) const;
             void     AddTexture        (const std::string& id, Texture* texture);
@@ -60,17 +60,17 @@ namespace Violet
             std::unordered_map<std::string, Texture*> textures;
     };
 
-    extern void          InitTextureManager ();
-    extern void          CloseTextureManager();
-    extern void          BindTexture        (const std::string& id);
-    extern int           GetTextureWidth    (const std::string& id);
-    extern int           GetTextureHeight   (const std::string& id);
-    extern TextureFilter GetTextureFilter   (const std::string& id);
-    extern void          SetTextureFilter   (const std::string& id, const TextureFilter filter);
-    extern TextureWrap   GetTextureWrapX    (const std::string& id);
-    extern TextureWrap   GetTextureWrapY    (const std::string& id);
-    extern void          SetTextureWrapX    (const std::string& id, const TextureWrap wrap);
-    extern void          SetTextureWrapY    (const std::string& id, const TextureWrap wrap);
+    extern void          InitTextureGroup ();
+    extern void          CloseTextureGroup();
+    extern void          BindTexture      (const std::string& id);
+    extern int           GetTextureWidth  (const std::string& id);
+    extern int           GetTextureHeight (const std::string& id);
+    extern TextureFilter GetTextureFilter (const std::string& id);
+    extern void          SetTextureFilter (const std::string& id, const TextureFilter filter);
+    extern TextureWrap   GetTextureWrapX  (const std::string& id);
+    extern TextureWrap   GetTextureWrapY  (const std::string& id);
+    extern void          SetTextureWrapX  (const std::string& id, const TextureWrap wrap);
+    extern void          SetTextureWrapY  (const std::string& id, const TextureWrap wrap);
 }
 
 #endif // VIOLET_ENGINE_TEXTURE_INTERNAL_HPP

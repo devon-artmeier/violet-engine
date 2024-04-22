@@ -3,16 +3,16 @@
 
 namespace Violet
 {
-    static SpriteSheetManager* sprite_sheet_manager{ nullptr };
+    static SpriteSheetGroup* sprite_sheet_group{ nullptr };
 
-    void InitSpriteSheetManager()
+    void InitSpriteSheetGroup()
     {
-        sprite_sheet_manager = new SpriteSheetManager();
+        sprite_sheet_group = new SpriteSheetGroup();
     }
 
-    void CloseSpriteSheetManager()
+    void CloseSpriteSheetGroup()
     {
-        delete sprite_sheet_manager;
+        delete sprite_sheet_group;
     }
 
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
@@ -27,12 +27,12 @@ namespace Violet
         delete this->mesh;
     }
 
-    SpriteSheetManager::~SpriteSheetManager()
+    SpriteSheetGroup::~SpriteSheetGroup()
     {
         this->DestroyAllSpriteSheets();
     }
 
-    SpriteSheet* SpriteSheetManager::GetSpriteSheet(const std::string& id) const
+    SpriteSheet* SpriteSheetGroup::GetSpriteSheet(const std::string& id) const
     {
         auto sheet = this->sheets.find(id);
         if (sheet != this->sheets.end()) {
@@ -41,13 +41,13 @@ namespace Violet
         return nullptr;
     }
 
-    void SpriteSheetManager::AddSpriteSheet(const std::string& id, SpriteSheet* sheet)
+    void SpriteSheetGroup::AddSpriteSheet(const std::string& id, SpriteSheet* sheet)
     {
         this->DestroySpriteSheet(id);
         this->sheets.insert({id, sheet});
     }
     
-    void SpriteSheetManager::DestroySpriteSheet(const std::string& id)
+    void SpriteSheetGroup::DestroySpriteSheet(const std::string& id)
     {
         SpriteSheet* sheet = GetSpriteSheet(id);
         if (sheet != nullptr) {
@@ -56,7 +56,7 @@ namespace Violet
         }
     }
     
-    void SpriteSheetManager::DestroyAllSpriteSheets()
+    void SpriteSheetGroup::DestroyAllSpriteSheets()
     {
         for (auto sheet : this->sheets) {
             delete sheet.second;

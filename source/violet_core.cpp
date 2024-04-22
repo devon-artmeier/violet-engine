@@ -19,9 +19,9 @@ namespace Violet
         }
 
         InitWindow();
-        InitShaderManager();
-        InitTextureManager();
-        InitSpriteSheetManager();
+        InitShaderGroup();
+        InitTextureGroup();
+        InitSpriteSheetGroup();
         InitVideo();
         InitAudio();
 
@@ -34,9 +34,9 @@ namespace Violet
 
         CloseAudio();
         CloseVideo();
-        CloseSpriteSheetManager();
-        CloseTextureManager();
-        CloseShaderManager();
+        CloseSpriteSheetGroup();
+        CloseTextureGroup();
+        CloseShaderGroup();
         CloseWindow();
 
         SDL_Quit();

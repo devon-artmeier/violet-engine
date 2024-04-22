@@ -16,12 +16,13 @@ namespace Violet
             std::string id     { "" };
             std::string texture{ "" };
             Mesh*       mesh   { nullptr };
+            bool        loaded { false };
     };
 
-    class SpriteSheetManager
+    class SpriteSheetGroup
     {
         public:
-            ~SpriteSheetManager();
+            ~SpriteSheetGroup();
 
             SpriteSheet* GetSpriteSheet        (const std::string& id) const;
             void         AddSpriteSheet        (const std::string& id, SpriteSheet* sheet);
@@ -32,8 +33,8 @@ namespace Violet
             std::unordered_map<std::string, SpriteSheet*> sheets;
     };
     
-    extern void InitSpriteSheetManager ();
-    extern void CloseSpriteSheetManager();
+    extern void InitSpriteSheetGroup ();
+    extern void CloseSpriteSheetGroup();
 }
 
 #endif // VIOLET_ENGINE_SPRITE_INTERNAL_HPP

@@ -5,74 +5,74 @@
 
 namespace Violet
 {
-    static TextureManager* texture_manager{ nullptr };
-    static const Texture*  current_texture{ nullptr };
+    static TextureGroup*  texture_group  { nullptr };
+    static const Texture* current_texture{ nullptr };
 
-    void InitTextureManager()
+    void InitTextureGroup()
     {
-        texture_manager = new TextureManager();
+        texture_group = new TextureGroup();
     }
 
-    void CloseTextureManager()
+    void CloseTextureGroup()
     {
-        delete texture_manager;
+        delete texture_group;
     }
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
         Texture* texture = new Texture(id, path);
-        if (texture->IsLoaded()) { texture_manager->AddTexture(id, texture); return; }
+        if (texture->IsLoaded()) { texture_group->AddTexture(id, texture); return; }
         delete texture;
     }
 
     void DestroyTexture(const std::string& id)
     {
-        texture_manager->DestroyTexture(id);
+        texture_group->DestroyTexture(id);
     }
     
     void BindTexture(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->Bind();
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->GetWidth();
         return 0;
     }
 
     int GetTextureHeight(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->GetHeight();
         return 0;
     }
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->GetFilter();
         return TextureFilter::Nearest;
     }
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->SetFilter(filter);
     }
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->GetWrapX();
         return TextureWrap::Repeat;
     }
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->GetWrapY();
         return TextureWrap::Repeat;
     }
@@ -80,13 +80,13 @@ namespace Violet
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->SetWrapX(wrap);
     }
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = texture_manager->GetTexture(id);
+        Texture* texture = texture_group->GetTexture(id);
         if (texture != nullptr) texture->SetWrapY(wrap);
     }
 
@@ -215,12 +215,12 @@ namespace Violet
         }
     }
 
-    TextureManager::~TextureManager()
+    TextureGroup::~TextureGroup()
     {
         this->DestroyAllTextures();
     }
 
-    Texture* TextureManager::GetTexture(const std::string& id) const
+    Texture* TextureGroup::GetTexture(const std::string& id) const
     {
         auto texture = this->textures.find(id);
         if (texture != this->textures.end()) {
@@ -229,13 +229,13 @@ namespace Violet
         return nullptr;
     }
 
-    void TextureManager::AddTexture(const std::string& id, Texture* texture)
+    void TextureGroup::AddTexture(const std::string& id, Texture* texture)
     {
         this->DestroyTexture(id);
         this->textures.insert({id, texture});
     }
     
-    void TextureManager::DestroyTexture(const std::string& id)
+    void TextureGroup::DestroyTexture(const std::string& id)
     {
         Texture* texture = GetTexture(id);
         if (texture != nullptr) {
@@ -244,7 +244,7 @@ namespace Violet
         }
     }
     
-    void TextureManager::DestroyAllTextures()
+    void TextureGroup::DestroyAllTextures()
     {
         for (auto texture : this->textures) {
             delete texture.second;

@@ -33,10 +33,10 @@ namespace Violet
             int          volume       { 100 };
     };
 
-    class SoundManager
+    class SoundGroup
     {
         public:
-            SoundManager::~SoundManager();
+            SoundGroup::~SoundGroup();
 
             void   Render          (short* stream, short* read_buffer, const size_t length) const;
             Sound* GetSound        (const std::string& id) const;
