@@ -24,13 +24,13 @@ namespace Violet
             virtual void Seek(const uint sample) = 0;
             virtual int  Read(Pointer<short> read_buffer, const size_t length) = 0;
 
-            bool         loaded       { false };
-            bool         playing      { false };
-            uint         play_position{ 0 };
-            uint         play_count   { 0 };
-            uint         loop_start   { 0 };
-            uint         loop_end     { 0 };
-            int          volume       { 100 };
+            bool loaded       { false };
+            bool playing      { false };
+            uint play_position{ 0 };
+            uint play_count   { 0 };
+            uint loop_start   { 0 };
+            uint loop_end     { 0 };
+            int  volume       { 100 };
     };
     
     class SoundGroup : public ResourceGroup<Sound>
