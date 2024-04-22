@@ -4,25 +4,20 @@
 
 namespace Violet
 {
-    static SDL_AudioStream* audio_stream { nullptr };
-    static SoundGroup*      sound_group  { nullptr };
-    static int              master_volume{ 100 };
+    static SDL_AudioStream*    audio_stream { nullptr };
+    static Pointer<SoundGroup> sound_group  { nullptr };
+    static int                 master_volume{ 100 };
 
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
         if (additional_amount > 0) {
-            uchar *stream_data = new uchar[additional_amount];
-            uchar *read_buffer = new uchar[additional_amount];
+            Pointer<short> stream_data = new short[additional_amount / sizeof(short)];
+            Pointer<short> read_buffer = new short[additional_amount / sizeof(short)];
             
-            memset(stream_data, 0, additional_amount);
+            memset(stream_data.Raw(), 0, additional_amount);
 
-            sound_group->Render(reinterpret_cast<short*>(stream_data),
-                                  reinterpret_cast<short*>(read_buffer),
-                                  additional_amount);
-            SDL_PutAudioStreamData(stream, stream_data, additional_amount);
-            
-            delete[] stream_data;
-            delete[] read_buffer;
+            sound_group->Render(stream_data, read_buffer, additional_amount);
+            SDL_PutAudioStreamData(stream, stream_data.Raw(), additional_amount);
         }
     }
 
@@ -49,26 +44,22 @@ namespace Violet
             SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
             SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
         }
-        delete sound_group;
+        sound_group = nullptr;
     }
 
     void LoadSound(const std::string& id, const std::string& path)
     {
-        Sound* sound = LoadWavSound(id, path);
+        Pointer<Sound> sound = LoadWavSound(id, path);
         if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-        delete sound;
 
         sound = LoadMp3Sound(id, path);
         if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-        delete sound;
 
         sound = LoadOggSound(id, path);
         if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-        delete sound;
 
         sound = LoadFlacSound(id, path);
         if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-        delete sound;
 
 #ifdef VIOLET_DEBUG
         LogError("Failed to load sound \"" + id + "\" from \"" + path + "\"");
@@ -79,21 +70,16 @@ namespace Violet
     {
         sound_group->Destroy(id);
     }
-    
-    static Sound* GetSound(const std::string& id)
-    {
-        return reinterpret_cast<Sound*>(sound_group->Get(id));
-    }
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        Sound* sound = GetSound(id);
+        Pointer<Sound> sound = sound_group->Get(id);
         if (sound != nullptr) sound->Play(play_count);
     }
 
     void StopSound(const std::string& id)
     {
-        Sound* sound = GetSound(id);
+        Pointer<Sound> sound = sound_group->Get(id);
         if (sound != nullptr) sound->Stop();
     }
 
@@ -171,12 +157,12 @@ namespace Violet
         return (sample * volume) / 100;
     }
 
-    void Sound::Render(short* stream, short* read_buffer, const size_t length)
+    void Sound::Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length)
     {
         if (this->playing) {
-            size_t  read_count      = 0;
-            short*  read_buffer_pos = read_buffer;
-            bool    loop            = false;
+            size_t         read_count      = 0;
+            Pointer<short> read_buffer_pos = read_buffer;
+            bool           loop            = false;
 
             while (read_count < length) {
                 size_t samples_to_read = length - read_count;
@@ -215,11 +201,11 @@ namespace Violet
         }
     }
 
-    void SoundGroup::Render(short* stream, short* read_buffer, const size_t length) const
+    void SoundGroup::Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length) const
     {
         for (auto sound_entry : this->resources) {
-            memset(read_buffer, 0, length);
-            reinterpret_cast<Sound*>(sound_entry.second)->Render(stream, read_buffer, length / (sizeof(short) * 2));
+            memset(read_buffer.Raw(), 0, length);
+            static_cast<Pointer<Sound>>(sound_entry.second)->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
     }
 }

@@ -5,24 +5,23 @@
 
 namespace Violet
 {
-    static ResourceGroup* texture_group  { nullptr };
-    static const Texture* current_texture{ nullptr };
+    static Pointer<ResourceGroup<Texture>> texture_group  { nullptr };
+    static GLuint                          current_texture{ 0 };
 
     void InitTextureGroup()
     {
-        texture_group = new ResourceGroup();
+        texture_group = new ResourceGroup<Texture>();
     }
 
     void CloseTextureGroup()
     {
-        delete texture_group;
+        texture_group = nullptr;
     }
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
-        Texture* texture = new Texture(id, path);
+        Pointer<Texture> texture(new Texture(id, path));
         if (texture->IsLoaded()) { texture_group->Add(id, texture); return; }
-        delete texture;
     }
 
     void DestroyTexture(const std::string& id)
@@ -30,68 +29,62 @@ namespace Violet
         texture_group->Destroy(id);
     }
     
-    static Texture* GetTexture(const std::string& id)
-    {
-        return reinterpret_cast<Texture*>(texture_group->Get(id));
-    }
-    
     void BindTexture(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->Bind();
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->GetWidth();
         return 0;
     }
 
     int GetTextureHeight(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->GetHeight();
         return 0;
     }
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->GetFilter();
         return TextureFilter::Nearest;
     }
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->SetFilter(filter);
     }
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->GetWrapX();
         return TextureWrap::Repeat;
     }
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->GetWrapY();
         return TextureWrap::Repeat;
     }
-
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->SetWrapX(wrap);
     }
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        Texture* texture = GetTexture(id);
+        Pointer<Texture> texture = texture_group->Get(id);
         if (texture != nullptr) texture->SetWrapY(wrap);
     }
 
@@ -121,10 +114,10 @@ namespace Violet
 
     Texture::~Texture()
     {
-        if (current_texture == this) {
-            current_texture = nullptr;
-        }
         if (this->loaded) {
+            if (current_texture == this->gl_id) {
+                current_texture = 0;
+            }
             glDeleteTextures(1, &this->gl_id);
 #ifdef VIOLET_DEBUG
             LogInfo("Destroyed texture \"" + id + "\"");
@@ -139,8 +132,8 @@ namespace Violet
 
     void Texture::Bind() const
     {
-        if (current_texture != this) {
-            current_texture = this;
+        if (current_texture != this->gl_id) {
+            current_texture = this->gl_id;
             glBindTexture(GL_TEXTURE_2D, this->gl_id);  
         }
     }

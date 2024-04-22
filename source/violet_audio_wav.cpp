@@ -34,17 +34,17 @@ namespace Violet
                 drwav_seek_to_pcm_frame(&this->file, sample);
             }
 
-            int Read(short* read_buffer, const size_t length)
+            int Read(Pointer<short> read_buffer, const size_t length)
             {
-                return drwav_read_pcm_frames_s16(&this->file, length, read_buffer);
+                return drwav_read_pcm_frames_s16(&this->file, length, read_buffer.Raw());
             }
 
         private:
             drwav file{ { 0 } };
     };
 
-    Sound* LoadWavSound(const std::string& id, const std::string& path)
+    Pointer<Sound> LoadWavSound(const std::string& id, const std::string& path)
     {
-        return new WavSound(id, path);
+        return Pointer<Sound>(new WavSound(id, path));
     }
 }

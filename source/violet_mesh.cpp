@@ -41,18 +41,14 @@ namespace Violet
         glDeleteVertexArrays(1, &this->vao);
         glDeleteBuffers(1, &this->vbo);
         glDeleteBuffers(1, &this->ebo);
-        
-        if (this->vertex_buffer != nullptr)     delete[] this->vertex_buffer;
-        if (this->element_buffer != nullptr)    delete[] this->element_buffer;
-        if (this->attribute_lengths != nullptr) delete[] this->attribute_lengths;
     }
 
-    float* Mesh::GetVertexBuffer() const
+    Pointer<float> Mesh::GetVertexBuffer() const
     {
         return this->vertex_buffer;
     }
 
-    uint* Mesh::GetElementBuffer() const
+    Pointer<uint> Mesh::GetElementBuffer() const
     {
         return this->element_buffer;
     }
@@ -61,7 +57,7 @@ namespace Violet
     {
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, this->GetVertexBufferLengthBytes(), this->vertex_buffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, this->GetVertexBufferLengthBytes(), this->vertex_buffer.Raw());
         glBindVertexArray(0);
     }
 
@@ -69,7 +65,7 @@ namespace Violet
     {
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, this->GetElementBufferLengthBytes(), this->element_buffer);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, this->GetElementBufferLengthBytes(), this->element_buffer.Raw());
         glBindVertexArray(0);
     }
 
@@ -81,13 +77,12 @@ namespace Violet
             if (this->vertex_buffer != nullptr) {
                 if (offset < count) {
                     uint space = ((count - offset) > this->vertex_count) ? this->vertex_count : (count - offset);
-                    memcpy(new_buffer + (offset * this->vertex_stride), this->vertex_buffer, space * this->vertex_stride * sizeof(float));
+                    memcpy(new_buffer + (offset * this->vertex_stride), this->vertex_buffer.Raw(), 
+                           space * this->vertex_stride * sizeof(float));
                 }
-                delete[] this->vertex_buffer;
             }
             this->vertex_buffer = new_buffer;
         } else if (this->vertex_buffer != nullptr) {
-            delete[] this->vertex_buffer;
             this->vertex_buffer = nullptr;
         }
         
@@ -95,7 +90,8 @@ namespace Violet
 
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-        glBufferData(GL_ARRAY_BUFFER, this->GetVertexBufferLengthBytes(), this->vertex_buffer, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, this->GetVertexBufferLengthBytes(), this->vertex_buffer.Raw(),
+                     this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     }
 
     void Mesh::ResizeElementBuffer(const uint count, const uint offset)
@@ -106,13 +102,11 @@ namespace Violet
             if (this->element_buffer != nullptr) {
                 if (offset < count) {
                     uint space = ((count - offset) > this->element_count) ? this->element_count : (count - offset);
-                    memcpy(new_buffer + offset, this->element_buffer, space * sizeof(uint));
+                    memcpy(new_buffer + offset, this->element_buffer.Raw(), space * sizeof(uint));
                 }
-                delete[] this->element_buffer;
             }
             this->element_buffer = new_buffer;
         } else if (this->element_buffer != nullptr) {
-            delete[] this->element_buffer;
             this->element_buffer = nullptr;
         }
 
@@ -120,7 +114,8 @@ namespace Violet
 
         glBindVertexArray(this->vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer, this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer.Raw(),
+                     this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
         glBindVertexArray(0);
     }
     
@@ -137,7 +132,7 @@ namespace Violet
     void Mesh::ClearVertexBuffer()
     {
         if (this->vertex_buffer != nullptr) {
-            memset(this->vertex_buffer, 0, this->vertex_count * this->vertex_stride * sizeof(float));
+            memset(this->vertex_buffer.Raw(), 0, this->vertex_count * this->vertex_stride * sizeof(float));
             this->RefreshVertexBuffer();
         }
     }
@@ -145,7 +140,7 @@ namespace Violet
     void Mesh::ClearElementBuffer()
     {
         if (this->element_buffer != nullptr) {
-            memset(this->element_buffer, 0, this->element_count* sizeof(uint));
+            memset(this->element_buffer.Raw(), 0, this->element_count* sizeof(uint));
             this->RefreshElementBuffer();
         }
     }

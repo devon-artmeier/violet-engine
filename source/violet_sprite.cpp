@@ -3,16 +3,16 @@
 
 namespace Violet
 {
-    static ResourceGroup* sprite_sheet_group{ nullptr };
+    static Pointer<ResourceGroup<SpriteSheet>> sprite_sheet_group{ nullptr };
 
     void InitSpriteSheetGroup()
     {
-        sprite_sheet_group = new ResourceGroup();
+        sprite_sheet_group = new ResourceGroup<SpriteSheet>();
     }
 
     void CloseSpriteSheetGroup()
     {
-        delete sprite_sheet_group;
+        sprite_sheet_group = nullptr;
     }
 
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture): Resource(id)
@@ -23,6 +23,6 @@ namespace Violet
 
     SpriteSheet::~SpriteSheet()
     {
-        delete this->mesh;
+        
     }
 }

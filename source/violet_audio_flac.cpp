@@ -25,7 +25,7 @@ namespace Violet
 
             ~FlacSound()
             {
-                if (this->loaded) {
+                if (this->file != nullptr) {
                     drflac_close(this->file);
                 }
             }
@@ -35,17 +35,17 @@ namespace Violet
                 drflac_seek_to_pcm_frame(this->file, sample);
             }
 
-            int Read(short* read_buffer, const size_t length)
+            int Read(Pointer<short> read_buffer, const size_t length)
             {
-                return drflac_read_pcm_frames_s16(this->file, length, read_buffer);
+                return drflac_read_pcm_frames_s16(this->file, length, read_buffer.Raw());
             }
 
         private:
             drflac* file{ nullptr };
     };
 
-    Sound* LoadFlacSound(const std::string& id, const std::string& path)
+    Pointer<Sound> LoadFlacSound(const std::string& id, const std::string& path)
     {
-        return new FlacSound(id, path);
+        return Pointer<Sound>(new FlacSound(id, path));
     }
 }

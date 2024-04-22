@@ -14,9 +14,9 @@ namespace Violet
             ~SpriteSheet();
 
         private:
-            std::string texture{ "" };
-            Mesh*       mesh   { nullptr };
-            bool        loaded { false };
+            std::string   texture{ "" };
+            Pointer<Mesh> mesh   { nullptr };
+            bool          loaded { false };
     };
     
     extern void InitSpriteSheetGroup ();

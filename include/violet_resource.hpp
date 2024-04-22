@@ -15,18 +15,45 @@ namespace Violet
             std::string id{ "" };
     };
     
+    template<typename T>
     class ResourceGroup
     {
         public:
-            virtual ~ResourceGroup();
+            virtual ~ResourceGroup()
+            {
+                this->DestroyAll();
+            }
             
-            Resource* Get       (const std::string& id) const;
-            void      Add       (const std::string& id, Resource* resource);
-            void      Destroy   (const std::string& id);
-            void      DestroyAll();
+            Pointer<T> Get(const std::string& id) const
+            {
+                auto resource = this->resources.find(id);
+                if (resource != this->resources.end()) {
+                    return resource->second;
+                }
+                return Pointer<T>(nullptr);
+            }
+            
+            void Add(const std::string& id, const Pointer<T> resource)
+            {
+                this->Destroy(id);
+                this->resources.insert({id, resource});
+            }
+            
+            void Destroy(const std::string& id)
+            {
+                Pointer<T> resource = this->Get(id);
+                if (resource != nullptr) {
+                    this->resources.erase(id);
+                }
+            }
+            
+            void DestroyAll()
+            {
+                this->resources.clear();
+            }
         
         protected:
-            std::unordered_map<std::string, Resource*> resources;
+            std::unordered_map<std::string, Pointer<T>> resources;
     };
 }
 

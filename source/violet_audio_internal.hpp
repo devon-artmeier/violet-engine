@@ -18,11 +18,11 @@ namespace Violet
             void Stop     ();
             int  GetVolume() const;
             void SetVolume(const int volume);
-            void Render   (short* stream, short* read_buffer, const size_t length);
+            void Render   (Pointer<short> stream, Pointer<short> read_buffer, const size_t length);
 
         protected:
             virtual void Seek(const uint sample) = 0;
-            virtual int  Read(short* read_buffer, const size_t length) = 0;
+            virtual int  Read(Pointer<short> read_buffer, const size_t length) = 0;
 
             bool         loaded       { false };
             bool         playing      { false };
@@ -33,18 +33,18 @@ namespace Violet
             int          volume       { 100 };
     };
     
-    class SoundGroup : public ResourceGroup
+    class SoundGroup : public ResourceGroup<Sound>
     {
         public:
-            void Render(short* stream, short* read_buffer, const size_t length) const;
+            void Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length) const;
     };
     
-    extern void   InitAudio    ();
-    extern void   CloseAudio   ();
-    extern Sound* LoadWavSound (const std::string& id, const std::string& path);
-    extern Sound* LoadMp3Sound (const std::string& id, const std::string& path);
-    extern Sound* LoadOggSound (const std::string& id, const std::string& path);
-    extern Sound* LoadFlacSound(const std::string& id, const std::string& path);
+    extern void           InitAudio    ();
+    extern void           CloseAudio   ();
+    extern Pointer<Sound> LoadWavSound (const std::string& id, const std::string& path);
+    extern Pointer<Sound> LoadMp3Sound (const std::string& id, const std::string& path);
+    extern Pointer<Sound> LoadOggSound (const std::string& id, const std::string& path);
+    extern Pointer<Sound> LoadFlacSound(const std::string& id, const std::string& path);
 }
 
 #endif // VIOLET_ENGINE_AUDIO_INTERNAL_HPP

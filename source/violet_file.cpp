@@ -259,14 +259,13 @@ namespace Violet
                 }
             }
         } else {
-            char* buffer = new char[size + 1];
-            memset(buffer, 0, (size + 1) * sizeof(char));
+            Pointer<char> buffer = new char[size + 1];
+            memset(buffer.Raw(), 0, (size + 1) * sizeof(char));
             
-            file.read(buffer, size * sizeof(char));
+            file.read(buffer.Raw(), size * sizeof(char));
             CheckReadFail(this->file, this->path, "string");
-            
-            str = buffer;
-            delete[] buffer;
+
+            str = buffer.Raw();
         }
         return str;
     }

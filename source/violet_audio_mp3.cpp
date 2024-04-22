@@ -34,17 +34,17 @@ namespace Violet
                 drmp3_seek_to_pcm_frame(&this->file, sample);
             }
 
-            int Read(short* read_buffer, const size_t length)
+            int Read(Pointer<short> read_buffer, const size_t length)
             {
-                return drmp3_read_pcm_frames_s16(&this->file, length, read_buffer);
+                return drmp3_read_pcm_frames_s16(&this->file, length, read_buffer.Raw());
             }
 
         private:
             drmp3 file{ { 0 } };
     };
 
-    Sound* LoadMp3Sound(const std::string& id, const std::string& path)
+    Pointer<Sound> LoadMp3Sound(const std::string& id, const std::string& path)
     {
-        return new Mp3Sound(id, path);
+        return Pointer<Sound>(new Mp3Sound(id, path));
     }
 }

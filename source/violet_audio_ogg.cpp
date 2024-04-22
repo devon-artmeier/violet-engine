@@ -9,7 +9,7 @@ namespace Violet
         public:
             OggSound(const std::string& id, const std::string& path) : Sound(id)
             {
-                this->file   = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
+                this->file = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
                 if (this->file != nullptr) {
                     this->loaded = true;
 #ifdef VIOLET_DEBUG
@@ -20,7 +20,7 @@ namespace Violet
 
             ~OggSound()
             {
-                if (this->loaded) {
+                if (this->file != nullptr) {
                     stb_vorbis_close(this->file);
                 }
             }
@@ -30,17 +30,17 @@ namespace Violet
                 stb_vorbis_seek(this->file, sample);
             }
 
-            int Read(short* read_buffer, const size_t length)
+            int Read(Pointer<short> read_buffer, const size_t length)
             {
-                return stb_vorbis_get_samples_short_interleaved(this->file, 2, read_buffer, length * 2);
+                return stb_vorbis_get_samples_short_interleaved(this->file, 2, read_buffer.Raw(), length * 2);
             }
 
         private:
             stb_vorbis* file{ nullptr };
     };
 
-    Sound* LoadOggSound(const std::string& id, const std::string& path)
+    Pointer<Sound> LoadOggSound(const std::string& id, const std::string& path)
     {
-        return new OggSound(id, path);
+        return Pointer<Sound>(new OggSound(id, path));
     }
 }
