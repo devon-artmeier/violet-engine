@@ -2,6 +2,7 @@
 #define VIOLET_ENGINE_HPP
 
 #include "violet_audio.hpp"
+#include "violet_file.hpp"
 #include "violet_message.hpp"
 #include "violet_shader.hpp"
 #include "violet_sprite.hpp"
