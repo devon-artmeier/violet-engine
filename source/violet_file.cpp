@@ -50,320 +50,201 @@ namespace Violet
     {
         return this->file.fail();
     }
-    
-    static bool CheckInvalidRead(std::fstream& file, const std::string& path, const std::string& type_name, const bool write_mode)
-    {
-        if (!file.is_open()) {
-#ifdef VIOLET_DEBUG
-            LogError("Tried to read " + type_name + " while file \"" + path + "\" is not open.");
-#endif
-            return true;
-        } else if (file.eof()) {
-#ifdef VIOLET_DEBUG
-            LogError("Tried to read " + type_name + " while at end of file \"" + path + "\"");
-#endif
-            return true;
-        } else if (write_mode) {
-#ifdef VIOLET_DEBUG
-            LogError("Tried to read " + type_name + " while file \"" + path + "\" is in write mode.");
-#endif
-            return true;
-        }
-        return false;
-    }
-    
-    static bool CheckReadFail(std::fstream& file, const std::string& path, const std::string& type_name)
-    {
-        if (file.fail()) {
-#ifdef VIOLET_DEBUG
-            LogError("Failed to read " + type_name + " from file \"" + path + "\"");
-#endif
-            return true;
-        }
-        return false;
-    }
-    
-    static bool CheckReadEndOfFile(std::fstream& file, const std::string& path, const std::string& type_name)
-    {
-        if (file.eof()) {
-#ifdef VIOLET_DEBUG
-            std::string type_name_fix = type_name;
-            type_name_fix[0] = std::toupper(type_name_fix[0]);
-            LogWarn(type_name_fix +  " read from file \"" + path + "\" ended prematurely due to end of file being reached");
-#endif
-            return true;
-        }
-        return false;
-    }
+
     
     template<typename T>
-    static T ReadValue(std::fstream& file, const std::string& path, const std::string& type_name, const bool big_endian, const bool write_mode)
+    static T ReadValue(std::fstream& file, const bool big_endian)
     {
-        if (CheckInvalidRead(file, path, type_name, write_mode)) {
-            return 0;
-        }
-        
         T value = 0;
         char buffer;
 
         for (int i = 0; i < sizeof(T); i++) {
             file.read(&buffer, sizeof(char));
+            if (file.fail()) return 0;
             value |= static_cast<T>(buffer & 0xFF) << ((big_endian ? ((sizeof(T) - i) - 1) : i) << 3);
-            if (i != (sizeof(T) - 1)) {
-                if (CheckReadEndOfFile(file, path, type_name)) {
-                    break;
-                }
-            } else if (CheckReadFail(file, path, type_name)) {
-                break;
-            }
         }
         return value;
     }
     
     char File::ReadChar()
     {
-        if (CheckInvalidRead(this->file, this->path, "char", this->write_mode)) {
-            return 0;
-        }
-        
-        char buffer;
-        file.read(&buffer, sizeof(char));
-        CheckReadFail(this->file, this->path, "char");
-        
-        return buffer;
+        char buffer = 0;
+        this->file.read(&buffer, sizeof(char));
+        return this->file.fail() ? 0 : buffer;
     }
     
     uchar File::ReadUChar() 
     {
-        if (CheckInvalidRead(this->file, this->path, "unsigned char", this->write_mode)) {
-            return 0;
-        }
-        
-        char buffer;
-        file.read(&buffer, sizeof(char));
-        CheckReadFail(this->file, this->path, "unsigned char");
-        
-        return static_cast<uchar>(buffer);
+        char buffer = 0;
+        this->file.read(&buffer, sizeof(char));
+        return this->file.fail() ? 0 : static_cast<uchar>(buffer);
     }
     
     schar File::ReadSChar() 
     {
-        if (CheckInvalidRead(this->file, this->path, "signed char", this->write_mode)) {
-            return 0;
-        }
-        
-        char buffer;
-        file.read(&buffer, sizeof(char));
-        CheckReadFail(this->file, this->path, "signed char");
-        
-        return static_cast<schar>(buffer);
+        char buffer = 0;
+        this->file.read(&buffer, sizeof(char));
+        return this->file.fail() ? 0 : static_cast<schar>(buffer);
     }
     
     short File::ReadShortLE() 
     {
-        return ReadValue<short>(this->file, this->path, "little-endian short", false, this->write_mode);
+        return ReadValue<short>(this->file, false);
     }
     
     ushort File::ReadUShortLE() 
     {
-        return ReadValue<ushort>(this->file, this->path, "little-endian unsigned short", false, this->write_mode);
+        return ReadValue<ushort>(this->file, false);
     }
     
     int File::ReadIntLE() 
     {
-        return ReadValue<int>(this->file, this->path, "little-endian int", false, this->write_mode);
+        return ReadValue<int>(this->file, false);
     }
     
     uint File::ReadUIntLE() 
     {
-        return ReadValue<uint>(this->file, this->path, "little-endian unsigned int", false, this->write_mode);
+        return ReadValue<uint>(this->file, false);
     }
     
     long File::ReadLongLE() 
     {
-        return ReadValue<long>(this->file, this->path, "little-endian long", false, this->write_mode);
+        return ReadValue<long>(this->file, false);
     }
     
     ulong File::ReadULongLE() 
     {
-        return ReadValue<ulong>(this->file, this->path, "little-endian unsigned long", false, this->write_mode);
+        return ReadValue<ulong>(this->file, false);
     }
     
     longlong File::ReadLongLongLE() 
     {
-        return ReadValue<longlong>(this->file, this->path, "little-endian long long", false, this->write_mode);
+        return ReadValue<longlong>(this->file, false);
     }
     
     ulonglong File::ReadULongLongLE() 
     {
-        return ReadValue<ulonglong>(this->file, this->path, "little-endian unsigned long long", false, this->write_mode);
+        return ReadValue<ulonglong>(this->file, false);
     }
 
     short File::ReadShortBE() 
     {
-        return ReadValue<short>(this->file, this->path, "big-endian short", true, this->write_mode);
+        return ReadValue<short>(this->file, true);
     }
     
     ushort File::ReadUShortBE() 
     {
-        return ReadValue<ushort>(this->file, this->path, "big-endian unsigned short", true, this->write_mode);
+        return ReadValue<ushort>(this->file, true);
     }
     
     int File::ReadIntBE() 
     {
-        return ReadValue<int>(this->file, this->path, "big-endian int", true, this->write_mode);
+        return ReadValue<int>(this->file, true);
     }
     
     uint File::ReadUIntBE() 
     {
-        return ReadValue<uint>(this->file, this->path, "big-endian unsigned int", true, this->write_mode);
+        return ReadValue<uint>(this->file, true);
     }
     
     long File::ReadLongBE() 
     {
-        return ReadValue<long>(this->file, this->path, "big-endian long", true, this->write_mode);
+        return ReadValue<long>(this->file, true);
     }
     
     ulong File::ReadULongBE() 
     {
-        return ReadValue<ulong>(this->file, this->path, "big-endian unsigned long", true, this->write_mode);
+        return ReadValue<ulong>(this->file, true);
     }
     
     longlong File::ReadLongLongBE() 
     {
-        return ReadValue<longlong>(this->file, this->path, "big-endian long long", true, this->write_mode);
+        return ReadValue<longlong>(this->file, true);
     }
     
     ulonglong File::ReadULongLongBE() 
     {
-        return ReadValue<ulonglong>(this->file, this->path, "big-endian unsigned long long", true, this->write_mode);
+        return ReadValue<ulonglong>(this->file, true);
     }
     
     std::string File::ReadString(const uint size) 
     {
-        if (CheckInvalidRead(this->file, this->path, "string", this->write_mode)) {
-            return "";
-        }
-        
-        std::string str = "";
         if (size == 0) {
+            std::string str = "";
             char buffer = ' ';
-            while (buffer != '\0') {
-                file.read(&buffer, sizeof(char));
-                if (CheckReadEndOfFile(this->file, this->path, "string")) {
-                    break;
-                } else if (CheckReadFail(this->file, this->path, "string")) {
-                    break;
-                } else if (buffer != '\0') {
-                    str += buffer;
-                }
-            }
-        } else {
-            Pointer<char> buffer = new char[size + 1];
-            memset(buffer.Raw(), 0, (size + 1) * sizeof(char));
-            
-            file.read(buffer.Raw(), size * sizeof(char));
-            CheckReadFail(this->file, this->path, "string");
 
-            str = buffer.Raw();
-        }
-        return str;
-    }
+            while (buffer != '\0') {
+                this->file.read(&buffer, sizeof(char));
+                if (this->file.fail()) return "";
+                if (buffer != '\0')    str += buffer;
+            }
+            return str;
+        } 
     
-    static bool CheckInvalidWrite(std::fstream& file, const std::string& path, const std::string& type_name, const bool write_mode)
-    {
-        if (!file.is_open()) {
-#ifdef VIOLET_DEBUG
-            LogError("Tried to write " + type_name + " while file \"" + path + "\" is not open.");
-#endif
-            return true;
-        } else if (!write_mode) {
-#ifdef VIOLET_DEBUG
-            LogError("Tried to write " + type_name + " while file \"" + path + "\" is in read mode.");
-#endif
-            return true;
-        }
-        return false;
-    }
-    
-    static bool CheckWriteFail(std::fstream& file, const std::string& path, const std::string& type_name)
-    {
-        if (file.fail()) {
-#ifdef VIOLET_DEBUG
-            LogError("Failed to write " + type_name + " to file \"" + path + "\"");
-#endif
-            return true;
-        }
-        return false;
+        Pointer<char> buffer = new char[size + 1];
+        memset(buffer.Raw(), 0, (size + 1) * sizeof(char));
+        
+        this->file.read(buffer.Raw(), size * sizeof(char));
+        return this->file.fail() ? "" : buffer.Raw();
     }
     
     template<typename T>
-    static void WriteValue(std::fstream& file, const std::string& path, const T value, const std::string& type_name, const bool big_endian, const bool write_mode)
+    static void WriteValue(std::fstream& file, const T value, const bool big_endian)
     {
-        if (!CheckInvalidWrite(file, path, type_name, write_mode)) {
-            for (int i = 0; i < sizeof(T); i++) {
-                char buffer = (value >> ((big_endian ? ((sizeof(T) - i) - 1) : i) << 3)) & 0xFF;
-                file.write(&buffer, sizeof(char));
-                if (CheckWriteFail(file, path, type_name)) {
-                    break;
-                }
-            }
+        for (int i = 0; i < sizeof(T); i++) {
+            char buffer = (value >> ((big_endian ? ((sizeof(T) - i) - 1) : i) << 3)) & 0xFF;
+            file.write(&buffer, sizeof(char));
+            if (file.fail()) break;
         }
     }
     
     void File::WriteChar(const char value) 
     {
-        if (!CheckInvalidWrite(this->file, this->path, "char", this->write_mode)) {
-            file.write(&value, sizeof(char));
-            CheckWriteFail(this->file, this->path, "char");
-        }
+        file.write(&value, sizeof(char));
     }
     
     void File::WriteShortLE(const short value) 
     {
-        WriteValue<short>(this->file, this->path, value, "little-endian short", false, this->write_mode);
+        WriteValue<short>(this->file, value, false);
     }
     
     void File::WriteIntLE(const int value) 
     {
-        WriteValue<int>(this->file, this->path, value, "little-endian int", false, this->write_mode);
+        WriteValue<int>(this->file, value, false);
     }
     
     void File::WriteLongLE(const long value) 
     {
-        WriteValue<long>(this->file, this->path, value, "little-endian long", false, this->write_mode);
+        WriteValue<long>(this->file, value, false);
     }
     
     void File::WriteLongLongLE(const longlong value) 
     {
-        WriteValue<longlong>(this->file, this->path, value, "little-endian long long", false, this->write_mode);
+        WriteValue<longlong>(this->file, value, false);
     }
     
     void File::WriteShortBE(const short value) 
     {
-        WriteValue<short>(this->file, this->path, value, "big-endian short", true, this->write_mode);
+        WriteValue<short>(this->file, value, true);
     }
     
     void File::WriteIntBE(const int value) 
     {
-        WriteValue<int>(this->file, this->path, value, "big-endian int", true, this->write_mode);
+        WriteValue<int>(this->file, value, true);
     }
     
     void File::WriteLongBE(const long value) 
     {
-        WriteValue<long>(this->file, this->path, value, "big-endian long", true, this->write_mode);
+        WriteValue<long>(this->file, value, true);
     }
     
     void File::WriteLongLongBE(const longlong value) 
     {
-        WriteValue<longlong>(this->file, this->path, value, "big-endian long long", true, this->write_mode);
+        WriteValue<longlong>(this->file, value, true);
     }
     
     void File::WriteString(const std::string& str, const bool terminate) 
     {
-        if (!CheckInvalidWrite(this->file, this->path, "string", this->write_mode)) {
-            file.write(str.c_str(), (str.length() + (terminate ? 1 : 0)) * sizeof(char));
-            CheckWriteFail(this->file, this->path, "string");
-        }
+        file.write(str.c_str(), (str.length() + (terminate ? 1 : 0)) * sizeof(char));
     }
 }

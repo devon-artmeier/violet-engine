@@ -1,6 +1,7 @@
 #ifndef VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 #define VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 
+#include "violet_file.hpp"
 #include "violet_mesh_internal.hpp"
 #include "violet_resource.hpp"
 #include "violet_sprite.hpp"
@@ -14,9 +15,12 @@ namespace Violet
             ~SpriteSheet();
 
         private:
+            bool ReadFile(const Pointer<File>& file, const std::string& path);
+
             std::string   texture{ "" };
             Pointer<Mesh> mesh   { nullptr };
             bool          loaded { false };
+            uint          count  { 0 };
     };
     
     extern void InitSpriteSheetGroup ();

@@ -14,13 +14,13 @@ namespace Violet
                 build += "[INFO]  ";
                 break;
             case MessageType::Warn:
-                build += "[WARN]  ";
+                build += "\x1B[93m[WARN]  ";
                 break;
             case MessageType::Error:
-                build += "[ERROR] ";
+                build += "\x1B[91m[ERROR] ";
                 break;
             case MessageType::Fatal:
-                build += "[FATAL] ";
+                build += "\x1B[97;101m[FATAL] ";
                 break;
         }
 
@@ -39,7 +39,7 @@ namespace Violet
             }
         }
         
-        std::cout << build << std::endl;
+        std::cout << build << "\x1B[37;40m" << std::endl;
 #endif
     }
     
