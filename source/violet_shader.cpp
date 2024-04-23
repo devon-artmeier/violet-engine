@@ -32,7 +32,7 @@ namespace Violet
     
     void AttachShader(const std::string& id)
     {
-        Pointer<Shader> shader = shader_group->Get(id);
+        const Pointer<Shader>& shader = shader_group->Get(id);
         if (shader != nullptr) {
             shader->Attach();
         }
@@ -146,147 +146,147 @@ namespace Violet
         }
     }
     
-    void SetShaderFloatArray(const std::string& name, const uint count, const Pointer<float> value)
+    void SetShaderFloatArray(const std::string& name, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail("float array")) {
             glUniform1fv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderIntArray(const std::string& name, const uint count, const Pointer<int> value)
+    void SetShaderIntArray(const std::string& name, const uint count, const Pointer<int>& value)
     {
         if (!CheckShaderSetFail("int array")) {
             glUniform1iv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderUIntArray(const std::string& name, const uint count, const Pointer<uint> value)
+    void SetShaderUIntArray(const std::string& name, const uint count, const Pointer<uint>& value)
     {
         if (!CheckShaderSetFail("unsigned int array")) {
             glUniform1uiv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderVec2Array(const std::string& name, const uint count, const Pointer<float> value)
+    void SetShaderVec2Array(const std::string& name, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail("2D vector array")) {
             glUniform2fv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderIVec2Array(const std::string& name, const uint count, const Pointer<int> value)
+    void SetShaderIVec2Array(const std::string& name, const uint count, const Pointer<int>& value)
     {
         if (!CheckShaderSetFail("2D int vector array")) {
             glUniform2iv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderUIVec2Array(const std::string& name, const uint count, const Pointer<uint> value)
+    void SetShaderUIVec2Array(const std::string& name, const uint count, const Pointer<uint>& value)
     {
         if (!CheckShaderSetFail("2D unsigned int vector array")) {
             glUniform2uiv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderVec3Array(const std::string& name, const uint count, const Pointer<float> value)
+    void SetShaderVec3Array(const std::string& name, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail("3D vector array")) {
             glUniform3fv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderIVec3Array(const std::string& name, const uint count, const Pointer<int> value)
+    void SetShaderIVec3Array(const std::string& name, const uint count, const Pointer<int>& value)
     {
         if (!CheckShaderSetFail("3D int vector array")) {
             glUniform3iv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderUIVec3Array(const std::string& name, const uint count, const Pointer<uint> value)
+    void SetShaderUIVec3Array(const std::string& name, const uint count, const Pointer<uint>& value)
     {
         if (!CheckShaderSetFail("3D unsigned int vector array")) {
             glUniform3uiv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderVec4Array(const std::string& name, const uint count, const Pointer<float> value)
+    void SetShaderVec4Array(const std::string& name, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail("4D vector array")) {
             glUniform4fv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderIVec4Array(const std::string& name, const uint count, const Pointer<int> value)
+    void SetShaderIVec4Array(const std::string& name, const uint count, const Pointer<int>& value)
     {
         if (!CheckShaderSetFail("4D int vector array")) {
             glUniform4iv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderUIVec4Array(const std::string& name, const uint count, const Pointer<uint> value)
+    void SetShaderUIVec4Array(const std::string& name, const uint count, const Pointer<uint>& value)
     {
         if (!CheckShaderSetFail("4D unsigned int vector array")) {
             glUniform4uiv(GetUniformLocation(name), count, value.Raw());
         }
     }
     
-    void SetShaderMatrix2x2(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix2x2(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"2x2 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix2fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix3x3(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix3x3(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"3x3 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix3fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix4x4(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix4x4(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"4x4 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix4fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix2x3(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix2x3(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"2x3 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix2x3fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix3x2(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix3x2(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"3x3 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix3x2fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix2x4(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix2x4(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"2x4 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix2x4fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix4x2(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix4x2(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"4x2 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix4x2fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix3x4(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix3x4(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"3x4 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix3x4fv(GetUniformLocation(name), count, swap, value.Raw());
         }
     }
     
-    void SetShaderMatrix4x3(const std::string& name, const bool swap, const uint count, const Pointer<float> value)
+    void SetShaderMatrix4x3(const std::string& name, const bool swap, const uint count, const Pointer<float>& value)
     {
         if (!CheckShaderSetFail((std::string)"4x3 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix4x3fv(GetUniformLocation(name), count, swap, value.Raw());

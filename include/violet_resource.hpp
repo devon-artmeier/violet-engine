@@ -9,7 +9,9 @@ namespace Violet
     {
         public:
             Resource(const std::string& id);
-            virtual ~Resource();
+            virtual ~Resource() { }
+
+            std::string GetId() const;
         
         protected:
             std::string id{ "" };
@@ -32,8 +34,8 @@ namespace Violet
                 }
                 return Pointer<T>(nullptr);
             }
-            
-            void Add(const std::string& id, const Pointer<T> resource)
+
+            void Add(const std::string& id, const Pointer<T>& resource)
             {
                 this->Destroy(id);
                 this->resources.insert({id, resource});
@@ -41,7 +43,7 @@ namespace Violet
             
             void Destroy(const std::string& id)
             {
-                Pointer<T> resource = this->Get(id);
+                const Pointer<T>& resource = this->Get(id);
                 if (resource != nullptr) {
                     this->resources.erase(id);
                 }

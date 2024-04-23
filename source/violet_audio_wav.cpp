@@ -34,7 +34,7 @@ namespace Violet
                 drwav_seek_to_pcm_frame(&this->file, sample);
             }
 
-            int Read(Pointer<short> read_buffer, const size_t length)
+            int Read(const Pointer<short>& read_buffer, const size_t length)
             {
                 return drwav_read_pcm_frames_s16(&this->file, length, read_buffer.Raw());
             }

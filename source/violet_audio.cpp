@@ -73,13 +73,13 @@ namespace Violet
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        Pointer<Sound> sound = sound_group->Get(id);
+        const Pointer<Sound>& sound = sound_group->Get(id);
         if (sound != nullptr) sound->Play(play_count);
     }
 
     void StopSound(const std::string& id)
     {
-        Pointer<Sound> sound = sound_group->Get(id);
+        const Pointer<Sound>& sound = sound_group->Get(id);
         if (sound != nullptr) sound->Stop();
     }
 
@@ -201,11 +201,11 @@ namespace Violet
         }
     }
 
-    void SoundGroup::Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length) const
+    void SoundGroup::Render(const Pointer<short>& stream, const Pointer<short>& read_buffer, const size_t length) const
     {
         for (auto sound_entry : this->resources) {
             memset(read_buffer.Raw(), 0, length);
-            static_cast<Pointer<Sound>>(sound_entry.second)->Render(stream, read_buffer, length / (sizeof(short) * 2));
+            sound_entry.second->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
     }
 }

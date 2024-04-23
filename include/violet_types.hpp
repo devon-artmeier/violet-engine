@@ -15,17 +15,6 @@ namespace Violet
     typedef long long           longlong;
     typedef unsigned long long  ulonglong;
     
-    class PointerReference
-    {
-        public:
-            uint GetCount();
-            void Add     ();
-            void Remove  ();
-        
-        private:
-            uint count{ 0 };
-    };
-    
     template<typename T>
     class Pointer
     {
@@ -34,7 +23,7 @@ namespace Violet
             {
                 this->raw_pointer = raw_pointer;
                 if (raw_pointer != nullptr) {
-                    this->reference = new PointerReference();
+                    this->reference = new Reference();
                     this->reference->Add();
                 }
             }
@@ -69,7 +58,7 @@ namespace Violet
                 this->RemoveReference();
                 this->raw_pointer = other;
                 if (other != nullptr) {
-                    this->reference = new PointerReference();
+                    this->reference = new Reference();
                     this->reference->Add();
                 } else {
                     this->reference = nullptr;
@@ -195,6 +184,17 @@ namespace Violet
             }
         
         private:
+            class Reference
+            {
+                public:
+                    uint GetCount() { return this->count; }
+                    void Add     () { this->count++; }
+                    void Remove  () { this->count--; }
+                
+                private:
+                    uint count{ 0 };
+            };
+
             void CopyPointer(const Pointer<T>& other)
             {
                 this->raw_pointer = other.raw_pointer;
@@ -215,8 +215,8 @@ namespace Violet
                 }
             }
             
-            T*                raw_pointer{ nullptr };
-            PointerReference* reference  { nullptr };
+            T*         raw_pointer{ nullptr };
+            Reference* reference  { nullptr };
     };
 }
 

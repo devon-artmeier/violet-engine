@@ -22,7 +22,7 @@ namespace Violet
 
         protected:
             virtual void Seek(const uint sample) = 0;
-            virtual int  Read(Pointer<short> read_buffer, const size_t length) = 0;
+            virtual int  Read(const Pointer<short>& read_buffer, const size_t length) = 0;
 
             bool loaded       { false };
             bool playing      { false };
@@ -36,7 +36,7 @@ namespace Violet
     class SoundGroup : public ResourceGroup<Sound>
     {
         public:
-            void Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length) const;
+            void Render(const Pointer<short>& stream, const Pointer<short>& read_buffer, const size_t length) const;
     };
     
     extern void           InitAudio    ();

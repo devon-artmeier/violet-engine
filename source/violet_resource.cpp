@@ -6,9 +6,9 @@ namespace Violet
     {
         this->id = id;
     }
-    
-    Resource::~Resource()
+
+    std::string Resource::GetId() const
     {
-        
+        return this->id;
     }
 }

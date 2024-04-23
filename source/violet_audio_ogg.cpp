@@ -30,7 +30,7 @@ namespace Violet
                 stb_vorbis_seek(this->file, sample);
             }
 
-            int Read(Pointer<short> read_buffer, const size_t length)
+            int Read(const Pointer<short>& read_buffer, const size_t length)
             {
                 return stb_vorbis_get_samples_short_interleaved(this->file, 2, read_buffer.Raw(), length * 2);
             }
