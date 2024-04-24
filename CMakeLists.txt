@@ -44,7 +44,7 @@ elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/glm/CMakeLists.txt")
     target_include_directories(violet-engine PRIVATE "dependencies/glm")
     target_link_libraries(violet-engine PRIVATE glm::glm)
 else()
-    message(FATAL_ERROR "\nglm not found! Please initialize the submodules or download glm and put the files in \"dependencies/glm\"\nhttps://github.com/icaven/glm")
+    message(FATAL_ERROR "\nGLM not found! Please initialize the submodules or download GLM and put the files in \"dependencies/glm\"\nhttps://github.com/icaven/glm")
 endif()
 
 target_include_directories(violet-engine PRIVATE "include")
