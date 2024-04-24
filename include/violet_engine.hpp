@@ -8,5 +8,6 @@
 #include "violet_sprite.hpp"
 #include "violet_texture.hpp"
 #include "violet_types.hpp"
+#include "violet_window.hpp"
 
 #endif // VIOLET_ENGINE_HPP

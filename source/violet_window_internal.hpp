@@ -2,6 +2,7 @@
 #define VIOLET_ENGINE_WINDOW_INTERNAL_HPP
 
 #include <SDL3/SDL.h>
+#include "violet_window.hpp"
 #include "violet_types.hpp"
 
 namespace Violet

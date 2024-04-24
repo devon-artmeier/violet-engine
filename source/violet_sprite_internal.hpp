@@ -1,7 +1,6 @@
 #ifndef VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 #define VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 
-#include "violet_file.hpp"
 #include "violet_mesh_internal.hpp"
 #include "violet_resource.hpp"
 #include "violet_sprite.hpp"
@@ -23,8 +22,8 @@ namespace Violet
             uint          count  { 0 };
     };
     
-    extern void InitSpriteSheetGroup ();
-    extern void CloseSpriteSheetGroup();
+    extern void InitSprites ();
+    extern void CloseSprites();
 }
 
 #endif // VIOLET_ENGINE_SPRITE_INTERNAL_HPP

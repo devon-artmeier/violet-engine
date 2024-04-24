@@ -75,6 +75,59 @@ namespace Violet
         return window != nullptr;
     }
 
+    int GetWindowWidth()
+    {
+        int width;
+        SDL_GetWindowSize(window, &width, nullptr);
+        return width;
+    }
+
+    int GetWindowHeight()
+    {
+        int height;
+        SDL_GetWindowSize(window, nullptr, &height);
+        return height;
+    }
+
+    void GetWindowSize(int& width, int& height)
+    {
+        SDL_GetWindowSize(window, &width, &height);
+    }
+    
+    int GetWindowWidthPixels()
+    {
+        int width;
+        SDL_GetWindowSizeInPixels(window, &width, nullptr);
+        return width;
+    }
+
+    int GetWindowHeightPixels()
+    {
+        int height;
+        SDL_GetWindowSizeInPixels(window, nullptr, &height);
+        return height;
+    }
+
+    void GetWindowSizePixels(int& width, int& height)
+    {
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+    }
+    
+    void SetWindowWidth(const int width)
+    {
+        SDL_SetWindowSize(window, width, GetWindowHeight());
+    }
+    
+    void SetWindowHeight(const int height)
+    {
+        SDL_SetWindowSize(window, GetWindowWidth(), height);
+    }
+    
+    void SetWindowSize(const int width, const int height)
+    {
+        SDL_SetWindowSize(window, width, height);
+    }
+    
     void SwapWindowBuffer()
     {
         SDL_GL_SwapWindow(window);

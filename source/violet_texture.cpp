@@ -108,7 +108,6 @@ namespace Violet
 
     Texture::Texture(const std::string& id, const std::string& path) : Resource(id)
     {
-        stbi_set_flip_vertically_on_load(1);
         uchar *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
         
         if (data != nullptr) {

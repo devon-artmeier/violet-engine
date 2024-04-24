@@ -1,4 +1,7 @@
+#include "violet_file.hpp"
+#include "violet_matrix_internal.hpp"
 #include "violet_message_internal.hpp"
+#include "violet_shader_internal.hpp"
 #include "violet_sprite_internal.hpp"
 #include "violet_texture_internal.hpp"
 
@@ -6,12 +9,40 @@ namespace Violet
 {
     static Pointer<ResourceGroup<SpriteSheet>> sprite_sheet_group{ nullptr };
 
-    void InitSpriteSheetGroup()
+    static const char* sprite_shader_vertex =
+        "#version 330 core\n"
+        "\n"
+        "layout (location = 0) in vec2 inVecCoord;\n"
+        "layout (location = 1) in vec2 inTexCoord;\n"
+        "\n"
+        "uniform mat4 inProjection;\n"
+        "out vec2 fragTexCoord;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	gl_Position = inProjection * vec4(inVecCoord, 0.0f, 1.0f);\n"
+        "	fragTexCoord = inTexCoord;\n"
+        "}";
+
+    static const char* sprite_shader_frag =
+        "#version 330 core\n"
+        "\n"
+        "in vec2 fragTexCoord;\n"
+        "uniform sampler2D fragTexture;\n"
+        "out vec4 outColor;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	outColor = texture(fragTexture, fragTexCoord);\n"
+        "}";
+
+    void InitSprites()
     {
         sprite_sheet_group = new ResourceGroup<SpriteSheet>();
+        LoadShader("INTERNAL_sprite_shader", sprite_shader_vertex, sprite_shader_frag);
     }
 
-    void CloseSpriteSheetGroup()
+    void CloseSprites()
     {
         sprite_sheet_group = nullptr;
     }
@@ -170,6 +201,9 @@ namespace Violet
     void SpriteSheet::Draw(uint frame)
     {
         if (frame < this->count) {
+            AttachShader("INTERNAL_sprite_shader");
+            SetShaderMatrix4x4("inProjection", false, 1, Get2dProjection());
+            SetShaderTexture(this->texture, 0);
             this->mesh->DrawPartial(2, frame * 2);
         } else {
 #ifdef VIOLET_DEBUG
