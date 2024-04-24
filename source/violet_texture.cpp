@@ -21,7 +21,9 @@ namespace Violet
     void LoadTexture(const std::string& id, const std::string& path)
     {
         Pointer<Texture> texture(new Texture(id, path));
-        if (texture->IsLoaded()) { texture_group->Add(id, texture); return; }
+        if (texture->IsLoaded()) {
+            texture_group->Add(id, texture);
+        }
     }
 
     void DestroyTexture(const std::string& id)
@@ -38,54 +40,70 @@ namespace Violet
     int GetTextureWidth(const std::string& id)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->GetWidth();
+        if (texture != nullptr) {
+            return texture->GetWidth();
+        }
         return 0;
     }
 
     int GetTextureHeight(const std::string& id)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->GetHeight();
+        if (texture != nullptr) {
+            return texture->GetHeight();
+        }
         return 0;
     }
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->GetFilter();
+        if (texture != nullptr) {
+            return texture->GetFilter();
+        }
         return TextureFilter::Nearest;
     }
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->SetFilter(filter);
+        if (texture != nullptr) {
+            texture->SetFilter(filter);
+        }
     }
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->GetWrapX();
+        if (texture != nullptr) {
+            return texture->GetWrapX();
+        }
         return TextureWrap::Repeat;
     }
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->GetWrapY();
+        if (texture != nullptr) {
+            return texture->GetWrapY();
+        }
         return TextureWrap::Repeat;
     }
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->SetWrapX(wrap);
+        if (texture != nullptr) {
+            texture->SetWrapX(wrap);
+        }
     }
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
         const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->SetWrapY(wrap);
+        if (texture != nullptr) {
+            texture->SetWrapY(wrap);
+        }
     }
 
     Texture::Texture(const std::string& id, const std::string& path) : Resource(id)

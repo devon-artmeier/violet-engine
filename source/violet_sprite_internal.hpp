@@ -13,10 +13,10 @@ namespace Violet
         public:
             SpriteSheet(const std::string& id, const std::string& path, const std::string& texture);
             ~SpriteSheet();
+            
+            void Draw(uint frame);
 
         private:
-            bool ReadFile(const Pointer<File>& file, const std::string& path);
-
             std::string   texture{ "" };
             Pointer<Mesh> mesh   { nullptr };
             bool          loaded { false };

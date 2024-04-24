@@ -47,8 +47,6 @@ namespace Violet
             void        WriteString     (const std::string& str, const bool terminate = true);
 
         private:
-            bool CheckError();
-        
             std::fstream file;
             std::string  path      { "" };
             bool         write_mode{ false };

@@ -75,16 +75,12 @@ namespace Violet
     
     uchar File::ReadUChar() 
     {
-        char buffer = 0;
-        this->file.read(&buffer, sizeof(char));
-        return this->file.fail() ? 0 : static_cast<uchar>(buffer);
+        return static_cast<uchar>(this->ReadChar());
     }
     
     schar File::ReadSChar() 
     {
-        char buffer = 0;
-        this->file.read(&buffer, sizeof(char));
-        return this->file.fail() ? 0 : static_cast<schar>(buffer);
+        return static_cast<schar>(this->ReadChar());
     }
     
     short File::ReadShortLE() 
