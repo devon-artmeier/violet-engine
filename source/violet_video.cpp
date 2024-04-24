@@ -11,8 +11,8 @@ namespace Violet
     
     void InitVideo()
     {
-        LoadTexture("texture", "texture.png");
-        sheet = new SpriteSheet("test", "sprites.spr", "texture");
+        LoadTexture("texture", "data/texture.png");
+        sheet = new SpriteSheet("test", "data/sprites.spr", "texture");
     }
 
     void CloseVideo()
