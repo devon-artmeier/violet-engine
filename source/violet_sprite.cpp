@@ -112,23 +112,23 @@ namespace Violet
                         return;
                     }
                     
-                    *(vertex_data++)  = -pivot_x / 640.f;
-                    *(vertex_data++)  = -pivot_y / 480.f;
+                    *(vertex_data++)  = -pivot_x;
+                    *(vertex_data++)  = -pivot_y;
                     *(vertex_data++)  = x / static_cast<float>(texture_width);
                     *(vertex_data++)  = y / static_cast<float>(texture_height);
                     
-                    *(vertex_data++)  = (-pivot_x + width) / 640.f;
-                    *(vertex_data++)  = -pivot_y / 480.f;
+                    *(vertex_data++)  = -pivot_x + width;
+                    *(vertex_data++)  = -pivot_y;
                     *(vertex_data++)  = (x + width) / static_cast<float>(texture_width);
                     *(vertex_data++)  = y / static_cast<float>(texture_height);
                     
-                    *(vertex_data++)  = -pivot_x / 640.f;
-                    *(vertex_data++)  = (-pivot_y + height) / 480.f;
+                    *(vertex_data++)  = -pivot_x;
+                    *(vertex_data++)  = -pivot_y + height;
                     *(vertex_data++)  = x / static_cast<float>(texture_width);
                     *(vertex_data++)  = (y + height) / static_cast<float>(texture_height);
                     
-                    *(vertex_data++)  = (-pivot_x + width) / 640.f;
-                    *(vertex_data++)  = (-pivot_y + height) / 480.f;
+                    *(vertex_data++)  = -pivot_x + width;
+                    *(vertex_data++)  = -pivot_y + height;
                     *(vertex_data++)  = (x + width) / static_cast<float>(texture_width);
                     *(vertex_data++)  = (y + height) / static_cast<float>(texture_height);
                     
