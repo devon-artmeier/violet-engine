@@ -12,9 +12,6 @@ namespace Violet
                 this->file = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
                 if (this->file != nullptr) {
                     this->loaded = true;
-#ifdef VIOLET_DEBUG
-                    LogInfo("Loaded OGG sound \"" + id + "\" from \"" + path + "\"");
-#endif
                 }
             }
 

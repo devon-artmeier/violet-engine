@@ -15,9 +15,6 @@ namespace Violet
                         drmp3_uninit(&this->file);
                     } else {
                         this->loaded = true;
-#ifdef VIOLET_DEBUG
-                        LogInfo("Loaded MP3 sound \"" + id + "\" from \"" + path + "\"");
-#endif
                     }
                 }
             }

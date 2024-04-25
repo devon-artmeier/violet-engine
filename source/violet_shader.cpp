@@ -19,9 +19,9 @@ namespace Violet
 
     void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
-        Pointer<Shader> shader(new Shader(id, vertex_code, frag_code));
+        Pointer<Shader> shader(new Shader("shd_" + id, vertex_code, frag_code));
         if (shader->GetProgram() != 0) {
-            shader_group->Add(id, shader);
+            shader_group->Add("shd_" + id, shader);
         }
     }
 
@@ -32,7 +32,7 @@ namespace Violet
     
     void AttachShader(const std::string& id)
     {
-        const Pointer<Shader>& shader = shader_group->Get(id);
+        const Pointer<Shader>& shader = shader_group->Get("shd_" + id);
         if (shader != nullptr) {
             shader->Attach();
         }
@@ -308,60 +308,49 @@ namespace Violet
         const char* vertex_code_c = vertex_code.c_str();
         const char* frag_code_c   = frag_code.c_str();
 
+        this->Info("Compiling vertex shader");
+
         uint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &vertex_code_c, nullptr);
         glCompileShader(vertex_shader);
         glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+        glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
 
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
-            LogError("Failed to compile vertex shader code for shader program \"" + id + "\":\n" + log);
-#endif
+        if (this->Error((std::string)"Failed to compile vertex shader:\n" + log, success == 0)) {
             return;
         }
-#ifdef VIOLET_DEBUG
-        LogInfo("Compiled vertex shader code for shader program \"" + id + "\"");
-#endif
+
+        this->Info("Compiling fragment shader");
 
         uint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(frag_shader, 1, &frag_code_c, nullptr);
         glCompileShader(frag_shader);
         glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
-
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            glGetShaderInfoLog(frag_shader, 512, nullptr, log);
-            LogError("Failed to compile fragment shader code for shader program \"" + id + "\":\n" + log);
-#endif 
+        glGetShaderInfoLog(frag_shader, 512, nullptr, log);
+        
+        if (this->Error((std::string)"Failed to compile fragment shader:\n" + log, success == 0)) {
             glDeleteShader(vertex_shader);
             return;
         }
-#ifdef VIOLET_DEBUG
-        LogInfo("Compiled fragment shader code for shader program \"" + id + "\"");
-#endif
+
+        this->Info("Linking shaders");
 
         this->program = glCreateProgram();
         glAttachShader(this->program, vertex_shader);
         glAttachShader(this->program, frag_shader);
         glLinkProgram(this->program);
         glGetProgramiv(this->program, GL_LINK_STATUS, &success);
-
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            glGetProgramInfoLog(this->program, 512, nullptr, log);
-            LogError("Failed to link code for shader program \"" + id + "\":\n" + log);
-#endif
-            glDeleteProgram(this->program);
-            this->program = 0;
-        } else {
-#ifdef VIOLET_DEBUG
-            LogInfo("Linked code for shader program \"" + id + "\"");
-#endif
-        }
-
+        glGetProgramInfoLog(this->program, 512, nullptr, log);
         glDeleteShader(vertex_shader);
         glDeleteShader(frag_shader);
+
+        if (this->Error((std::string)"Failed to link shaders:\n" + log, success == 0)) {
+            glDeleteShader(vertex_shader);
+            return;
+        }
+
+        this->Info("Compiled successfully");
+        this->loaded = true;
     }
 
     Shader::~Shader()
@@ -371,15 +360,7 @@ namespace Violet
         }
         if (this->program != 0) {
             glDeleteProgram(this->program);
-#ifdef VIOLET_DEBUG
-            LogInfo("Destroyed shader program \"" + this->id + "\"");
-#endif
         }
-    }
-
-    std::string Shader::GetId() const
-    {
-        return this->id;
     }
 
     GLuint Shader::GetProgram() const

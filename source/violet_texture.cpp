@@ -20,26 +20,26 @@ namespace Violet
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
-        Pointer<Texture> texture(new Texture(id, path));
+        Pointer<Texture> texture(new Texture("txt_" + id, path));
         if (texture->IsLoaded()) {
-            texture_group->Add(id, texture);
+            texture_group->Add("txt_" + id, texture);
         }
     }
 
     void DestroyTexture(const std::string& id)
     {
-        texture_group->Destroy(id);
+        texture_group->Destroy("txt_" + id);
     }
     
     void BindTexture(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) texture->Bind();
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             return texture->GetWidth();
         }
@@ -48,7 +48,7 @@ namespace Violet
 
     int GetTextureHeight(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             return texture->GetHeight();
         }
@@ -57,7 +57,7 @@ namespace Violet
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             return texture->GetFilter();
         }
@@ -66,7 +66,7 @@ namespace Violet
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             texture->SetFilter(filter);
         }
@@ -74,7 +74,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             return texture->GetWrapX();
         }
@@ -83,7 +83,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             return texture->GetWrapY();
         }
@@ -92,7 +92,7 @@ namespace Violet
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             texture->SetWrapX(wrap);
         }
@@ -100,7 +100,7 @@ namespace Violet
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
         if (texture != nullptr) {
             texture->SetWrapY(wrap);
         }
@@ -108,25 +108,28 @@ namespace Violet
 
     Texture::Texture(const std::string& id, const std::string& path) : Resource(id)
     {
-        uchar *data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
-        
-        if (data != nullptr) {
-            glGenTextures(1, &this->gl_id);
-            
-            this->Bind();
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            
-            stbi_image_free(data);
-            loaded = true;
-#ifdef VIOLET_DEBUG
-            LogInfo("Loaded texture \"" + id + "\" from \"" + path + "\"");
-#endif
-        } else {
-#ifdef VIOLET_DEBUG
-            LogError("Failed to load texture \"" + id + "\" from \"" + path + "\"");
-#endif
+        uchar* data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
+        this->Info("Loading \"" + path + "\"");
+
+        if (data == nullptr) {
+            if (stbi_failure_reason() != nullptr) {
+                this->Error("Failed to load");
+            } else {
+                this->Error((std::string)"Failed to load:\n", data);
+            }
+            return;
         }
+
+        glGenTextures(1, &this->gl_id);
+        this->Bind();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+
+        loaded = true;
+        this->Info("Loaded successfully");
     }
 
     Texture::~Texture()
@@ -136,15 +139,7 @@ namespace Violet
                 current_texture = 0;
             }
             glDeleteTextures(1, &this->gl_id);
-#ifdef VIOLET_DEBUG
-            LogInfo("Destroyed texture \"" + id + "\"");
-#endif
         }
-    }
-
-    bool Texture::IsLoaded() const
-    {
-        return this->loaded;
     }
 
     void Texture::Bind() const
@@ -174,6 +169,7 @@ namespace Violet
     {
         if (this->filter != filter) {
             this->filter = filter;
+
             this->Bind();
             switch (filter) {
                 case TextureFilter::Nearest:
@@ -215,6 +211,7 @@ namespace Violet
     {
         if (this->wrap_x != wrap) {
             this->wrap_x = wrap;
+
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetGlWrapValue(wrap));
         }
@@ -224,6 +221,7 @@ namespace Violet
     {
         if (this->wrap_y != wrap) {
             this->wrap_y = wrap;
+
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGlWrapValue(wrap));
         }

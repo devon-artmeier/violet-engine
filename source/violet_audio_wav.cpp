@@ -15,9 +15,6 @@ namespace Violet
                         drwav_uninit(&this->file);
                     } else {
                         this->loaded = true;
-#ifdef VIOLET_DEBUG
-                        LogInfo("Loaded WAV sound \"" + id + "\" from \"" + path + "\"");
-#endif
                     }
                 }
             }

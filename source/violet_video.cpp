@@ -5,9 +5,11 @@
 
 namespace Violet
 {
+    static bool multisampling{ false };
+
     void InitVideo()
     {
-
+        EnableVideoMultisampling();
     }
 
     void CloseVideo()
@@ -25,5 +27,26 @@ namespace Violet
         }
 
         SwapWindowBuffer();
+    }
+
+    void EnableVideoMultisampling()
+    {
+        if (multisampling == false) {
+            glEnable(GL_MULTISAMPLE);
+            multisampling = true;
+        }
+    }
+
+    void DisableVideoMultisampling()
+    {
+        if (multisampling == true) {
+            glDisable(GL_MULTISAMPLE);
+            multisampling = false;
+        }
+    }
+
+    bool IsVideoMultisampled()
+    {
+        return multisampling;
     }
 }

@@ -7,32 +7,11 @@ namespace Violet
     {
         this->path       = path;
         this->write_mode = write_mode;
-        
         this->file.open(path, std::ios::binary | (write_mode ? std::ios::out : std::ios::in));
-#ifdef VIOLET_DEBUG
-        if (!this->IsOpen()) {
-            if (!write_mode) {
-                LogError("Failed to open \"" + this->path + "\" for reading");
-            } else {
-                LogError("Failed to open \"" + this->path + "\" for writing");
-            }
-        } else {
-            if (!write_mode) {
-                LogInfo("Opened file \"" + this->path + "\" for reading");
-            } else {
-                LogInfo("Opened file \"" + this->path + "\" for writing");
-            }
-        }
-#endif
     }
     
     File::~File()
     {
-        if (this->IsOpen()) {
-#ifdef VIOLET_DEBUG
-            LogInfo("Closed file \"" + this->path + "\"");
-#endif
-        }
         this->file.close();
     }
     

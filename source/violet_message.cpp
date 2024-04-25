@@ -1,3 +1,9 @@
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef MessageBox
+#endif
+
 #include <stdexcept>
 #include <iostream>
 #include <SDL3/SDL.h>
@@ -5,26 +11,68 @@
 
 namespace Violet
 {
+    enum class LogColor {
+        Black = 0,
+        DarkBlue,
+        DarkGreen,
+        DarkCyan,
+        DarkRed,
+        DarkMagenta,
+        DarkYellow,
+        LightGray,
+        DarkGray,
+        Blue,
+        Green,
+        Cyan,
+        Red,
+        Magenta,
+        Yellow,
+        White
+    };
+
+    static void SetLogColor(const LogColor color_fg, const LogColor color_bg)
+    {
+#ifdef WIN32
+        HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(console, static_cast<int>(color_fg) + (static_cast<int>(color_bg) << 4));
+#else
+        int code_fg = static_cast<int>(color_fg) + 30;
+        if (code_fg >= 38) {
+            code_fg += 90 - 38;
+        }
+        int code_bg = static_cast<int>(color_bg) + 40;
+        if (code_bg >= 48) {
+            code_bg += 100 - 48;
+        }
+        std::cout << "\[" + code_fg + ";" + code_bg + "m";
+#endif
+    }
+
     void MessageLog(const MessageType type, const std::string& message)
     {
 #ifdef VIOLET_DEBUG
-        std::string build = "";
         switch (type) {
             case MessageType::Info:
-                build += "[INFO]  ";
+                SetLogColor(LogColor::LightGray, LogColor::Black);
+                std::cout << "[INFO]  ";
                 break;
             case MessageType::Warn:
-                build += "[WARN]  ";
+                SetLogColor(LogColor::Yellow, LogColor::Black);
+                std::cout << "[WARN]  ";
                 break;
             case MessageType::Error:
-                build += "[ERROR] ";
+                SetLogColor(LogColor::Red, LogColor::Black);
+                std::cout << "[ERROR] ";
                 break;
             case MessageType::Fatal:
-                build += "[FATAL] ";
+                SetLogColor(LogColor::White, LogColor::DarkRed);
+                std::cout << "[FATAL] ";
                 break;
         }
 
+        std::string build = "";
         size_t cursor = 0;
+
         while (cursor < message.length()) {
             size_t new_line = message.find('\r', cursor);
             if (new_line != std::string::npos) new_line++;
@@ -38,8 +86,9 @@ namespace Violet
                 cursor = new_line + 1;
             }
         }
-        
+
         std::cout << build << std::endl;
+        SetLogColor(LogColor::LightGray, LogColor::Black);
 #endif
     }
     

@@ -9,12 +9,18 @@ namespace Violet
     {
         public:
             Resource(const std::string& id);
-            virtual ~Resource() { }
+            virtual ~Resource();
 
-            std::string GetId() const;
+            std::string GetResourceId() const;
+            bool        IsLoaded() const;
         
         protected:
-            std::string id{ "" };
+            bool Info (const std::string& message, bool condition = true) const;
+            bool Warn (const std::string& message, bool condition = true) const;
+            bool Error(const std::string& message, bool condition = true) const;
+
+            std::string resource_id{ "" };
+            bool        loaded{ false };
     };
     
     template<typename T>

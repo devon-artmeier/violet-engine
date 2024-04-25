@@ -12,7 +12,6 @@ namespace Violet
             Sound(const std::string& id) : Resource(id) { }
             virtual ~Sound();
 
-            bool IsLoaded () const;
             bool IsPlaying() const;
             void Play     (const uint play_count);
             void Stop     ();
@@ -24,7 +23,6 @@ namespace Violet
             virtual void Seek(const uint sample) = 0;
             virtual int  Read(const Pointer<short>& read_buffer, const size_t length) = 0;
 
-            bool loaded       { false };
             bool playing      { false };
             uint play_position{ 0 };
             uint play_count   { 0 };

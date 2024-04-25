@@ -7,25 +7,12 @@
 
 namespace Violet
 {
-    enum class TextureFilter {
-        Nearest,
-        Bilinear
-    };
-
-    enum class TextureWrap {
-        Repeat,
-        Mirror,
-        ClampEdge,
-        ClampBorder
-    };
-    
     class Texture : public Resource
     {
         public:
             Texture(const std::string& id, const std::string& path);
             ~Texture();
 
-            bool          IsLoaded () const;
             void          Bind     () const;
             int           GetWidth () const;
             int           GetHeight() const;
@@ -38,7 +25,6 @@ namespace Violet
 
         private:
             GLuint        gl_id { 0 };
-            bool          loaded{false };
             int           width { 0 };
             int           height{ 0 };
             TextureFilter filter{ TextureFilter::Nearest };

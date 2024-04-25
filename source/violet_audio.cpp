@@ -49,38 +49,42 @@ namespace Violet
 
     void LoadSound(const std::string& id, const std::string& path)
     {
-        Pointer<Sound> sound = LoadWavSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
+        Pointer<Sound> sound = LoadWavSound("snd_" + id, path);
+        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
 
-        sound = LoadMp3Sound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
+        sound = LoadMp3Sound("snd_" + id, path);
+        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
 
-        sound = LoadOggSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
+        sound = LoadOggSound("snd_" + id, path);
+        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
 
-        sound = LoadFlacSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
+        sound = LoadFlacSound("snd_" + id, path);
+        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
 
 #ifdef VIOLET_DEBUG
-        LogError("Failed to load sound \"" + id + "\" from \"" + path + "\"");
+        LogError("snd_" + id + "\" from \"" + path + "\"");
 #endif
     }
 
     void DestroySound(const std::string& id)
     {
-        sound_group->Destroy(id);
+        sound_group->Destroy("snd_" + id);
     }
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        const Pointer<Sound>& sound = sound_group->Get(id);
-        if (sound != nullptr) sound->Play(play_count);
+        const Pointer<Sound>& sound = sound_group->Get("snd_" + id);
+        if (sound != nullptr) {
+            sound->Play(play_count);
+        }
     }
 
     void StopSound(const std::string& id)
     {
-        const Pointer<Sound>& sound = sound_group->Get(id);
-        if (sound != nullptr) sound->Stop();
+        const Pointer<Sound>& sound = sound_group->Get("snd_" + id);
+        if (sound != nullptr) {
+            sound->Stop();
+        }
     }
 
     int GetMasterVolume()
@@ -97,15 +101,7 @@ namespace Violet
     {
         if (this->loaded) {
             this->Stop();
-#ifdef VIOLET_DEBUG
-            LogInfo("Destroyed sound \"" + id + "\"");
-#endif
         }
-    }
-
-    bool Sound::IsLoaded() const
-    {
-       return this->loaded;
     }
 
     bool Sound::IsPlaying() const
@@ -119,15 +115,6 @@ namespace Violet
         this->play_count    = play_count;
         this->play_position = 0;
         this->playing       = true;
-#ifdef VIOLET_DEBUG
-        if (play_count == 0) {
-            LogInfo("Looped sound \"" + this->id + "\"");
-        } else if (play_count == 1) {
-            LogInfo("Played sound \"" + this->id + "\"");
-        } else {
-            LogInfo("Played sound \"" + this->id + "\" " + std::to_string(play_count) + " times");
-        }
-#endif
     }
 
     void Sound::Stop()
@@ -136,9 +123,6 @@ namespace Violet
             this->playing       = false;
             this->play_position = 0;
             this->play_count    = 0;
-#ifdef VIOLET_DEBUG
-            LogInfo("Stopped sound \"" + this->id + "\"");
-#endif
         }
     }
 

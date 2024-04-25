@@ -1,7 +1,7 @@
 #ifndef VIOLET_ENGINE_VIDEO_INTERNAL_HPP
 #define VIOLET_ENGINE_VIDEO_INTERNAL_HPP
 
-#include "violet_types.hpp"
+#include "violet_video.hpp"
 
 namespace Violet
 {

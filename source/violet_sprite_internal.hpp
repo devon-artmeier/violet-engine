@@ -11,26 +11,21 @@ namespace Violet
     {
         public:
             SpriteSheet(const std::string& id, const std::string& path, const std::string& texture);
-            ~SpriteSheet();
             
-            bool IsLoaded() const;
-            void Draw    (const Sprite& sprite);
+            void QueueDraw(const uint layer, const Sprite& sprite);
+            void DrawLayer(const uint layer);
 
         private:
-            std::string   texture{ "" };
-            Pointer<Mesh> mesh   { nullptr };
-            bool          loaded { false };
-            uint          count  { 0 };
+            std::string         texture   { "" };
+            Pointer<Mesh>       mesh      { nullptr };
+            uint                count     { 0 };
+            std::vector<Sprite> draw_queue[256];
     };
 
-    class SpriteRenderer
+    class SpriteSheetGroup : public ResourceGroup<SpriteSheet>
     {
         public:
-            void QueueSprite(const std::string& sheet_id, const uint layer, const Sprite& sprite);
-            void DrawLayer  (const uint layer);
-
-        private:
-            std::unordered_map<std::string, std::vector<Sprite>> draw_queue[256];
+            void DrawLayer(const uint layer);
     };
     
     extern void InitSprites    ();

@@ -5,6 +5,18 @@
 
 namespace Violet
 {
+    enum class TextureFilter {
+        Bilinear,
+        Nearest
+    };
+
+    enum class TextureWrap {
+        Repeat,
+        Mirror,
+        ClampEdge,
+        ClampBorder
+    };
+
     extern void LoadTexture   (const std::string& id, const std::string& path);
     extern void DestroyTexture(const std::string& id);
 }

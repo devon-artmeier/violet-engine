@@ -1,17 +1,18 @@
 #ifndef VIOLET_ENGINE_SPRITE_HPP
 #define VIOLET_ENGINE_SPRITE_HPP
 
-#include "violet_types.hpp"
+#include "violet_texture.hpp"
 
 namespace Violet
 {
     struct Sprite {
-        uint  frame;
-        float x;
-        float y;
-        float x_scale;
-        float y_scale;
-        float angle;
+        uint          frame;
+        float         x;
+        float         y;
+        float         x_scale;
+        float         y_scale;
+        float         angle;
+        TextureFilter filter;
     };
 
     extern void LoadSpriteSheet   (const std::string& id, const std::string& path, const std::string& texture);
