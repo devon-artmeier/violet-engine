@@ -8,6 +8,7 @@
 namespace Violet
 {
     static Pointer<ResourceGroup<SpriteSheet>> sprite_sheet_group{ nullptr };
+    static Pointer<SpriteRenderer>             sprite_renderer   { nullptr };
 
     static const char* sprite_shader_vertex =
         "#version 330 core\n"
@@ -16,11 +17,12 @@ namespace Violet
         "layout (location = 1) in vec2 inTexCoord;\n"
         "\n"
         "uniform mat4 inProjection;\n"
+        "uniform mat4 inTransform;\n"
         "out vec2 fragTexCoord;\n"
         "\n"
         "void main()\n"
         "{\n"
-        "	gl_Position = inProjection * vec4(inVecCoord, 0.0f, 1.0f);\n"
+        "	gl_Position = inProjection * inTransform * vec4(inVecCoord, 0.0f, 1.0f);\n"
         "	fragTexCoord = inTexCoord;\n"
         "}";
 
@@ -39,12 +41,38 @@ namespace Violet
     void InitSprites()
     {
         sprite_sheet_group = new ResourceGroup<SpriteSheet>();
+        sprite_renderer    = new SpriteRenderer();
+
         LoadShader("INTERNAL_sprite_shader", sprite_shader_vertex, sprite_shader_frag);
     }
 
     void CloseSprites()
     {
+        sprite_renderer    = nullptr;
         sprite_sheet_group = nullptr;
+    }
+
+    void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
+    {
+        Pointer<SpriteSheet> sheet = new SpriteSheet(id, path, texture);
+        if (sheet->IsLoaded()) {
+            sprite_sheet_group->Add(id, sheet);
+        }
+    }
+
+    void DestroySpriteSheet(const std::string& id)
+    {
+        sprite_sheet_group->Destroy(id);
+    }
+
+    void DrawSprite(const std::string& id, const uint layer, const Sprite& sprite)
+    {
+        sprite_renderer->QueueSprite(id, layer, sprite);
+    }
+
+    void DrawSpriteLayer(uint layer)
+    {
+        sprite_renderer->DrawLayer(layer);
     }
 
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture): Resource(id)
@@ -197,18 +225,52 @@ namespace Violet
         LogInfo("Destroyed sprite sheet \"" + id + "\"");
 #endif
     }
-    
-    void SpriteSheet::Draw(uint frame)
+
+    bool SpriteSheet::IsLoaded() const
     {
-        if (frame < this->count) {
+        return this->loaded;
+    }
+    
+    void SpriteSheet::Draw(const Sprite& sprite)
+    {
+        if (sprite.frame < this->count) {
             AttachShader("INTERNAL_sprite_shader");
-            SetShaderMatrix4x4("inProjection", false, 1, Get2dProjection());
+            SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
+            SetShaderMatrix4x4("inTransform", false, 1,
+                               glm::value_ptr(Get2dTransformMatrix(sprite.x, sprite.y, sprite.x_scale, sprite.y_scale, sprite.angle)));
             SetShaderTexture(this->texture, 0);
-            this->mesh->DrawPartial(2, frame * 2);
+            this->mesh->DrawPartial(2, sprite.frame * 2);
         } else {
 #ifdef VIOLET_DEBUG
-            LogError("Attempted to draw invalid sprite " + std::to_string(frame) + " from sprite sheet \"" + id + "\"");
+            LogError("Attempted to draw invalid sprite " + std::to_string(sprite.frame) + " from sprite sheet \"" + id + "\"");
 #endif 
+        }
+    }
+
+    void SpriteRenderer::QueueSprite(const std::string& sheet_id, const uint layer, const Sprite& sprite)
+    {
+        if (layer < 256) {
+            auto& sprite_sheet_queue = this->draw_queue[layer].find(sheet_id);
+            if (sprite_sheet_queue == this->draw_queue[layer].end()) {
+                this->draw_queue[layer].insert({ sheet_id, { sprite } });
+            } else {
+                sprite_sheet_queue->second.push_back(sprite);
+            }
+        }
+    }
+
+    void SpriteRenderer::DrawLayer(const uint layer)
+    {
+        if (layer < 256) {
+            for (auto& sprite_sheet_queue : this->draw_queue[layer]) {
+                Pointer<SpriteSheet> sprite_sheet = sprite_sheet_group->Get(sprite_sheet_queue.first);
+                if (sprite_sheet != nullptr) {
+                    for (auto& sprite : sprite_sheet_queue.second) {
+                        sprite_sheet->Draw(sprite);
+                    }
+                }
+            }
+            this->draw_queue[layer].clear();
         }
     }
 }

@@ -13,7 +13,8 @@ namespace Violet
             SpriteSheet(const std::string& id, const std::string& path, const std::string& texture);
             ~SpriteSheet();
             
-            void Draw(uint frame);
+            bool IsLoaded() const;
+            void Draw    (const Sprite& sprite);
 
         private:
             std::string   texture{ "" };
@@ -21,9 +22,20 @@ namespace Violet
             bool          loaded { false };
             uint          count  { 0 };
     };
+
+    class SpriteRenderer
+    {
+        public:
+            void QueueSprite(const std::string& sheet_id, const uint layer, const Sprite& sprite);
+            void DrawLayer  (const uint layer);
+
+        private:
+            std::unordered_map<std::string, std::vector<Sprite>> draw_queue[256];
+    };
     
-    extern void InitSprites ();
-    extern void CloseSprites();
+    extern void InitSprites    ();
+    extern void CloseSprites   ();
+    extern void DrawSpriteLayer(uint layer);
 }
 
 #endif // VIOLET_ENGINE_SPRITE_INTERNAL_HPP

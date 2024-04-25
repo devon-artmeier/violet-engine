@@ -20,7 +20,7 @@ namespace Violet
         }
 
         InitWindow();
-        UpdateProjection();
+        UpdateProjectionMatrices();
         InitShaderGroup();
         InitTextureGroup();
         InitSprites();

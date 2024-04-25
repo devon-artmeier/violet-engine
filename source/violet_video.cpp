@@ -1,23 +1,18 @@
 #include <glad.h>
+#include "violet_sprite_internal.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 
-#include "violet_sprite_internal.hpp"
-#include "violet_texture.hpp"
-
 namespace Violet
 {
-    static Pointer<SpriteSheet> sheet = nullptr;
-    
     void InitVideo()
     {
-        LoadTexture("texture", "data/texture.png");
-        sheet = new SpriteSheet("test", "data/sprites.spr", "texture");
+
     }
 
     void CloseVideo()
     {
-        sheet = nullptr;
+
     }
 
     void UpdateVideo()
@@ -25,8 +20,10 @@ namespace Violet
         glClearColor(0, 1, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        sheet->Draw(0);
-        
+        for (uint i = 0; i < 256; i++) {
+            DrawSpriteLayer(i);
+        }
+
         SwapWindowBuffer();
     }
 }

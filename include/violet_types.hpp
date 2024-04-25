@@ -1,6 +1,7 @@
 #ifndef VIOLET_ENGINE_TYPES_HPP
 #define VIOLET_ENGINE_TYPES_HPP
 
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
