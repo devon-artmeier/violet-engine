@@ -62,11 +62,12 @@ namespace Violet
         sprite_sheet_group->Destroy("spr_" + id);
     }
 
-    void DrawSprite(const std::string& id, const uint layer, const Sprite& sprite)
+    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, Point2D<float> position,
+                    const Point2D<float> scale, const float angle, const TextureFilter filter)
     {
-        Pointer<SpriteSheet> sprite_sheet = sprite_sheet_group->Get("spr_" + id);
+        Pointer<SpriteSheet> sprite_sheet = sprite_sheet_group->Get("spr_" + sheet_id);
         if (sprite_sheet != nullptr) {
-            sprite_sheet->QueueDraw(layer, sprite);
+            sprite_sheet->QueueDraw(layer, { frame, position, scale, angle, filter });
         }
     }
 
@@ -180,7 +181,7 @@ namespace Violet
         this->Info("Loaded successfully");
     }
 
-    void SpriteSheet::QueueDraw(const uint layer, const Sprite& sprite)
+    void SpriteSheet::QueueDraw(const uint layer, const SpriteDraw& sprite)
     {
         if (layer < 256 && sprite.frame < this->count) {
             this->draw_queue[layer].push_back(sprite);
@@ -193,13 +194,13 @@ namespace Violet
     {
         if (layer < 256) {
             for (int i = 0; i < this->draw_queue[layer].size(); i++) {
-                const Sprite& sprite = this->draw_queue[layer][i];
+                const SpriteDraw& sprite = this->draw_queue[layer][i];
                 
                 SetTextureFilter(this->texture, sprite.filter);
                 AttachShader("sprite_internal");
                 SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
                 SetShaderMatrix4x4("inTransform", false, 1,
-                    glm::value_ptr(Get2dTransformMatrix(sprite.x, sprite.y, sprite.x_scale, sprite.y_scale, sprite.angle)));
+                    glm::value_ptr(Get2dTransformMatrix(sprite.position, sprite.scale, sprite.angle)));
                 SetShaderTexture(this->texture, 0);
 
                 this->mesh->DrawPartial(2, sprite.frame * 2);

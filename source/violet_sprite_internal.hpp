@@ -7,19 +7,27 @@
 
 namespace Violet
 {
+    struct SpriteDraw {
+        uint           frame;
+        Point2D<float> position;
+        Point2D<float> scale;
+        float          angle;
+        TextureFilter  filter;
+    };
+
     class SpriteSheet : public Resource
     {
         public:
             SpriteSheet(const std::string& id, const std::string& path, const std::string& texture);
             
-            void QueueDraw(const uint layer, const Sprite& sprite);
+            void QueueDraw(const uint layer, const SpriteDraw& sprite);
             void DrawLayer(const uint layer);
 
         private:
-            std::string         texture   { "" };
-            Pointer<Mesh>       mesh      { nullptr };
-            uint                count     { 0 };
-            std::vector<Sprite> draw_queue[256];
+            std::string             texture   { "" };
+            Pointer<Mesh>           mesh      { nullptr };
+            uint                    count     { 0 };
+            std::vector<SpriteDraw> draw_queue[256];
     };
 
     class SpriteSheetGroup : public ResourceGroup<SpriteSheet>
