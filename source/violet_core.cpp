@@ -21,7 +21,7 @@ namespace Violet
 
         InitWindow();
         UpdateProjectionMatrices();
-        InitShaderGroup();
+        InitShaders();
         InitTextureGroup();
         InitSprites();
         InitVideo();
@@ -38,7 +38,7 @@ namespace Violet
         CloseVideo();
         CloseSprites();
         CloseTextureGroup();
-        CloseShaderGroup();
+        CloseShaders();
         CloseWindow();
 
         SDL_Quit();

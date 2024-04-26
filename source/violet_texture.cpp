@@ -20,26 +20,26 @@ namespace Violet
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
-        Pointer<Texture> texture(new Texture("txt_" + id, path));
+        Pointer<Texture> texture(new Texture(id, path));
         if (texture->IsLoaded()) {
-            texture_group->Add("txt_" + id, texture);
+            texture_group->Add(id, texture);
         }
     }
 
     void DestroyTexture(const std::string& id)
     {
-        texture_group->Destroy("txt_" + id);
+        texture_group->Destroy(id);
     }
     
     void BindTexture(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) texture->Bind();
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             return texture->GetWidth();
         }
@@ -48,7 +48,7 @@ namespace Violet
 
     int GetTextureHeight(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             return texture->GetHeight();
         }
@@ -57,7 +57,7 @@ namespace Violet
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             return texture->GetFilter();
         }
@@ -66,7 +66,7 @@ namespace Violet
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             texture->SetFilter(filter);
         }
@@ -74,7 +74,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             return texture->GetWrapX();
         }
@@ -83,7 +83,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             return texture->GetWrapY();
         }
@@ -92,7 +92,7 @@ namespace Violet
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             texture->SetWrapX(wrap);
         }
@@ -100,7 +100,7 @@ namespace Violet
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get("txt_" + id);
+        const Pointer<Texture>& texture = texture_group->Get(id);
         if (texture != nullptr) {
             texture->SetWrapY(wrap);
         }

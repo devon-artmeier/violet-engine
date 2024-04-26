@@ -9,39 +9,9 @@ namespace Violet
 {
     static Pointer<SpriteSheetGroup> sprite_sheet_group{ nullptr };
 
-    static const char* sprite_shader_vertex =
-        "#version 330 core\n"
-        "\n"
-        "layout (location = 0) in vec2 inVecCoord;\n"
-        "layout (location = 1) in vec2 inTexCoord;\n"
-        "\n"
-        "uniform mat4 inProjection;\n"
-        "uniform mat4 inTransform;\n"
-        "out vec2 fragTexCoord;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "	gl_Position = inProjection * inTransform * vec4(inVecCoord, 0.0f, 1.0f);\n"
-        "	fragTexCoord = inTexCoord;\n"
-        "}";
-
-    static const char* sprite_shader_frag =
-        "#version 330 core\n"
-        "\n"
-        "in vec2 fragTexCoord;\n"
-        "uniform sampler2D fragTexture;\n"
-        "out vec4 outColor;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "	outColor = texture(fragTexture, fragTexCoord);\n"
-        "}";
-
     void InitSprites()
     {
         sprite_sheet_group = new SpriteSheetGroup();
-
-        LoadShader("sprite_internal", sprite_shader_vertex, sprite_shader_frag);
     }
 
     void CloseSprites()
@@ -51,21 +21,21 @@ namespace Violet
 
     void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
-        Pointer<SpriteSheet> sheet = new SpriteSheet("spr_" + id, path, texture);
+        Pointer<SpriteSheet> sheet = new SpriteSheet(id, path, texture);
         if (sheet->IsLoaded()) {
-            sprite_sheet_group->Add("spr_" + id, sheet);
+            sprite_sheet_group->Add(id, sheet);
         }
     }
 
     void DestroySpriteSheet(const std::string& id)
     {
-        sprite_sheet_group->Destroy("spr_" + id);
+        sprite_sheet_group->Destroy(id);
     }
 
     void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, Point2D<float> position,
                     const Point2D<float> scale, const float angle, const TextureFilter filter)
     {
-        Pointer<SpriteSheet> sprite_sheet = sprite_sheet_group->Get("spr_" + sheet_id);
+        Pointer<SpriteSheet> sprite_sheet = sprite_sheet_group->Get(sheet_id);
         if (sprite_sheet != nullptr) {
             sprite_sheet->QueueDraw(layer, { frame, position, scale, angle, filter });
         }
@@ -197,7 +167,7 @@ namespace Violet
                 const SpriteDraw& sprite = this->draw_queue[layer][i];
                 
                 SetTextureFilter(this->texture, sprite.filter);
-                AttachShader("sprite_internal");
+                AttachShader("shader_sprite_internal");
                 SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
                 SetShaderMatrix4x4("inTransform", false, 1,
                     glm::value_ptr(Get2dTransformMatrix(sprite.position, sprite.scale, sprite.angle)));

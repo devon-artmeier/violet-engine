@@ -49,31 +49,31 @@ namespace Violet
 
     void LoadSound(const std::string& id, const std::string& path)
     {
-        Pointer<Sound> sound = LoadWavSound("snd_" + id, path);
-        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
+        Pointer<Sound> sound = LoadWavSound(id, path);
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
 
-        sound = LoadMp3Sound("snd_" + id, path);
-        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
+        sound = LoadMp3Sound(id, path);
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
 
-        sound = LoadOggSound("snd_" + id, path);
-        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
+        sound = LoadOggSound(id, path);
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
 
-        sound = LoadFlacSound("snd_" + id, path);
-        if (sound->IsLoaded()) { sound_group->Add("snd_" + id, sound); return; }
+        sound = LoadFlacSound(id, path);
+        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
 
 #ifdef VIOLET_DEBUG
-        LogError("snd_" + id + "\" from \"" + path + "\"");
+        LogError(id + "\" from \"" + path + "\"");
 #endif
     }
 
     void DestroySound(const std::string& id)
     {
-        sound_group->Destroy("snd_" + id);
+        sound_group->Destroy(id);
     }
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        const Pointer<Sound>& sound = sound_group->Get("snd_" + id);
+        const Pointer<Sound>& sound = sound_group->Get(id);
         if (sound != nullptr) {
             sound->Play(play_count);
         }
@@ -81,7 +81,7 @@ namespace Violet
 
     void StopSound(const std::string& id)
     {
-        const Pointer<Sound>& sound = sound_group->Get("snd_" + id);
+        const Pointer<Sound>& sound = sound_group->Get(id);
         if (sound != nullptr) {
             sound->Stop();
         }

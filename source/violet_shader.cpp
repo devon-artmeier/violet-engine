@@ -7,32 +7,91 @@ namespace Violet
     static Pointer<ResourceGroup<Shader>> shader_group  { nullptr };
     static GLuint                         current_shader{ 0 };
 
-    void InitShaderGroup()
+    static const char* reserved_shaders[] = {
+        "shader_sprite_internal"
+    };
+
+    static const char* sprite_shader_vertex =
+        "#version 330 core\n"
+        "\n"
+        "layout (location = 0) in vec2 inVecCoord;\n"
+        "layout (location = 1) in vec2 inTexCoord;\n"
+        "\n"
+        "uniform mat4 inProjection;\n"
+        "uniform mat4 inTransform;\n"
+        "out vec2 fragTexCoord;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	gl_Position = inProjection * inTransform * vec4(inVecCoord, 0.0f, 1.0f);\n"
+        "	fragTexCoord = inTexCoord;\n"
+        "}";
+
+    static const char* sprite_shader_frag =
+        "#version 330 core\n"
+        "\n"
+        "in vec2 fragTexCoord;\n"
+        "uniform sampler2D fragTexture;\n"
+        "out vec4 outColor;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	outColor = texture(fragTexture, fragTexCoord);\n"
+        "}";
+
+    void InitShaders()
     {
         shader_group = new ResourceGroup<Shader>();
+
+        LoadShaderInternal("shader_sprite_internal", sprite_shader_vertex, sprite_shader_frag);
     }
 
-    void CloseShaderGroup()
+    void CloseShaders()
     {
         shader_group = nullptr;
     }
 
+    static bool IsReservedShader(const std::string& id)
+    {
+        for (int i = 0; i < sizeof(reserved_shaders) / sizeof(const char*); i++) {
+            if (id.compare(reserved_shaders[i]) == 0) {
+                LogError(id + " is a reserved shader name");
+                return true;
+            }
+        }
+        return false;
+    }
+
     void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
-        Pointer<Shader> shader(new Shader("shd_" + id, vertex_code, frag_code));
+        if (!IsReservedShader(id)) {
+            LoadShaderInternal(id, vertex_code, frag_code);
+        }
+    }
+
+    void LoadShaderInternal(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        Pointer<Shader> shader(new Shader(id, vertex_code, frag_code));
         if (shader->GetProgram() != 0) {
-            shader_group->Add("shd_" + id, shader);
+            shader_group->Add(id, shader);
         }
     }
 
     void DestroyShader(const std::string& id)
+    {
+        if (!IsReservedShader(id)) {
+            DestroyShaderInternal(id);
+        }
+    }
+
+    void DestroyShaderInternal(const std::string& id)
     {
         shader_group->Destroy(id);
     }
     
     void AttachShader(const std::string& id)
     {
-        const Pointer<Shader>& shader = shader_group->Get("shd_" + id);
+        const Pointer<Shader>& shader = shader_group->Get(id);
         if (shader != nullptr) {
             shader->Attach();
         }
@@ -41,6 +100,21 @@ namespace Violet
     void DetachShader()
     {
         current_shader = 0;
+    }
+
+    void ResetSpriteShader()
+    {
+
+    }
+
+    void SetSpriteShader(const std::string& id, const ShaderCallback callback)
+    {
+
+    }
+
+    void SetNextSpriteShader(const std::string& id, const ShaderCallback callback)
+    {
+
     }
     
     static bool CheckShaderSetFail(const std::string& type_name)
