@@ -29,6 +29,8 @@ namespace Violet
             void      SetVolume   (const float volume);
             float     GetPanning  () const;
             void      SetPanning  (const float panning);
+            float     GetPitch    () const;
+            void      SetPitch    (const float pitch);
             ulonglong GetLength   ();
             ulonglong GetLoopStart();
             ulonglong GetLoopEnd  ();

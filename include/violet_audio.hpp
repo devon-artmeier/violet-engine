@@ -13,6 +13,8 @@ namespace Violet
     extern void      SetSoundVolume   (const std::string& id, const float volume);
     extern float     GetSoundPanning  (const std::string& id);
     extern void      SetSoundPanning  (const std::string& id, const float panning);
+    extern float     GetSoundPitch    (const std::string& id);
+    extern void      SetSoundPitch    (const std::string& id, const float pitch);
     extern ulonglong GetSoundLength   (const std::string& id);
     extern ulonglong GetSoundLoopStart(const std::string& id);
     extern ulonglong GetSoundLoopEnd  (const std::string& id);

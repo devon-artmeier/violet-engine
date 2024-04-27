@@ -107,6 +107,23 @@ namespace Violet
         }
     }
 
+    float GetSoundPitch(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetPitch();
+        }
+        return 0;
+    }
+
+    void SetSoundPitch(const std::string& id, const float pitch)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetPitch(pitch);
+        }
+    }
+
     ulonglong GetSoundLength(const std::string& id)
     {
         const Pointer<Sound>& sound = GetSound(id);
@@ -243,6 +260,16 @@ namespace Violet
     void Sound::SetPanning(const float panning)
     {
         ma_sound_set_pan(&this->sound, panning);
+    }
+
+    float Sound::GetPitch() const
+    {
+        return ma_sound_get_pitch(&this->sound);
+    }
+
+    void Sound::SetPitch(const float pitch)
+    {
+        ma_sound_set_pitch(&this->sound, pitch);
     }
 
     ulonglong Sound::GetLength()
