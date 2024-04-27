@@ -1,8 +1,6 @@
 #ifndef VIOLET_ENGINE_CORE_INTERNAL_HPP
 #define VIOLET_ENGINE_CORE_INTERNAL_HPP
 
-#include "violet_types.hpp"
-
 namespace Violet
 {
     extern void Initialize();

@@ -1,5 +1,4 @@
-#include "violet_matrix_internal.hpp"
-#include "violet_window.hpp"
+#include "violet_engine_internal.hpp"
 
 namespace Violet
 {
@@ -16,11 +15,11 @@ namespace Violet
         return projection2D;
     }
 
-    const glm::mat4 Get2dTransformMatrix(const Point2D<float> position, const Point2D<float> scale, const float angle)
+    const glm::mat4 Get2dTransformMatrix(const float x, const float y, const float x_scale, const float y_scale, const float angle)
     {
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f));
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
         transform           = glm::rotate(transform, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
-        transform           = glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
+        transform           = glm::scale(transform, glm::vec3(x_scale, y_scale, 1.0f));
         return transform;
     }
 }

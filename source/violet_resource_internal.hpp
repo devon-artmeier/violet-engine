@@ -1,13 +1,6 @@
 #ifndef VIOLET_ENGINE_RESOURCE_INTERNAL_HPP
 #define VIOLET_ENGINE_RESOURCE_INTERNAL_HPP
 
-#include "violet_audio_internal.hpp"
-#include "violet_resource.hpp"
-#include "violet_shader_internal.hpp"
-#include "violet_sprite_internal.hpp"
-#include "violet_texture_internal.hpp"
-#include "violet_types.hpp"
-
 namespace Violet
 {
     typedef std::unordered_map<std::string, Pointer<Shader>>      ShaderGroup;
@@ -46,16 +39,18 @@ namespace Violet
             TextureGroup     textures;
     };
 
-    extern void                    InitResources         ();
-    extern void                    CloseResources        ();
-    extern Pointer<Shader>         GetShader             (const std::string& id);
-    extern const ShaderGroup&      GetAllShaders         ();
-    extern Pointer<Sound>          GetSound              (const std::string& id);
-    extern const SoundGroup&       GetAllSounds          ();
-    extern Pointer<SpriteSheet>    GetSpriteSheet        (const std::string& id);
-    extern const SpriteSheetGroup& GetAllSpriteSheets    ();
-    extern Pointer<Texture>        GetTexture            (const std::string& id);
-    extern const TextureGroup&     GetAllTextures        ();
+    extern void                    InitResources        ();
+    extern void                    CloseResources       ();
+    extern Pointer<Shader>         GetShader            (const std::string& id);
+    extern const ShaderGroup&      GetAllShaders        ();
+    extern void                    LoadShaderInternal   (const std::string& id, const std::string& vertex_code, const std::string& frag_code);
+    extern void                    DestroyShaderInternal(const std::string& id);
+    extern Pointer<Sound>          GetSound             (const std::string& id);
+    extern const SoundGroup&       GetAllSounds         ();
+    extern Pointer<SpriteSheet>    GetSpriteSheet       (const std::string& id);
+    extern const SpriteSheetGroup& GetAllSpriteSheets   ();
+    extern Pointer<Texture>        GetTexture           (const std::string& id);
+    extern const TextureGroup&     GetAllTextures       ();
 }
 
 #endif // VIOLET_ENGINE_RESOURCE_INTERNAL_HPP

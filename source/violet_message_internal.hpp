@@ -1,8 +1,6 @@
 #ifndef VIOLET_ENGINE_MESSAGE_INTERNAL_HPP
 #define VIOLET_ENGINE_MESSAGE_INTERNAL_HPP
 
-#include "violet_message.hpp"
-
 namespace Violet
 {
     enum class MessageType {

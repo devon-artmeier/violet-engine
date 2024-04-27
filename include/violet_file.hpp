@@ -1,8 +1,5 @@
-#ifndef VIOLET_ENGINE_FILE_INTERNAL_HPP
-#define VIOLET_ENGINE_FILE_INTERNAL_HPP
-
-#include <fstream>
-#include "violet_types.hpp"
+#ifndef VIOLET_ENGINE_FILE_HPP
+#define VIOLET_ENGINE_FILE_HPP
 
 namespace Violet
 {
@@ -54,4 +51,4 @@ namespace Violet
 
 }
 
-#endif // VIOLET_ENGINE_FILE_INTERNAL_HPP
+#endif // VIOLET_ENGINE_FILE_HPP

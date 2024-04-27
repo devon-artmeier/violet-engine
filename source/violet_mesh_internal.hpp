@@ -1,9 +1,6 @@
 #ifndef VIOLET_ENGINE_MESH_INTERNAL_HPP
 #define VIOLET_ENGINE_MESH_INTERNAL_HPP
 
-#include <glad.h>
-#include "violet_types.hpp"
-
 namespace Violet
 {
     class Mesh

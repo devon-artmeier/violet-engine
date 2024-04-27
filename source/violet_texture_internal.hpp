@@ -1,9 +1,6 @@
 #ifndef VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 #define VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 
-#include <glad.h>
-#include "violet_texture.hpp"
-
 namespace Violet
 {
     class Texture
@@ -34,15 +31,7 @@ namespace Violet
             TextureWrap   wrap_y{ TextureWrap::Repeat };
     };
 
-    extern void          BindTexture      (const std::string& id);
-    extern int           GetTextureWidth  (const std::string& id);
-    extern int           GetTextureHeight (const std::string& id);
-    extern TextureFilter GetTextureFilter (const std::string& id);
-    extern void          SetTextureFilter (const std::string& id, const TextureFilter filter);
-    extern TextureWrap   GetTextureWrapX  (const std::string& id);
-    extern TextureWrap   GetTextureWrapY  (const std::string& id);
-    extern void          SetTextureWrapX  (const std::string& id, const TextureWrap wrap);
-    extern void          SetTextureWrapY  (const std::string& id, const TextureWrap wrap);
+    extern void BindTexture(const std::string& id);
 }
 
 #endif // VIOLET_ENGINE_TEXTURE_INTERNAL_HPP

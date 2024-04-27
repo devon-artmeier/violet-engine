@@ -1,17 +1,15 @@
 #ifndef VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 #define VIOLET_ENGINE_SPRITE_INTERNAL_HPP
 
-#include "violet_mesh_internal.hpp"
-#include "violet_sprite.hpp"
-
 namespace Violet
 {
     struct SpriteDraw {
-        uint           frame;
-        Point2D<float> position;
-        Point2D<float> scale;
-        float          angle;
-        TextureFilter  filter;
+        uint  frame;
+        float x;
+        float y;
+        float x_scale;
+        float y_scale;
+        float angle;
     };
 
     class SpriteSheet

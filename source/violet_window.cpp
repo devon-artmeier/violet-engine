@@ -1,8 +1,4 @@
-#include <string>
-#include <SDL3/SDL.h>
-#include <glad.h>
-#include "violet_message_internal.hpp"
-#include "violet_window_internal.hpp"
+#include "violet_engine_internal.hpp"
 
 namespace Violet
 {
@@ -90,11 +86,6 @@ namespace Violet
         SDL_GetWindowSize(window, nullptr, &height);
         return height;
     }
-
-    void GetWindowSize(int& width, int& height)
-    {
-        SDL_GetWindowSize(window, &width, &height);
-    }
     
     int GetWindowWidthPixels()
     {
@@ -109,25 +100,23 @@ namespace Violet
         SDL_GetWindowSizeInPixels(window, nullptr, &height);
         return height;
     }
-
-    void GetWindowSizePixels(int& width, int& height)
-    {
-        SDL_GetWindowSizeInPixels(window, &width, &height);
-    }
     
     void SetWindowWidth(const int width)
     {
         SDL_SetWindowSize(window, width, GetWindowHeight());
+        UpdateProjectionMatrices();
     }
     
     void SetWindowHeight(const int height)
     {
         SDL_SetWindowSize(window, GetWindowWidth(), height);
+        UpdateProjectionMatrices();
     }
     
     void SetWindowSize(const int width, const int height)
     {
         SDL_SetWindowSize(window, width, height);
+        UpdateProjectionMatrices();
     }
     
     void SwapWindowBuffer()

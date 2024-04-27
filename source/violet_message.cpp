@@ -1,13 +1,10 @@
+#include "violet_engine_internal.hpp"
+
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #undef MessageBox
 #endif
-
-#include <stdexcept>
-#include <iostream>
-#include <SDL3/SDL.h>
-#include "violet_message_internal.hpp"
 
 namespace Violet
 {

@@ -1,11 +1,6 @@
 #ifndef VIOLET_ENGINE_TYPES_HPP
 #define VIOLET_ENGINE_TYPES_HPP
 
-#include <map>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 namespace Violet
 {
     typedef unsigned char       uchar;
@@ -15,32 +10,6 @@ namespace Violet
     typedef unsigned long       ulong;
     typedef long long           longlong;
     typedef unsigned long long  ulonglong;
-
-    template<typename T>
-    struct Point2D {
-        T x;
-        T y;
-    };
-
-    template<typename T>
-    struct Point3D {
-        T x;
-        T y;
-        T z;
-    };
-
-    template<typename T>
-    struct Size2D {
-        T w;
-        T h;
-    };
-
-    template<typename T>
-    struct Size3D {
-        T w;
-        T h;
-        T d;
-    };
     
     template<typename T>
     class Pointer

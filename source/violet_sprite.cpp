@@ -1,19 +1,18 @@
-#include "violet_file.hpp"
-#include "violet_matrix_internal.hpp"
-#include "violet_message_internal.hpp"
-#include "violet_resource_internal.hpp"
-#include "violet_shader_internal.hpp"
-#include "violet_sprite_internal.hpp"
-#include "violet_texture_internal.hpp"
+#include "violet_engine_internal.hpp"
 
 namespace Violet
 {
-    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, Point2D<float> position,
-                    const Point2D<float> scale, const float angle, const TextureFilter filter)
+    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, const float x, const float y)
+    {
+        DrawSprite(sheet_id, layer, frame, x, y, 1.0f, 1.0f, 0.0f);
+    }
+
+    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, const float x, const float y,
+                    const float x_scale, const float y_scale, const float angle)
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sheet_id);
         if (sprite_sheet != nullptr) {
-            sprite_sheet->QueueDraw(layer, { frame, position, scale, angle, filter });
+            sprite_sheet->QueueDraw(layer, { frame, x, y, x_scale, y_scale, angle });
         }
     }
 
@@ -203,11 +202,10 @@ namespace Violet
             for (int i = 0; i < this->draw_queue[layer].size(); i++) {
                 const SpriteDraw& sprite = this->draw_queue[layer][i];
                 
-                SetTextureFilter(this->texture, sprite.filter);
                 AttachShader("shader_sprite_internal");
                 SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
                 SetShaderMatrix4x4("inTransform", false, 1,
-                    glm::value_ptr(Get2dTransformMatrix(sprite.position, sprite.scale, sprite.angle)));
+                    glm::value_ptr(Get2dTransformMatrix(sprite.x, sprite.y, sprite.x_scale, sprite.y_scale, sprite.angle)));
                 SetShaderTexture(this->texture, 0);
 
                 this->mesh->DrawPartial(2, sprite.frame * 2);

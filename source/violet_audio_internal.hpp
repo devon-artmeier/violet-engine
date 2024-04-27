@@ -1,8 +1,6 @@
 #ifndef VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 #define VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 
-#include "violet_audio.hpp"
-
 namespace Violet
 {
     class Sound

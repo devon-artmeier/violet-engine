@@ -1,9 +1,25 @@
-#include "violet_message.hpp"
-#include "violet_resource_internal.hpp"
+#include "violet_engine_internal.hpp"
 
 namespace Violet
 {
     static Pointer<ResourceManager> resource_manager{ nullptr };
+
+    static const char* reserved_shaders[] = {
+        "shader_sprite_internal"
+    };
+
+    static bool IsShaderReserved(const std::string& id)
+    {
+        for (int i = 0; i < sizeof(reserved_shaders) / sizeof(const char*); i++) {
+            if (id.compare(reserved_shaders[i]) == 0) {
+#ifdef VIOLET_DEBUG
+                LogError("\"" + id + "\" is a reserved shader name");
+#endif
+                return true;
+            }
+        }
+        return false;
+    }
 
     Pointer<Shader> ResourceManager::GetShader(const std::string& id) const
     {
@@ -182,10 +198,24 @@ namespace Violet
 
     void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
+        if (!IsShaderReserved(id)) {
+            LoadShaderInternal(id, vertex_code, frag_code);
+        }
+    }
+
+    void LoadShaderInternal(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
         resource_manager->LoadShader(id, vertex_code, frag_code);
     }
 
     void DestroyShader(const std::string& id)
+    {
+        if (!IsShaderReserved(id)) {
+            DestroyShaderInternal(id);
+        }
+    }
+
+    void DestroyShaderInternal(const std::string& id)
     {
         resource_manager->DestroyShader(id);
     }
