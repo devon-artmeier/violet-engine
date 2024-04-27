@@ -22,11 +22,19 @@ namespace Violet
         player = nullptr;
     }
 
-    void PlaySound(const std::string& id, const bool loop)
+    void PlaySound(const std::string& id)
     {
         const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
-            sound->Play(loop);
+            sound->Play(false);
+        }
+    }
+
+    void LoopSound(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->Play(true);
         }
     }
 
@@ -38,7 +46,34 @@ namespace Violet
         }
     }
 
-    int GetSoundVolume(const std::string& id)
+    bool IsSoundPlaying(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->IsPlaying();
+        }
+        return false;
+    }
+
+    bool IsSoundLooping(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->IsLooping();
+        }
+        return false;
+    }
+
+    bool IsSoundAtEnd(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->IsAtEnd();
+        }
+        return false;
+    }
+
+    float GetSoundVolume(const std::string& id)
     {
         const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
@@ -47,11 +82,28 @@ namespace Violet
         return 0;
     }
 
-    void SetSoundVolume(const std::string& id, const int volume)
+    void SetSoundVolume(const std::string& id, const float volume)
     {
         const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
             sound->SetVolume(volume);
+        }
+    }
+
+    float GetSoundPanning(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetPanning();
+        }
+        return 0;
+    }
+
+    void SetSoundPanning(const std::string& id, const float panning)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetPanning(panning);
         }
     }
 
@@ -106,6 +158,16 @@ namespace Violet
         }
     }
 
+    float GetMasterVolume()
+    {
+        return player->GetVolume();
+    }
+
+    void SetMasterVolume(const float volume)
+    {
+        player->SetVolume(volume);
+    }
+
     Sound::Sound(const std::string& id, const std::string& path)
     {
         this->id = id;
@@ -121,8 +183,8 @@ namespace Violet
 #ifdef VIOLET_DEBUG
             LogInfo(this->id + ": Destroyed");
 #endif
+            ma_sound_uninit(&this->sound);
         }
-        ma_sound_uninit(&this->sound);
     }
 
     bool Sound::IsLoaded() const
@@ -135,8 +197,21 @@ namespace Violet
         return ma_sound_is_playing(&this->sound) == MA_TRUE;
     }
 
+    bool Sound::IsLooping() const
+    {
+        return this->IsPlaying() && ma_sound_is_looping(&this->sound) == MA_TRUE;
+    }
+
+    bool Sound::IsAtEnd() const
+    {
+        return ma_sound_at_end(&this->sound) == MA_TRUE;
+    }
+
     void Sound::Play(const bool loop)
     {
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": " + (loop ? "Looping" : "Playing"));
+#endif
         ma_sound_seek_to_pcm_frame(&this->sound, 0);
         ma_sound_set_looping(&this->sound, loop ? MA_TRUE : MA_FALSE);
         ma_sound_start(&this->sound);
@@ -144,6 +219,9 @@ namespace Violet
 
     void Sound::Stop()
     {
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Stopped");
+#endif
         ma_sound_stop(&this->sound);
     }
 
@@ -155,6 +233,16 @@ namespace Violet
     void Sound::SetVolume(const float volume)
     {
         ma_sound_set_volume(&this->sound, volume);
+    }
+
+    float Sound::GetPanning() const
+    {
+        return ma_sound_get_pan(&this->sound);
+    }
+
+    void Sound::SetPanning(const float panning)
+    {
+        ma_sound_set_pan(&this->sound, panning);
     }
 
     ulonglong Sound::GetLength()
@@ -185,6 +273,10 @@ namespace Violet
 #ifdef VIOLET_DEBUG
             LogError(this->id + ": Failed to set loop start point");
 #endif
+        } else {
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Set loop start point to " + std::to_string(point));
+#endif
         }
     }
 
@@ -195,6 +287,10 @@ namespace Violet
 #ifdef VIOLET_DEBUG
             LogError(this->id + ": Failed to set loop end point");
 #endif
+        } else {
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Set loop end point to " + std::to_string(point));
+#endif
         }
     }
 
@@ -204,6 +300,10 @@ namespace Violet
         if (ma_data_source_set_loop_point_in_pcm_frames(data_source, start, end) != MA_SUCCESS) {
 #ifdef VIOLET_DEBUG
             LogError(this->id + ": Failed to set loop points");
+#endif
+        } else {
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Set loop points to " + std::to_string(start) + " and " + std::to_string(end));
 #endif
         }
     }
@@ -227,9 +327,11 @@ namespace Violet
         this->stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &audio_spec, AudioCallback, nullptr);
         if (this->stream == nullptr) {
             MessageBoxError("Failed to open audio device stream.");
-        } else {
-            SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(this->stream));
+            return;
         }
+        
+        SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(this->stream));
+        this->initialized = true;
     }
 
     AudioPlayer::~AudioPlayer()
@@ -241,12 +343,35 @@ namespace Violet
 
     bool AudioPlayer::InitSound(const std::string& path, ma_sound* sound)
     {
-        return ma_sound_init_from_file(&this->engine, path.c_str(), 0, nullptr, nullptr, sound) == MA_SUCCESS;
+        if (this->initialized) {
+            if (ma_sound_init_from_file(&this->engine, path.c_str(), MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, nullptr, sound) == MA_SUCCESS) {
+                ma_sound_set_pan_mode(sound, ma_pan_mode_pan);
+                return true;
+            }
+        }
+        return false;
     }
 
     void AudioPlayer::Callback(Pointer<ma_uint8> buffer, ma_uint64 length)
     {
-        ma_uint64 frames = length / ma_get_bytes_per_frame(ma_format_f32, ma_engine_get_channels(&this->engine));
-        ma_engine_read_pcm_frames(&this->engine, buffer.Raw(), frames, nullptr);
+        if (this->initialized) {
+            ma_uint64 frames = length / ma_get_bytes_per_frame(ma_format_f32, ma_engine_get_channels(&this->engine));
+            ma_engine_read_pcm_frames(&this->engine, buffer.Raw(), frames, nullptr);
+        }
+    }
+
+    float AudioPlayer::GetVolume()
+    {
+        if (this->initialized) {
+            return ma_engine_get_volume(&this->engine);
+        }
+        return 0;
+    }
+
+    void AudioPlayer::SetVolume(const float volume)
+    {
+        if (this->initialized) {
+            ma_engine_set_volume(&this->engine, volume);
+        }
     }
 }
