@@ -1,45 +1,24 @@
 #include "violet_message_internal.hpp"
+#include "violet_resource_internal.hpp"
 #include "violet_texture_internal.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace Violet
 {
-    static Pointer<ResourceGroup<Texture>> texture_group  { nullptr };
-    static GLuint                          current_texture{ 0 };
+    static GLuint current_texture{ 0 };
 
-    void InitTextureGroup()
-    {
-        texture_group = new ResourceGroup<Texture>();
-    }
-
-    void CloseTextureGroup()
-    {
-        texture_group = nullptr;
-    }
-
-    void LoadTexture(const std::string& id, const std::string& path)
-    {
-        Pointer<Texture> texture(new Texture(id, path));
-        if (texture->IsLoaded()) {
-            texture_group->Add(id, texture);
-        }
-    }
-
-    void DestroyTexture(const std::string& id)
-    {
-        texture_group->Destroy(id);
-    }
-    
     void BindTexture(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
-        if (texture != nullptr) texture->Bind();
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            texture->Bind();
+        }
     }
 
     int GetTextureWidth(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             return texture->GetWidth();
         }
@@ -48,7 +27,7 @@ namespace Violet
 
     int GetTextureHeight(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             return texture->GetHeight();
         }
@@ -57,7 +36,7 @@ namespace Violet
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             return texture->GetFilter();
         }
@@ -66,7 +45,7 @@ namespace Violet
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             texture->SetFilter(filter);
         }
@@ -74,7 +53,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapX(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             return texture->GetWrapX();
         }
@@ -83,7 +62,7 @@ namespace Violet
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             return texture->GetWrapY();
         }
@@ -92,7 +71,7 @@ namespace Violet
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             texture->SetWrapX(wrap);
         }
@@ -100,23 +79,29 @@ namespace Violet
     
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
-        const Pointer<Texture>& texture = texture_group->Get(id);
+        const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
             texture->SetWrapY(wrap);
         }
     }
 
-    Texture::Texture(const std::string& id, const std::string& path) : Resource(id)
+    Texture::Texture(const std::string& id, const std::string& path)
     {
+        this->id = id;
+
         uchar* data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
-        this->Info("Loading \"" + path + "\"");
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Loading \"" + path + "\"");
+#endif
 
         if (data == nullptr) {
+#ifdef VIOLET_DEBUG
             if (stbi_failure_reason() != nullptr) {
-                this->Error("Failed to load");
+                LogError(this->id + ": Failed to load");
             } else {
-                this->Error((std::string)"Failed to load:\n", data);
+                LogError(this->id + ": Failed to load:\n" + stbi_failure_reason());
             }
+#endif
             return;
         }
 
@@ -129,7 +114,9 @@ namespace Violet
         stbi_image_free(data);
 
         loaded = true;
-        this->Info("Loaded successfully");
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Loaded successfully");
+#endif
     }
 
     Texture::~Texture()
@@ -139,7 +126,15 @@ namespace Violet
                 current_texture = 0;
             }
             glDeleteTextures(1, &this->gl_id);
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Destroyed");
+#endif
         }
+    }
+
+    bool Texture::IsLoaded() const
+    {
+        return this->loaded;
     }
 
     void Texture::Bind() const

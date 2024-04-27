@@ -1,57 +1,272 @@
 #include "violet_message.hpp"
-#include "violet_resource.hpp"
+#include "violet_resource_internal.hpp"
 
 namespace Violet
 {
-    Resource::Resource(const std::string& id)
+    static Pointer<ResourceManager> resource_manager{ nullptr };
+
+    Pointer<Shader> ResourceManager::GetShader(const std::string& id) const
     {
-        this->resource_id = id;
+        auto shader = this->shaders.find(id);
+        if (shader != this->shaders.end()) {
+            return shader->second;
+        }
+        return Pointer<Shader>(nullptr);
     }
 
-    Resource::~Resource()
+    const ShaderGroup& ResourceManager::GetAllShaders() const
     {
-        if (this->loaded) {
-            this->Info("Destroyed");
+        return this->shaders;
+    }
+
+    void ResourceManager::LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        if (this->GetShader(id) == nullptr) {
+            Pointer<Shader> shader(new Shader(id, vertex_code, frag_code));
+            if (shader->IsLoaded()) {
+                this->shaders.insert({ id, shader });
+            }
         }
     }
 
-    std::string Resource::GetResourceId() const
+    void ResourceManager::DestroyShader(const std::string& id)
     {
-        return this->resource_id;
-    }
-
-    bool Resource::IsLoaded() const
-    {
-        return this->loaded;
-    }
-
-    bool Resource::Info(const std::string& message, bool condition) const
-    {
-#ifdef VIOLET_DEBUG
-        if (condition) {
-            LogInfo(this->resource_id + ": " + message);
+        const Pointer<Shader>& shader = this->GetShader(id);
+        if (shader != nullptr) {
+            this->shaders.erase(id);
         }
-#endif
-        return condition;
     }
 
-    bool Resource::Warn(const std::string& message, bool condition) const
+    void ResourceManager::DestroyAllShaders()
     {
-#ifdef VIOLET_DEBUG
-        if (condition) {
-            LogWarn(this->resource_id + ": " + message);
-        }
-#endif
-        return condition;
+        this->shaders.clear();
     }
 
-    bool Resource::Error(const std::string& message, bool condition) const
+    Pointer<Sound> ResourceManager::GetSound(const std::string& id) const
     {
-#ifdef VIOLET_DEBUG
-        if (condition) {
-            LogError(this->resource_id + ": " + message);
+        auto sound = this->sounds.find(id);
+        if (sound != this->sounds.end()) {
+            return sound->second;
         }
-#endif
-        return condition;
+        return Pointer<Sound>(nullptr);
+    }
+
+    const SoundGroup& ResourceManager::GetAllSounds() const
+    {
+        return this->sounds;
+    }
+
+    void ResourceManager::LoadSound(const std::string& id, const std::string& path)
+    {
+        if (this->GetSound(id) == nullptr) {
+            Pointer<Sound> sound = LoadWavSound(id, path);
+            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
+
+            sound = LoadMp3Sound(id, path);
+            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
+
+            sound = LoadOggSound(id, path);
+            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
+
+            sound = LoadFlacSound(id, path);
+            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
+        }
+    }
+
+    void ResourceManager::DestroySound(const std::string& id)
+    {
+        const Pointer<Sound>& sound = this->GetSound(id);
+        if (sound != nullptr) {
+            this->sounds.erase(id);
+        }
+    }
+
+    void ResourceManager::DestroyAllSounds()
+    {
+        this->sounds.clear();
+    }
+
+    Pointer<SpriteSheet> ResourceManager::GetSpriteSheet(const std::string& id) const
+    {
+        auto sprite_sheet = this->sprite_sheets.find(id);
+        if (sprite_sheet != this->sprite_sheets.end()) {
+            return sprite_sheet->second;
+        }
+        return Pointer<SpriteSheet>(nullptr);
+    }
+
+    const SpriteSheetGroup& ResourceManager::GetAllSpriteSheets() const
+    {
+        return this->sprite_sheets;
+    }
+
+    void ResourceManager::LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
+    {
+        if (this->GetSpriteSheet(id) == nullptr) {
+            Pointer<SpriteSheet> sprite_sheet(new SpriteSheet(id, path, texture));
+            if (sprite_sheet->IsLoaded()) {
+                this->sprite_sheets.insert({ id, sprite_sheet });
+            }
+        }
+    }
+
+    void ResourceManager::DestroySpriteSheet(const std::string& id)
+    {
+        const Pointer<SpriteSheet>& sprite_sheet = this->GetSpriteSheet(id);
+        if (sprite_sheet != nullptr) {
+            this->sprite_sheets.erase(id);
+        }
+    }
+
+    void ResourceManager::DestroyAllSpriteSheets()
+    {
+        this->sprite_sheets.clear();
+    }
+
+    Pointer<Texture> ResourceManager::GetTexture(const std::string& id) const
+    {
+        auto texture = this->textures.find(id);
+        if (texture != this->textures.end()) {
+            return texture->second;
+        }
+        return Pointer<Texture>(nullptr);
+    }
+
+    const TextureGroup& ResourceManager::GetAllTextures() const
+    {
+        return this->textures;
+    }
+
+    void ResourceManager::LoadTexture(const std::string& id, const std::string& path)
+    {
+        if (this->GetTexture(id) == nullptr) {
+            Pointer<Texture> texture(new Texture(id, path));
+            if (texture->IsLoaded()) {
+                this->textures.insert({ id, texture });
+            }
+        }
+    }
+
+    void ResourceManager::DestroyTexture(const std::string& id)
+    {
+        const Pointer<Texture>& texture = this->GetTexture(id);
+        if (texture != nullptr) {
+            this->textures.erase(id);
+        }
+    }
+
+    void ResourceManager::DestroyAllTextures()
+    {
+        this->textures.clear();
+    }
+
+    extern void InitResources()
+    {
+        resource_manager = new ResourceManager();
+    }
+
+    extern void CloseResources()
+    {
+        resource_manager = nullptr;
+    }
+
+    Pointer<Shader> GetShader(const std::string& id)
+    {
+        return resource_manager->GetShader(id);
+    }
+
+    const ShaderGroup& GetAllShaders()
+    {
+        return resource_manager->GetAllShaders();
+    }
+
+    void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        resource_manager->LoadShader(id, vertex_code, frag_code);
+    }
+
+    void DestroyShader(const std::string& id)
+    {
+        resource_manager->DestroyShader(id);
+    }
+
+    void DestroyAllShaders()
+    {
+        resource_manager->DestroyAllShaders();
+    }
+
+    Pointer<Sound> GetSound(const std::string& id)
+    {
+        return resource_manager->GetSound(id);
+    }
+
+    const SoundGroup& GetAllSounds()
+    {
+        return resource_manager->GetAllSounds();
+    }
+
+    void LoadSound(const std::string& id, const std::string& path)
+    {
+        resource_manager->LoadSound(id, path);
+    }
+
+    void DestroySound(const std::string& id)
+    {
+        resource_manager->DestroySound(id);
+    }
+
+    void DestroyAllSounds()
+    {
+        resource_manager->DestroyAllSounds();
+    }
+
+    Pointer<SpriteSheet> GetSpriteSheet(const std::string& id)
+    {
+        return resource_manager->GetSpriteSheet(id);
+    }
+
+    const SpriteSheetGroup& GetAllSpriteSheets()
+    {
+        return resource_manager->GetAllSpriteSheets();
+    }
+
+    void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
+    {
+        resource_manager->LoadSpriteSheet(id, path, texture);
+    }
+
+    void DestroySpriteSheet(const std::string& id)
+    {
+        resource_manager->DestroySpriteSheet(id);
+    }
+
+    void DestroyAllSpriteSheets()
+    {
+        resource_manager->DestroyAllSpriteSheets();
+    }
+
+    Pointer<Texture> GetTexture(const std::string& id)
+    {
+        return resource_manager->GetTexture(id);
+    }
+
+    const TextureGroup& GetAllTextures()
+    {
+        return resource_manager->GetAllTextures();
+    }
+
+    void LoadTexture(const std::string& id, const std::string& path)
+    {
+        resource_manager->LoadTexture(id, path);
+    }
+
+    void DestroyTexture(const std::string& id)
+    {
+        resource_manager->DestroyTexture(id);
+    }
+
+    void DestroyAllTextures()
+    {
+        resource_manager->DestroyAllTextures();
     }
 }

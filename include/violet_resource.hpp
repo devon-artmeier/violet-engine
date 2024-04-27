@@ -1,68 +1,25 @@
-#ifndef VIOLET_RESOURCE_HPP
-#define VIOLET_RESOURCE_HPP
+#ifndef VIOLET_ENGINE_RESOURCE_HPP
+#define VIOLET_ENGINE_RESOURCE_HPP
 
 #include "violet_types.hpp"
 
 namespace Violet
 {
-    class Resource
-    {
-        public:
-            Resource(const std::string& id);
-            virtual ~Resource();
+    extern void LoadShader            (const std::string& id, const std::string& vertex_code, const std::string& frag_code);
+    extern void DestroyShader         (const std::string& id);
+    extern void DestroyAllShaders     ();
 
-            std::string GetResourceId() const;
-            bool        IsLoaded() const;
-        
-        protected:
-            bool Info (const std::string& message, bool condition = true) const;
-            bool Warn (const std::string& message, bool condition = true) const;
-            bool Error(const std::string& message, bool condition = true) const;
+    extern void LoadSound             (const std::string& id, const std::string& path);
+    extern void DestroySound          (const std::string& id);
+    extern void DestroyAllSounds      ();
 
-            std::string resource_id{ "" };
-            bool        loaded{ false };
-    };
-    
-    template<typename T>
-    class ResourceGroup
-    {
-        public:
-            virtual ~ResourceGroup()
-            {
-                this->DestroyAll();
-            }
-            
-            Pointer<T> Get(const std::string& id) const
-            {
-                auto resource = this->resources.find(id);
-                if (resource != this->resources.end()) {
-                    return resource->second;
-                }
-                return Pointer<T>(nullptr);
-            }
+    extern void LoadSpriteSheet       (const std::string& id, const std::string& path, const std::string& texture);
+    extern void DestroySpriteSheet    (const std::string& id);
+    extern void DestroyAllSpriteSheets();
 
-            void Add(const std::string& id, const Pointer<T>& resource)
-            {
-                this->Destroy(id);
-                this->resources.insert({id, resource});
-            }
-            
-            void Destroy(const std::string& id)
-            {
-                const Pointer<T>& resource = this->Get(id);
-                if (resource != nullptr) {
-                    this->resources.erase(id);
-                }
-            }
-            
-            void DestroyAll()
-            {
-                this->resources.clear();
-            }
-        
-        protected:
-            std::unordered_map<std::string, Pointer<T>> resources;
-    };
+    extern void LoadTexture           (const std::string& id, const std::string& path);
+    extern void DestroyTexture        (const std::string& id);
+    extern void DestroyAllTextures    ();
 }
 
-#endif // VIOLET_RESOURCE_HPP
+#endif // VIOLET_ENGINE_RESOURCE_HPP

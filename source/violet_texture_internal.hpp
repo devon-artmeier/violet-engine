@@ -2,17 +2,17 @@
 #define VIOLET_ENGINE_TEXTURE_INTERNAL_HPP
 
 #include <glad.h>
-#include "violet_resource.hpp"
 #include "violet_texture.hpp"
 
 namespace Violet
 {
-    class Texture : public Resource
+    class Texture
     {
         public:
             Texture(const std::string& id, const std::string& path);
             ~Texture();
 
+            bool          IsLoaded () const;
             void          Bind     () const;
             int           GetWidth () const;
             int           GetHeight() const;
@@ -24,6 +24,8 @@ namespace Violet
             void          SetWrapY (const TextureWrap wrap);
 
         private:
+            std::string   id    { "" };
+            bool          loaded{ false };
             GLuint        gl_id { 0 };
             int           width { 0 };
             int           height{ 0 };
@@ -32,8 +34,6 @@ namespace Violet
             TextureWrap   wrap_y{ TextureWrap::Repeat };
     };
 
-    extern void          InitTextureGroup ();
-    extern void          CloseTextureGroup();
     extern void          BindTexture      (const std::string& id);
     extern int           GetTextureWidth  (const std::string& id);
     extern int           GetTextureHeight (const std::string& id);

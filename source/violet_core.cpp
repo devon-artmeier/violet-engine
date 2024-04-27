@@ -3,11 +3,9 @@
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"
-#include "violet_matrix_internal.hpp"
 #include "violet_message_internal.hpp"
+#include "violet_resource_internal.hpp"
 #include "violet_shader_internal.hpp"
-#include "violet_sprite_internal.hpp"
-#include "violet_texture_internal.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
 
@@ -20,12 +18,10 @@ namespace Violet
         }
 
         InitWindow();
-        UpdateProjectionMatrices();
-        InitShaders();
-        InitTextureGroup();
-        InitSprites();
         InitVideo();
         InitAudio();
+        InitResources();
+        InitShaders();
 
         GameInit();
     }
@@ -34,11 +30,9 @@ namespace Violet
     {
         GameClose();
 
+        CloseResources();
         CloseAudio();
         CloseVideo();
-        CloseSprites();
-        CloseTextureGroup();
-        CloseShaders();
         CloseWindow();
 
         SDL_Quit();
@@ -50,7 +44,6 @@ namespace Violet
         if (!IsWindowOpen()) return;
 
         GameUpdate();
-
         UpdateVideo();
     }
 }

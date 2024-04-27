@@ -1,12 +1,12 @@
 #include <SDL3/SDL.h>
 #include "violet_audio_internal.hpp"
 #include "violet_message_internal.hpp"
+#include "violet_resource_internal.hpp"
 
 namespace Violet
 {
-    static SDL_AudioStream*    audio_stream { nullptr };
-    static Pointer<SoundGroup> sound_group  { nullptr };
-    static int                 master_volume{ 100 };
+    static SDL_AudioStream* audio_stream { nullptr };
+    static int              master_volume{ 100 };
 
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
@@ -15,8 +15,11 @@ namespace Violet
             Pointer<short> read_buffer = new short[additional_amount / sizeof(short)];
             
             memset(stream_data.Raw(), 0, additional_amount);
+            for (auto sound_entry : GetAllSounds()) {
+                memset(read_buffer.Raw(), 0, additional_amount);
+                sound_entry.second->Render(stream_data, read_buffer, additional_amount / (sizeof(short) * 2));
+            }
 
-            sound_group->Render(stream_data, read_buffer, additional_amount);
             SDL_PutAudioStreamData(stream, stream_data.Raw(), additional_amount);
         }
     }
@@ -34,8 +37,6 @@ namespace Violet
         } else {
             SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
         }
-
-        sound_group = new SoundGroup();
     }
 
     void CloseAudio()
@@ -44,36 +45,11 @@ namespace Violet
             SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
             SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
         }
-        sound_group = nullptr;
-    }
-
-    void LoadSound(const std::string& id, const std::string& path)
-    {
-        Pointer<Sound> sound = LoadWavSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-
-        sound = LoadMp3Sound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-
-        sound = LoadOggSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-
-        sound = LoadFlacSound(id, path);
-        if (sound->IsLoaded()) { sound_group->Add(id, sound); return; }
-
-#ifdef VIOLET_DEBUG
-        LogError(id + "\" from \"" + path + "\"");
-#endif
-    }
-
-    void DestroySound(const std::string& id)
-    {
-        sound_group->Destroy(id);
     }
 
     void PlaySound(const std::string& id, const uint play_count)
     {
-        const Pointer<Sound>& sound = sound_group->Get(id);
+        const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
             sound->Play(play_count);
         }
@@ -81,7 +57,7 @@ namespace Violet
 
     void StopSound(const std::string& id)
     {
-        const Pointer<Sound>& sound = sound_group->Get(id);
+        const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
             sound->Stop();
         }
@@ -97,11 +73,24 @@ namespace Violet
         master_volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
     }
 
+    Sound::Sound(const std::string& id)
+    {
+        this->id = id;
+    }
+
     Sound::~Sound()
     {
         if (this->loaded) {
             this->Stop();
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Destroyed");
+#endif
         }
+    }
+
+    bool Sound::IsLoaded() const
+    {
+        return this->loaded;
     }
 
     bool Sound::IsPlaying() const
@@ -182,14 +171,6 @@ namespace Violet
                 sample      = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
                 *(stream++) = sample;
             }
-        }
-    }
-
-    void SoundGroup::Render(const Pointer<short>& stream, const Pointer<short>& read_buffer, const size_t length) const
-    {
-        for (auto sound_entry : this->resources) {
-            memset(read_buffer.Raw(), 0, length);
-            sound_entry.second->Render(stream, read_buffer, length / (sizeof(short) * 2));
         }
     }
 }

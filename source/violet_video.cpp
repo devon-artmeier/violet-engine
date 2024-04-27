@@ -1,4 +1,5 @@
 #include <glad.h>
+#include "violet_matrix_internal.hpp"
 #include "violet_sprite_internal.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"
@@ -9,6 +10,7 @@ namespace Violet
 
     void InitVideo()
     {
+        UpdateProjectionMatrices();
         EnableVideoMultisampling();
     }
 
