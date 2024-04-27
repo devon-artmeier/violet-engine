@@ -75,14 +75,10 @@ namespace Violet
     void ResourceManager::LoadSound(const std::string& id, const std::string& path)
     {
         if (this->GetSound(id) == nullptr) {
-            Pointer<Sound> sound = LoadWavSound(id, path);
-            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
-
-            sound = LoadOggSound(id, path);
-            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
-
-            sound = LoadFlacSound(id, path);
-            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
+            Pointer<Sound> sound(new Sound(id, path));
+            if (sound->IsLoaded()) {
+                this->sounds.insert({ id, sound });
+            }
         }
     }
 

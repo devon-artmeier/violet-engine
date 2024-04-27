@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.5)
 project(violet-engine LANGUAGES C CXX)
 
 list(APPEND VIOLET_SRC
     "dependencies/glad/glad.c"
     "source/violet_audio.cpp"
-    "source/violet_audio_flac.cpp"
-    "source/violet_audio_ogg.cpp"
-    "source/violet_audio_wav.cpp"
+    "source/violet_audio_miniaudio.c"
     "source/violet_core.cpp"
     "source/violet_file.cpp"
     "source/violet_main.cpp"
@@ -19,6 +17,7 @@ list(APPEND VIOLET_SRC
     "source/violet_texture.cpp"
     "source/violet_video.cpp"
     "source/violet_window.cpp"
+    "dependencies/stb/stb_vorbis.c"
 )
 
 add_library(violet-engine STATIC ${VIOLET_SRC})
@@ -32,8 +31,6 @@ elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/SDL/CMakeLists.txt")
     add_subdirectory("dependencies/SDL")
     target_include_directories(violet-engine PRIVATE "dependencies/SDL/include")
     target_link_libraries(violet-engine PRIVATE SDL3::SDL3)
-else()
-    message(FATAL_ERROR "\nSDL3 not found! Please initialize the submodules or download SDL3 and put the files in \"dependencies/SDL\"\nhttps://github.com/libsdl-org/SDL")
 endif()
 
 find_package(glm QUIET)
@@ -43,11 +40,9 @@ elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/glm/CMakeLists.txt")
     add_subdirectory("dependencies/glm")
     target_include_directories(violet-engine PRIVATE "dependencies/glm")
     target_link_libraries(violet-engine PRIVATE glm::glm)
-else()
-    message(FATAL_ERROR "\nGLM not found! Please initialize the submodules or download GLM and put the files in \"dependencies/glm\"\nhttps://github.com/icaven/glm")
 endif()
 
 target_include_directories(violet-engine PRIVATE "include")
-target_include_directories(violet-engine PRIVATE "dependencies/dr_libs")
 target_include_directories(violet-engine PRIVATE "dependencies/glad")
+target_include_directories(violet-engine PRIVATE "dependencies/miniaudio")
 target_include_directories(violet-engine PRIVATE "dependencies/stb")

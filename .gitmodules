@@ -2,9 +2,6 @@
 [submodule "dependencies/stb"]
 	path = dependencies/stb
 	url = https://github.com/nothings/stb.git
-[submodule "dependencies/dr_libs"]
-	path = dependencies/dr_libs
-	url = https://github.com/mackron/dr_libs.git
 [submodule "dependencies/SDL"]
 	path = dependencies/SDL
 	url = https://github.com/libsdl-org/SDL.git
@@ -14,3 +11,6 @@
 [submodule "dependencies/glm"]
 	path = dependencies/glm
 	url = https://github.com/icaven/glm.git
+[submodule "dependencies/miniaudio"]
+	path = dependencies/miniaudio
+	url = https://github.com/mackron/miniaudio.git

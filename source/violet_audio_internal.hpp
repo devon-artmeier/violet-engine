@@ -1,47 +1,55 @@
 #ifndef VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 #define VIOLET_ENGINE_AUDIO_INTERNAL_HPP
 
+#include <miniaudio.h>
+#ifdef PlaySound
+#undef PlaySound
+#endif
+
 namespace Violet
 {
     class Sound
     {
         public:
-            Sound(const std::string& id);
-            virtual ~Sound();
+            Sound(const std::string& id, const std::string& path);
+            ~Sound();
 
             bool      IsLoaded    () const;
             bool      IsPlaying   () const;
-            void      Play        (const uint play_count);
+            void      Play        (const bool loop);
             void      Stop        ();
-            int       GetVolume   () const;
-            void      SetVolume   (const int volume);
-            ulonglong GetLength   () const;
-            ulonglong GetLoopStart() const;
-            ulonglong GetLoopEnd  () const;
+            float     GetVolume   () const;
+            void      SetVolume   (const float volume);
+            ulonglong GetLength   ();
+            ulonglong GetLoopStart();
+            ulonglong GetLoopEnd  ();
             void      SetLoopStart(const ulonglong point);
             void      SetLoopEnd  (const ulonglong point);
-            void      Render      (Pointer<short> stream, Pointer<short> read_buffer, const size_t length);
+            void      SetLoop     (const ulonglong start, const ulonglong end);
 
-        protected:
-            virtual void Seek(const ulonglong sample) = 0;
-            virtual int  Read(const Pointer<short>& read_buffer, const size_t length) = 0;
+        private:
+            std::string id    { "" };
+            bool        loaded{ false };
+            ma_sound    sound { { 0 } };
+            ulonglong   length{ 0};
+    };
 
-            std::string id           { "" };
-            bool        loaded       { false };
-            bool        playing      { false };
-            uint        play_position{ 0 };
-            uint        play_count   { 0 };
-            ulonglong   length       { 0 };
-            ulonglong   loop_start   { 0 };
-            ulonglong   loop_end     { 0 };
-            int         volume       { 100 };
+    class AudioPlayer
+    {
+        public:
+            AudioPlayer();
+            ~AudioPlayer();
+
+            bool InitSound(const std::string& path, ma_sound* sound);
+            void Callback (Pointer<ma_uint8> buffer, ma_uint64 length);
+
+        private:
+            ma_engine        engine{ { 0 } };
+            SDL_AudioStream* stream{ nullptr };
     };
     
-    extern void           InitAudio    ();
-    extern void           CloseAudio   ();
-    extern Pointer<Sound> LoadWavSound (const std::string& id, const std::string& path);
-    extern Pointer<Sound> LoadOggSound (const std::string& id, const std::string& path);
-    extern Pointer<Sound> LoadFlacSound(const std::string& id, const std::string& path);
+    extern void InitAudio ();
+    extern void CloseAudio();
 }
 
 #endif // VIOLET_ENGINE_AUDIO_INTERNAL_HPP

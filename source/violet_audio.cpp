@@ -2,53 +2,31 @@
 
 namespace Violet
 {
-    static SDL_AudioStream* audio_stream { nullptr };
-    static int              master_volume{ 100 };
+    static Pointer<AudioPlayer> player{ nullptr };
 
     static void AudioCallback(void *user_data, SDL_AudioStream *stream, int additional_amount, int total_amount)
     {
-        if (additional_amount > 0) {
-            Pointer<short> stream_data = new short[additional_amount / sizeof(short)];
-            Pointer<short> read_buffer = new short[additional_amount / sizeof(short)];
-            
-            memset(stream_data.Raw(), 0, additional_amount);
-            for (auto sound_entry : GetAllSounds()) {
-                memset(read_buffer.Raw(), 0, additional_amount);
-                sound_entry.second->Render(stream_data, read_buffer, additional_amount / (sizeof(short) * 2));
-            }
-
-            SDL_PutAudioStreamData(stream, stream_data.Raw(), additional_amount);
-        }
+        Pointer<ma_uint8> buffer = new ma_uint8[additional_amount];
+        player->Callback(buffer, additional_amount);
+        SDL_PutAudioStreamData(stream, buffer.Raw(), additional_amount);
     }
 
     void InitAudio()
     {
-        SDL_AudioSpec audio_spec  = { 0 };
-        audio_spec.freq           = 44100;
-        audio_spec.format         = SDL_AUDIO_S16;
-        audio_spec.channels       = 2;
-
-        audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &audio_spec, AudioCallback, nullptr);
-        if (audio_stream == nullptr) {
-            MessageBoxError("Failed to open audio device stream.");
-        } else {
-            SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
-        }
+        player = new AudioPlayer();
     }
 
     void CloseAudio()
     {
-        if (audio_stream != nullptr) {
-            SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
-            SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(audio_stream));
-        }
+        DestroyAllSounds();
+        player = nullptr;
     }
 
-    void PlaySound(const std::string& id, const uint play_count)
+    void PlaySound(const std::string& id, const bool loop)
     {
         const Pointer<Sound>& sound = GetSound(id);
         if (sound != nullptr) {
-            sound->Play(play_count);
+            sound->Play(loop);
         }
     }
 
@@ -120,29 +98,31 @@ namespace Violet
         }
     }
 
-    int GetMasterVolume()
+    void SetSoundLoop(const std::string& id, const ulonglong start, const ulonglong end)
     {
-        return master_volume;
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetLoop(start, end);
+        }
     }
 
-    void SetMasterVolume(const int volume)
-    {
-        master_volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
-    }
-
-    Sound::Sound(const std::string& id)
+    Sound::Sound(const std::string& id, const std::string& path)
     {
         this->id = id;
+        if (player->InitSound(path, &this->sound)) {
+            ma_sound_get_length_in_pcm_frames(&this->sound, &this->length);
+            this->loaded = true;
+        }
     }
 
     Sound::~Sound()
     {
         if (this->loaded) {
-            this->Stop();
 #ifdef VIOLET_DEBUG
             LogInfo(this->id + ": Destroyed");
 #endif
         }
+        ma_sound_uninit(&this->sound);
     }
 
     bool Sound::IsLoaded() const
@@ -152,133 +132,121 @@ namespace Violet
 
     bool Sound::IsPlaying() const
     {
-        return this->playing;
+        return ma_sound_is_playing(&this->sound) == MA_TRUE;
     }
 
-    void Sound::Play(const uint play_count)
+    void Sound::Play(const bool loop)
     {
-        Seek(0);
-        this->play_count    = play_count;
-        this->play_position = 0;
-        this->playing       = true;
+        ma_sound_seek_to_pcm_frame(&this->sound, 0);
+        ma_sound_set_looping(&this->sound, loop ? MA_TRUE : MA_FALSE);
+        ma_sound_start(&this->sound);
     }
 
     void Sound::Stop()
     {
-        if (this->playing) {
-            this->playing       = false;
-            this->play_position = 0;
-            this->play_count    = 0;
-        }
+        ma_sound_stop(&this->sound);
     }
 
-    int Sound::GetVolume() const
+    float Sound::GetVolume() const
     {
-        return this->volume;
+        return ma_sound_get_volume(&this->sound);
     }
 
-    void Sound::SetVolume(const int volume)
+    void Sound::SetVolume(const float volume)
     {
-        this->volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
+        ma_sound_set_volume(&this->sound, volume);
     }
 
-    ulonglong Sound::GetLength() const
+    ulonglong Sound::GetLength()
     {
         return this->length;
     }
 
-    ulonglong Sound::GetLoopStart() const
+    ulonglong Sound::GetLoopStart()
     {
-        return this->loop_start;
+        ulonglong point = 0;
+        ma_data_source* data_source = ma_sound_get_data_source(&this->sound);
+        ma_data_source_get_loop_point_in_pcm_frames(&this->sound, &point, nullptr);
+        return point;
     }
 
-    ulonglong Sound::GetLoopEnd() const
+    ulonglong Sound::GetLoopEnd()
     {
-        return this->loop_end;
+        ulonglong point = 0;
+        ma_data_source* data_source = ma_sound_get_data_source(&this->sound);
+        ma_data_source_get_loop_point_in_pcm_frames(&this->sound, nullptr, &point);
+        return point;
     }
 
     void Sound::SetLoopStart(const ulonglong point)
     {
-        if (this->loop_end < point) {
+        ma_data_source* data_source = ma_sound_get_data_source(&this->sound);
+        if (ma_data_source_set_loop_point_in_pcm_frames(data_source, point, this->GetLoopEnd()) != MA_SUCCESS) {
 #ifdef VIOLET_DEBUG
-            LogError(this->id + ": Cannot set loop start point after loop end point");
+            LogError(this->id + ": Failed to set loop start point");
 #endif
-        } else {
-            if (point > this->length) {
-#ifdef VIOLET_DEBUG
-                LogError(this->id + ": Loop start point capped at the end of the sound data");
-#endif
-                this->loop_start = this->length;
-            } else {
-                this->loop_start = point;
-            }
         }
     }
 
     void Sound::SetLoopEnd(const ulonglong point)
     {
-        if (point < this->loop_start) {
+        ma_data_source* data_source = ma_sound_get_data_source(&this->sound);
+        if (ma_data_source_set_loop_point_in_pcm_frames(data_source, this->GetLoopStart(), point) != MA_SUCCESS) {
 #ifdef VIOLET_DEBUG
-            LogError(this->id + ": Cannot set loop end point before loop start point");
+            LogError(this->id + ": Failed to set loop end point");
 #endif
+        }
+    }
+
+    void Sound::SetLoop(const ulonglong start, const ulonglong end)
+    {
+        ma_data_source* data_source = ma_sound_get_data_source(&this->sound);
+        if (ma_data_source_set_loop_point_in_pcm_frames(data_source, start, end) != MA_SUCCESS) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Failed to set loop points");
+#endif
+        }
+    }
+
+    AudioPlayer::AudioPlayer()
+    {
+        ma_engine_config engine_config = { 0 };
+        engine_config.channels         = 2;
+        engine_config.sampleRate       = 44100;
+
+        if (ma_engine_init(&engine_config, &this->engine) != MA_SUCCESS) {
+            MessageBoxError("Failed to initialize audio engine.");
+            return;
+        }
+
+        SDL_AudioSpec audio_spec = { 0 };
+        audio_spec.freq = ma_engine_get_sample_rate(&this->engine);
+        audio_spec.channels = ma_engine_get_channels(&this->engine);
+        audio_spec.format = SDL_AUDIO_F32;
+
+        this->stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &audio_spec, AudioCallback, nullptr);
+        if (this->stream == nullptr) {
+            MessageBoxError("Failed to open audio device stream.");
         } else {
-            if (point > this->length) {
-#ifdef VIOLET_DEBUG
-                LogError(this->id + ": Loop end point capped at the end of the sound data");
-#endif
-                this->loop_end = this->length;
-            } else {
-                this->loop_end = point;
-            }
+            SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(this->stream));
         }
     }
 
-    static inline int ApplySampleVolume(const int sample, const int volume)
+    AudioPlayer::~AudioPlayer()
     {
-        return (sample * volume) / 100;
+        SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(this->stream));
+        SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(this->stream));
+        ma_engine_uninit(&this->engine);
     }
 
-    void Sound::Render(Pointer<short> stream, Pointer<short> read_buffer, const size_t length)
+    bool AudioPlayer::InitSound(const std::string& path, ma_sound* sound)
     {
-        if (this->playing) {
-            size_t         read_count      = 0;
-            Pointer<short> read_buffer_pos = read_buffer;
-            bool           loop            = false;
+        return ma_sound_init_from_file(&this->engine, path.c_str(), 0, nullptr, nullptr, sound) == MA_SUCCESS;
+    }
 
-            while (read_count < length) {
-                size_t samples_to_read = length - read_count;
-                if (this->play_count != 1 && (this->loop_end - this->play_position) < samples_to_read) {
-                    samples_to_read = this->loop_end - this->play_position;
-                }
-
-                int samples_read     = Read(read_buffer_pos, samples_to_read);
-                this->play_position += samples_read;
-                read_count          += samples_read;
-                read_buffer_pos     += samples_read * 2;
-
-                if (samples_read == 0) {
-                    if (loop) break;
-                    loop = true;
-                } else {
-                    loop = this->play_position >= this->loop_end;
-                }
-
-                if (loop) {
-                    if (this->play_count == 1) break;
-                    if (this->play_count > 1) {
-                        this->play_count--;
-                    }
-                    this->play_position = this->loop_start;
-                    Seek(this->loop_start);
-                }
-            }
-
-            for (int i = 0; i < length * 2; i++) {
-                int sample  = ApplySampleVolume(ApplySampleVolume(*(read_buffer++), master_volume), this->volume);
-                sample     += *(stream);
-                sample      = (sample < -0x8000) ? -0x8000 : ((sample > 0x7FFF) ? 0x7FFF : sample);
-                *(stream++) = sample;
-            }
-        }
+    void AudioPlayer::Callback(Pointer<ma_uint8> buffer, ma_uint64 length)
+    {
+        ma_uint64 frames = length / ma_get_bytes_per_frame(ma_format_f32, ma_engine_get_channels(&this->engine));
+        ma_engine_read_pcm_frames(&this->engine, buffer.Raw(), frames, nullptr);
     }
 }
