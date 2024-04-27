@@ -60,6 +60,66 @@ namespace Violet
         }
     }
 
+    int GetSoundVolume(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetVolume();
+        }
+        return 0;
+    }
+
+    void SetSoundVolume(const std::string& id, const int volume)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetVolume(volume);
+        }
+    }
+
+    ulonglong GetSoundLength(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetLength();
+        }
+        return 0;
+    }
+
+    ulonglong GetSoundLoopStart(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetLoopStart();
+        }
+        return 0;
+    }
+
+    ulonglong GetSoundLoopEnd(const std::string& id)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            return sound->GetLoopEnd();
+        }
+        return 0;
+    }
+
+    void SetSoundLoopStart(const std::string& id, const ulonglong point)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetLoopStart(point);
+        }
+    }
+
+    void SetSoundLoopEnd(const std::string& id, const ulonglong point)
+    {
+        const Pointer<Sound>& sound = GetSound(id);
+        if (sound != nullptr) {
+            sound->SetLoopEnd(point);
+        }
+    }
+
     int GetMasterVolume()
     {
         return master_volume;
@@ -122,6 +182,57 @@ namespace Violet
         this->volume = (volume < 0) ? 0 : ((volume > 100) ? 100 : volume);
     }
 
+    ulonglong Sound::GetLength() const
+    {
+        return this->length;
+    }
+
+    ulonglong Sound::GetLoopStart() const
+    {
+        return this->loop_start;
+    }
+
+    ulonglong Sound::GetLoopEnd() const
+    {
+        return this->loop_end;
+    }
+
+    void Sound::SetLoopStart(const ulonglong point)
+    {
+        if (this->loop_end < point) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Cannot set loop start point after loop end point");
+#endif
+        } else {
+            if (point > this->length) {
+#ifdef VIOLET_DEBUG
+                LogError(this->id + ": Loop start point capped at the end of the sound data");
+#endif
+                this->loop_start = this->length;
+            } else {
+                this->loop_start = point;
+            }
+        }
+    }
+
+    void Sound::SetLoopEnd(const ulonglong point)
+    {
+        if (point < this->loop_start) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Cannot set loop end point before loop start point");
+#endif
+        } else {
+            if (point > this->length) {
+#ifdef VIOLET_DEBUG
+                LogError(this->id + ": Loop end point capped at the end of the sound data");
+#endif
+                this->loop_end = this->length;
+            } else {
+                this->loop_end = point;
+            }
+        }
+    }
+
     static inline int ApplySampleVolume(const int sample, const int volume)
     {
         return (sample * volume) / 100;
@@ -136,7 +247,7 @@ namespace Violet
 
             while (read_count < length) {
                 size_t samples_to_read = length - read_count;
-                if (this->play_count != 1 && this->loop_end != 0 && (this->loop_end - this->play_position) < samples_to_read) {
+                if (this->play_count != 1 && (this->loop_end - this->play_position) < samples_to_read) {
                     samples_to_read = this->loop_end - this->play_position;
                 }
 
@@ -149,7 +260,7 @@ namespace Violet
                     if (loop) break;
                     loop = true;
                 } else {
-                    loop = (this->loop_end != 0 && this->play_position >= this->loop_end);
+                    loop = this->play_position >= this->loop_end;
                 }
 
                 if (loop) {

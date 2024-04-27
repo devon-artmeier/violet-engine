@@ -5,7 +5,6 @@ list(APPEND VIOLET_SRC
     "dependencies/glad/glad.c"
     "source/violet_audio.cpp"
     "source/violet_audio_flac.cpp"
-    "source/violet_audio_mp3.cpp"
     "source/violet_audio_ogg.cpp"
     "source/violet_audio_wav.cpp"
     "source/violet_core.cpp"

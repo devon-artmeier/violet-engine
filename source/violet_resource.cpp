@@ -78,9 +78,6 @@ namespace Violet
             Pointer<Sound> sound = LoadWavSound(id, path);
             if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
 
-            sound = LoadMp3Sound(id, path);
-            if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
-
             sound = LoadOggSound(id, path);
             if (sound->IsLoaded()) { this->sounds.insert({ id, sound }); return; }
 

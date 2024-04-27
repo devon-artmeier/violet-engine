@@ -12,6 +12,9 @@ namespace Violet
                 this->file = stb_vorbis_open_filename(path.c_str(), nullptr, nullptr);
 
                 if (this->file != nullptr) {
+                    this->length   = stb_vorbis_stream_length_in_samples(this->file);
+                    this->loop_end = this->length;
+
                     stb_vorbis_comment comments = stb_vorbis_get_comment(this->file);
                     
                     for (int i = 0; i < comments.comment_list_length; i++) {
@@ -54,7 +57,7 @@ namespace Violet
                 }
             }
 
-            void Seek(const uint sample)
+            void Seek(const ulonglong sample)
             {
                 stb_vorbis_seek(this->file, sample);
             }

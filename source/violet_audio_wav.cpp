@@ -10,11 +10,13 @@ namespace Violet
         public:
             WavSound(const std::string& id, const std::string& path) : Sound(id)
             {
-                if (drwav_init_file(&this->file, path.c_str(), nullptr) != 0) {
+                if (drwav_init_file_with_metadata(&this->file, path.c_str(), 0, nullptr) != 0) {
                     if (this->file.channels != 2 || this->file.sampleRate != 44100) {
                         drwav_uninit(&this->file);
                     } else {
-                        this->loaded = true;
+                        this->length   = this->file.totalPCMFrameCount;
+                        this->loop_end = this->length;
+                        this->loaded   = true;
                     }
                 }
             }
@@ -26,7 +28,7 @@ namespace Violet
                 }
             }
 
-            void Seek(const uint sample)
+            void Seek(const ulonglong sample)
             {
                 drwav_seek_to_pcm_frame(&this->file, sample);
             }
