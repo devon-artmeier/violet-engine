@@ -8,6 +8,7 @@ list(APPEND VIOLET_SRC
     "source/violet_core.cpp"
     "source/violet_file.cpp"
     "source/violet_main.cpp"
+    "source/violet_math.cpp"
     "source/violet_mesh.cpp"
     "source/violet_matrix.cpp"
     "source/violet_message.cpp"

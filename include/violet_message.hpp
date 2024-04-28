@@ -1,8 +1,6 @@
 #ifndef VIOLET_ENGINE_MESSAGE_HPP
 #define VIOLET_ENGINE_MESSAGE_HPP
 
-#include "violet_types.hpp"
-
 namespace Violet
 {
     extern void LogInfo        (const std::string& message);
