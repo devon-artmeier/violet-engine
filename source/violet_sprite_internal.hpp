@@ -19,16 +19,15 @@ namespace Violet
             ~SpriteSheet();
             
             bool IsLoaded() const;
-            void QueueDraw(const uint layer, const SpriteDraw& sprite);
+            void QueueDraw(const uint layer, const SpriteDraw& draw);
             void DrawLayer(const uint layer);
 
         private:
             std::string             id        { "" };
             bool                    loaded    { false };
-
+            uint                    count{ 0 };
             std::string             texture   { "" };
             Pointer<Mesh>           mesh      { nullptr };
-            uint                    count     { 0 };
             std::vector<SpriteDraw> draw_queue[256];
     };
 

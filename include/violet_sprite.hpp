@@ -3,7 +3,7 @@
 
 namespace Violet
 {
-    extern void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, const float x, const float y,
+    extern void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y,
                            const float x_scale = 1.0f, const float y_scale = 1.0f, const float angle = 0.0f);
 }
 

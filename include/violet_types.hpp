@@ -10,11 +10,20 @@ namespace Violet
     typedef unsigned long       ulong;
     typedef long long           longlong;
     typedef unsigned long long  ulonglong;
+
+    struct Color {
+        uchar red;
+        uchar green;
+        uchar blue;
+        uchar alpha;
+    };
     
     template<typename T>
     class Pointer
     {
         public:
+            Pointer() { }
+
             Pointer(T* raw_pointer)
             {
                 this->raw_pointer = raw_pointer;

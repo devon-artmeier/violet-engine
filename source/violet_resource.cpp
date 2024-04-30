@@ -8,6 +8,16 @@ namespace Violet
         "shader_sprite_internal"
     };
 
+    void InitResources()
+    {
+        resource_manager = new ResourceManager();
+    }
+
+    void CloseResources()
+    {
+        resource_manager = nullptr;
+    }
+
     static bool IsShaderReserved(const std::string& id)
     {
         for (int i = 0; i < sizeof(reserved_shaders) / sizeof(const char*); i++) {
@@ -19,6 +29,150 @@ namespace Violet
             }
         }
         return false;
+    }
+
+    Pointer<Shader> GetShader(const std::string& id)
+    {
+        return resource_manager->GetShader(id);
+    }
+
+    const ShaderGroup& GetAllShaders()
+    {
+        return resource_manager->GetAllShaders();
+    }
+
+    void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        if (!IsShaderReserved(id)) {
+            LoadShaderInternal(id, vertex_code, frag_code);
+        }
+    }
+
+    void LoadShaderInternal(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        resource_manager->LoadShader(id, vertex_code, frag_code);
+    }
+
+    void DestroyShader(const std::string& id)
+    {
+        if (!IsShaderReserved(id)) {
+            DestroyShaderInternal(id);
+        }
+    }
+
+    void DestroyShaderInternal(const std::string& id)
+    {
+        resource_manager->DestroyShader(id);
+    }
+
+    void DestroyAllShaders()
+    {
+        resource_manager->DestroyAllShaders();
+    }
+
+    Pointer<Sound> GetSound(const std::string& id)
+    {
+        return resource_manager->GetSound(id);
+    }
+
+    const SoundGroup& GetAllSounds()
+    {
+        return resource_manager->GetAllSounds();
+    }
+
+    void LoadSound(const std::string& id, const std::string& path)
+    {
+        resource_manager->LoadSound(id, path);
+    }
+
+    void DestroySound(const std::string& id)
+    {
+        resource_manager->DestroySound(id);
+    }
+
+    void DestroyAllSounds()
+    {
+        resource_manager->DestroyAllSounds();
+    }
+
+    Pointer<SpriteSheet> GetSpriteSheet(const std::string& id)
+    {
+        return resource_manager->GetSpriteSheet(id);
+    }
+
+    const SpriteSheetGroup& GetAllSpriteSheets()
+    {
+        return resource_manager->GetAllSpriteSheets();
+    }
+
+    void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
+    {
+        resource_manager->LoadSpriteSheet(id, path, texture);
+    }
+
+    void DestroySpriteSheet(const std::string& id)
+    {
+        resource_manager->DestroySpriteSheet(id);
+    }
+
+    void DestroyAllSpriteSheets()
+    {
+        resource_manager->DestroyAllSpriteSheets();
+    }
+
+    Pointer<Texture> GetTexture(const std::string& id)
+    {
+        return resource_manager->GetTexture(id);
+    }
+
+    const TextureGroup& GetAllTextures()
+    {
+        return resource_manager->GetAllTextures();
+    }
+
+    void LoadTexture(const std::string& id, const std::string& path)
+    {
+        resource_manager->LoadTexture(id, path);
+    }
+
+    void LoadTexture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    {
+        resource_manager->LoadTexture(id, data, width, height, bpp);
+    }
+
+    void DestroyTexture(const std::string& id)
+    {
+        resource_manager->DestroyTexture(id);
+    }
+
+    void DestroyAllTextures()
+    {
+        resource_manager->DestroyAllTextures();
+    }
+
+    Pointer<Font> GetFont(const std::string& id)
+    {
+        return resource_manager->GetFont(id);
+    }
+
+    const FontGroup& GetAllFonts()
+    {
+        return resource_manager->GetAllFonts();
+    }
+
+    void LoadFont(const std::string& id, const std::string& path)
+    {
+        resource_manager->LoadFont(id, path);
+    }
+
+    void DestroyFont(const std::string& id)
+    {
+        resource_manager->DestroyFont(id);
+    }
+
+    void DestroyAllFonts()
+    {
+        resource_manager->DestroyAllFonts();
     }
 
     Pointer<Shader> ResourceManager::GetShader(const std::string& id) const
@@ -156,6 +310,16 @@ namespace Violet
         }
     }
 
+    void ResourceManager::LoadTexture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    {
+        if (this->GetTexture(id) == nullptr) {
+            Pointer<Texture> texture(new Texture(id, data, width, height, bpp));
+            if (texture->IsLoaded()) {
+                this->textures.insert({ id, texture });
+            }
+        }
+    }
+
     void ResourceManager::DestroyTexture(const std::string& id)
     {
         const Pointer<Texture>& texture = this->GetTexture(id);
@@ -169,127 +333,40 @@ namespace Violet
         this->textures.clear();
     }
 
-    extern void InitResources()
+    Pointer<Font> ResourceManager::GetFont(const std::string& id) const
     {
-        resource_manager = new ResourceManager();
+        auto font = this->fonts.find(id);
+        if (font != this->fonts.end()) {
+            return font->second;
+        }
+        return Pointer<Font>(nullptr);
     }
 
-    extern void CloseResources()
+    const FontGroup& ResourceManager::GetAllFonts() const
     {
-        resource_manager = nullptr;
+        return this->fonts;
     }
 
-    Pointer<Shader> GetShader(const std::string& id)
+    void ResourceManager::LoadFont(const std::string& id, const std::string& path)
     {
-        return resource_manager->GetShader(id);
-    }
-
-    const ShaderGroup& GetAllShaders()
-    {
-        return resource_manager->GetAllShaders();
-    }
-
-    void LoadShader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
-    {
-        if (!IsShaderReserved(id)) {
-            LoadShaderInternal(id, vertex_code, frag_code);
+        if (this->GetFont(id) == nullptr) {
+            Pointer<Font> font(new Font(id, path));
+            if (font->IsLoaded()) {
+                this->fonts.insert({ id, font });
+            }
         }
     }
 
-    void LoadShaderInternal(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    void ResourceManager::DestroyFont(const std::string& id)
     {
-        resource_manager->LoadShader(id, vertex_code, frag_code);
-    }
-
-    void DestroyShader(const std::string& id)
-    {
-        if (!IsShaderReserved(id)) {
-            DestroyShaderInternal(id);
+        const Pointer<Font>& font = this->GetFont(id);
+        if (font != nullptr) {
+            this->fonts.erase(id);
         }
     }
 
-    void DestroyShaderInternal(const std::string& id)
+    void ResourceManager::DestroyAllFonts()
     {
-        resource_manager->DestroyShader(id);
-    }
-
-    void DestroyAllShaders()
-    {
-        resource_manager->DestroyAllShaders();
-    }
-
-    Pointer<Sound> GetSound(const std::string& id)
-    {
-        return resource_manager->GetSound(id);
-    }
-
-    const SoundGroup& GetAllSounds()
-    {
-        return resource_manager->GetAllSounds();
-    }
-
-    void LoadSound(const std::string& id, const std::string& path)
-    {
-        resource_manager->LoadSound(id, path);
-    }
-
-    void DestroySound(const std::string& id)
-    {
-        resource_manager->DestroySound(id);
-    }
-
-    void DestroyAllSounds()
-    {
-        resource_manager->DestroyAllSounds();
-    }
-
-    Pointer<SpriteSheet> GetSpriteSheet(const std::string& id)
-    {
-        return resource_manager->GetSpriteSheet(id);
-    }
-
-    const SpriteSheetGroup& GetAllSpriteSheets()
-    {
-        return resource_manager->GetAllSpriteSheets();
-    }
-
-    void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
-    {
-        resource_manager->LoadSpriteSheet(id, path, texture);
-    }
-
-    void DestroySpriteSheet(const std::string& id)
-    {
-        resource_manager->DestroySpriteSheet(id);
-    }
-
-    void DestroyAllSpriteSheets()
-    {
-        resource_manager->DestroyAllSpriteSheets();
-    }
-
-    Pointer<Texture> GetTexture(const std::string& id)
-    {
-        return resource_manager->GetTexture(id);
-    }
-
-    const TextureGroup& GetAllTextures()
-    {
-        return resource_manager->GetAllTextures();
-    }
-
-    void LoadTexture(const std::string& id, const std::string& path)
-    {
-        resource_manager->LoadTexture(id, path);
-    }
-
-    void DestroyTexture(const std::string& id)
-    {
-        resource_manager->DestroyTexture(id);
-    }
-
-    void DestroyAllTextures()
-    {
-        resource_manager->DestroyAllTextures();
+        this->fonts.clear();
     }
 }

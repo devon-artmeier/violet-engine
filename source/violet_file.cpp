@@ -6,7 +6,13 @@ namespace Violet
     {
         this->path       = path;
         this->write_mode = write_mode;
+        
         this->file.open(path, std::ios::binary | (write_mode ? std::ios::out : std::ios::in));
+        if (this->file.is_open() && !write_mode) {
+            file.seekg(0, std::ios::end);
+            this->size = file.tellg();
+            file.seekg(0, std::ios::beg);
+        }
     }
     
     File::~File()
@@ -29,6 +35,10 @@ namespace Violet
         return this->file.fail();
     }
 
+    size_t File::GetSize()
+    {
+        return this->size;
+    }
     
     template<typename T>
     static T ReadValue(std::fstream& file, const bool big_endian)
@@ -38,9 +48,12 @@ namespace Violet
 
         for (int i = 0; i < sizeof(T); i++) {
             file.read(&buffer, sizeof(char));
-            if (file.fail()) return 0;
+            if (file.fail()) {
+                return 0;
+            }
             value |= static_cast<T>(buffer & 0xFF) << ((big_endian ? ((sizeof(T) - i) - 1) : i) << 3);
         }
+
         return value;
     }
     
@@ -161,64 +174,92 @@ namespace Violet
         this->file.read(buffer.Raw(), size * sizeof(char));
         return this->file.fail() ? "" : buffer.Raw();
     }
+
+    size_t File::ReadBuffer(void* const buffer, size_t length)
+    {
+        file.read(reinterpret_cast<char* const>(buffer), length);
+        size_t read_count = file.gcount();
+        if (read_count > 0 && file.eof()) {
+            file.clear(file.eofbit);
+        }
+        return read_count;
+    }
     
     template<typename T>
-    static void WriteValue(std::fstream& file, const T value, const bool big_endian)
+    static void WriteValue(std::fstream& file, const T value, const bool big_endian, size_t& size)
     {
         for (int i = 0; i < sizeof(T); i++) {
             char buffer = (value >> ((big_endian ? ((sizeof(T) - i) - 1) : i) << 3)) & 0xFF;
             file.write(&buffer, sizeof(char));
-            if (file.fail()) break;
+            if (file.fail()) {
+                break;
+            }
+            size += sizeof(T);
         }
     }
     
     void File::WriteChar(const char value) 
     {
         file.write(&value, sizeof(char));
+        if (!file.fail()) {
+            size += sizeof(char);
+        }
     }
     
     void File::WriteShortLE(const short value) 
     {
-        WriteValue<short>(this->file, value, false);
+        WriteValue<short>(this->file, value, false, this->size);
     }
     
     void File::WriteIntLE(const int value) 
     {
-        WriteValue<int>(this->file, value, false);
+        WriteValue<int>(this->file, value, false, this->size);
     }
     
     void File::WriteLongLE(const long value) 
     {
-        WriteValue<long>(this->file, value, false);
+        WriteValue<long>(this->file, value, false, this->size);
     }
     
     void File::WriteLongLongLE(const longlong value) 
     {
-        WriteValue<longlong>(this->file, value, false);
+        WriteValue<longlong>(this->file, value, false, this->size);
     }
     
     void File::WriteShortBE(const short value) 
     {
-        WriteValue<short>(this->file, value, true);
+        WriteValue<short>(this->file, value, true, this->size);
     }
     
     void File::WriteIntBE(const int value) 
     {
-        WriteValue<int>(this->file, value, true);
+        WriteValue<int>(this->file, value, true, this->size);
     }
     
     void File::WriteLongBE(const long value) 
     {
-        WriteValue<long>(this->file, value, true);
+        WriteValue<long>(this->file, value, true, this->size);
     }
     
     void File::WriteLongLongBE(const longlong value) 
     {
-        WriteValue<longlong>(this->file, value, true);
+        WriteValue<longlong>(this->file, value, true, this->size);
     }
     
     void File::WriteString(const std::string& str, const bool terminate) 
     {
-        file.write(str.c_str(), (str.length() + (terminate ? 1 : 0)) * sizeof(char));
+        size_t length = (str.length() + (terminate ? 1 : 0)) * sizeof(char);
+        file.write(str.c_str(), length);
+        if (!file.fail()) {
+            this->size += length;
+        }
+    }
+
+    void File::WriteBuffer(const void* const buffer, size_t length)
+    {
+        file.write(reinterpret_cast<const char* const>(buffer), length);
+        if (!file.fail()) {
+            this->size += length;
+        }
     }
 }

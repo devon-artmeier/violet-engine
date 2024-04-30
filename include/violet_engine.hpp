@@ -12,6 +12,7 @@
 #include "violet_types.hpp"
 #include "violet_audio.hpp"
 #include "violet_file.hpp"
+#include "violet_font.hpp"
 #include "violet_math.hpp"
 #include "violet_message.hpp"
 #include "violet_resource.hpp"

@@ -10,13 +10,15 @@
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"
 #include "violet_matrix_internal.hpp"
-#include "violet_mesh_internal.hpp"
 #include "violet_message_internal.hpp"
+#include "violet_video_internal.hpp"
+#include "violet_window_internal.hpp"
+
+#include "violet_mesh_internal.hpp"
 #include "violet_shader_internal.hpp"
 #include "violet_sprite_internal.hpp"
 #include "violet_texture_internal.hpp"
-#include "violet_video_internal.hpp"
-#include "violet_window_internal.hpp"
+#include "violet_font_internal.hpp"
 #include "violet_resource_internal.hpp"
 
 #endif

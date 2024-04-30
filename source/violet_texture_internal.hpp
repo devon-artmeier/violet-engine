@@ -7,6 +7,7 @@ namespace Violet
     {
         public:
             Texture(const std::string& id, const std::string& path);
+            Texture(const std::string& id, const void* const data, const int width, const int height, const uint bpp);
             ~Texture();
 
             bool          IsLoaded () const;

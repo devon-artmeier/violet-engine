@@ -7,6 +7,7 @@ namespace Violet
     typedef std::unordered_map<std::string, Pointer<Sound>>       SoundGroup;
     typedef std::unordered_map<std::string, Pointer<SpriteSheet>> SpriteSheetGroup;
     typedef std::unordered_map<std::string, Pointer<Texture>>     TextureGroup;
+    typedef std::unordered_map<std::string, Pointer<Font>>        FontGroup;
 
     class ResourceManager
     {
@@ -29,14 +30,21 @@ namespace Violet
             Pointer<Texture>        GetTexture            (const std::string& id) const;
             const TextureGroup&     GetAllTextures        () const;
             void                    LoadTexture           (const std::string& id, const std::string& path);
+            void                    LoadTexture           (const std::string& id, const void* const data, const int width, const int height, const uint bpp);
             void                    DestroyTexture        (const std::string& id);
             void                    DestroyAllTextures    ();
+            Pointer<Font>           GetFont               (const std::string& id) const;
+            const FontGroup&        GetAllFonts           () const;
+            void                    LoadFont              (const std::string& id, const std::string& path);
+            void                    DestroyFont           (const std::string& id);
+            void                    DestroyAllFonts       ();
 
         private:
             ShaderGroup      shaders;
             SoundGroup       sounds;
             SpriteSheetGroup sprite_sheets;
             TextureGroup     textures;
+            FontGroup        fonts;
     };
 
     extern void                    InitResources        ();
@@ -49,8 +57,11 @@ namespace Violet
     extern const SoundGroup&       GetAllSounds         ();
     extern Pointer<SpriteSheet>    GetSpriteSheet       (const std::string& id);
     extern const SpriteSheetGroup& GetAllSpriteSheets   ();
+    extern void                    LoadTexture          (const std::string& id, const void* const data, const int width, const int height, const uint bpp);
     extern Pointer<Texture>        GetTexture           (const std::string& id);
     extern const TextureGroup&     GetAllTextures       ();
+    extern Pointer<Font>           GetFont              (const std::string& id);
+    extern const FontGroup&        GetAllFonts          ();
 }
 
 #endif // VIOLET_ENGINE_RESOURCE_INTERNAL_HPP

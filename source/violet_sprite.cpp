@@ -2,15 +2,15 @@
 
 namespace Violet
 {
-    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, const float x, const float y)
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y)
     {
-        DrawSprite(sheet_id, layer, frame, x, y, 1.0f, 1.0f, 0.0f);
+        DrawSprite(sprite_sheet_id, layer, frame, x, y, 1.0f, 1.0f, 0.0f);
     }
 
-    void DrawSprite(const std::string& sheet_id, const uint layer, const uint frame, const float x, const float y,
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y,
                     const float x_scale, const float y_scale, const float angle)
     {
-        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sheet_id);
+        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
         if (sprite_sheet != nullptr) {
             sprite_sheet->QueueDraw(layer, { frame, x, y, x_scale, y_scale, angle });
         }
@@ -185,14 +185,16 @@ namespace Violet
         return this->loaded;
     }
 
-    void SpriteSheet::QueueDraw(const uint layer, const SpriteDraw& sprite)
+    void SpriteSheet::QueueDraw(const uint layer, const SpriteDraw& draw)
     {
-        if (layer < 256 && sprite.frame < this->count) {
-            this->draw_queue[layer].push_back(sprite);
-        } else {
+        if (layer < 256) {
+            if (draw.frame < this->count) {
+                this->draw_queue[layer].push_back(draw);
+            } else {
 #ifdef VIOLET_DEBUG
-            LogError(this->id + ": Attempted to draw invalid sprite " + std::to_string(sprite.frame));
+                LogError(this->id + ": Attempted to draw invalid sprite " + std::to_string(draw.frame));
 #endif
+            }
         }
     }
     
@@ -200,17 +202,16 @@ namespace Violet
     {
         if (layer < 256) {
             for (int i = 0; i < this->draw_queue[layer].size(); i++) {
-                const SpriteDraw& sprite = this->draw_queue[layer][i];
+                const SpriteDraw& draw = this->draw_queue[layer][i];
                 
                 AttachShader("shader_sprite_internal");
                 SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
                 SetShaderMatrix4x4("inTransform", false, 1,
-                    glm::value_ptr(Get2dTransformMatrix(sprite.x, sprite.y, sprite.x_scale, sprite.y_scale, sprite.angle)));
+                    glm::value_ptr(Get2dTransformMatrix(draw.x, draw.y, draw.x_scale, draw.y_scale, draw.angle)));
                 SetShaderTexture(this->texture, 0);
 
-                this->mesh->DrawPartial(2, sprite.frame * 2);
+                this->mesh->DrawPartial(2, draw.frame * 2);
             }
-
             this->draw_queue[layer].clear();
         }
     }

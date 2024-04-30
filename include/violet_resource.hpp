@@ -15,6 +15,9 @@ namespace Violet
     extern void LoadTexture           (const std::string& id, const std::string& path);
     extern void DestroyTexture        (const std::string& id);
     extern void DestroyAllTextures    ();
+    extern void LoadFont              (const std::string& id, const std::string& path);
+    extern void DestroyFont           (const std::string& id);
+    extern void DestroyAllFonts       ();
 }
 
 #endif // VIOLET_ENGINE_RESOURCE_HPP

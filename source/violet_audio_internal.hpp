@@ -10,6 +10,9 @@
 #ifdef PlaySound
 #undef PlaySound
 #endif
+#ifdef DrawText
+#undef DrawText
+#endif
 
 namespace Violet
 {

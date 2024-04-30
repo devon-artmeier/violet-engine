@@ -7,6 +7,7 @@ list(APPEND VIOLET_SRC
     "source/violet_audio_miniaudio.c"
     "source/violet_core.cpp"
     "source/violet_file.cpp"
+    "source/violet_font.cpp"
     "source/violet_main.cpp"
     "source/violet_math.cpp"
     "source/violet_mesh.cpp"

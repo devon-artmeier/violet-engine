@@ -12,6 +12,7 @@ namespace Violet
             bool        IsOpen          () const;
             bool        AtEnd           () const;
             bool        Failed          () const;
+            size_t      GetSize         ();
             char        ReadChar        ();
             uchar       ReadUChar       ();
             schar       ReadSChar       ();
@@ -32,6 +33,7 @@ namespace Violet
             longlong    ReadLongLongBE  ();
             ulonglong   ReadULongLongBE ();
             std::string ReadString      (const uint size = 0);
+            size_t      ReadBuffer      (void* const buffer, size_t length);
             void        WriteChar       (const char value);
             void        WriteShortLE    (const short value);
             void        WriteIntLE      (const int value);
@@ -42,11 +44,13 @@ namespace Violet
             void        WriteLongBE     (const long value);
             void        WriteLongLongBE (const longlong value);
             void        WriteString     (const std::string& str, const bool terminate = true);
+            void        WriteBuffer     (const void* const buffer, size_t length);
 
         private:
             std::fstream file;
             std::string  path      { "" };
             bool         write_mode{ false };
+            size_t       size      { 0 };
     };
 
 }

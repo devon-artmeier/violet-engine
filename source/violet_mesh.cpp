@@ -70,52 +70,56 @@ namespace Violet
 
     void Mesh::ResizeVertexBuffer(const uint count, const uint offset)
     {
-        if (count > 0) {
-            float* new_buffer = new float[count * this->vertex_stride];
-            memset(new_buffer, 0, count * this->vertex_stride * sizeof(float));
-            if (this->vertex_buffer != nullptr) {
-                if (offset < count) {
-                    uint space = ((count - offset) > this->vertex_count) ? this->vertex_count : (count - offset);
-                    memcpy(new_buffer + (offset * this->vertex_stride), this->vertex_buffer.Raw(), 
-                           space * this->vertex_stride * sizeof(float));
+        if (count != this->vertex_count) {
+            if (count > 0) {
+                float* new_buffer = new float[count * this->vertex_stride];
+                memset(new_buffer, 0, count * this->vertex_stride * sizeof(float));
+                if (this->vertex_buffer != nullptr) {
+                    if (offset < count) {
+                        uint space = ((count - offset) > this->vertex_count) ? this->vertex_count : (count - offset);
+                        memcpy(new_buffer + (offset * this->vertex_stride), this->vertex_buffer.Raw(), 
+                               space * this->vertex_stride * sizeof(float));
+                    }
                 }
+                this->vertex_buffer = new_buffer;
+            } else if (this->vertex_buffer != nullptr) {
+                this->vertex_buffer = nullptr;
             }
-            this->vertex_buffer = new_buffer;
-        } else if (this->vertex_buffer != nullptr) {
-            this->vertex_buffer = nullptr;
-        }
         
-        this->vertex_count = count;
+            this->vertex_count = count;
 
-        glBindVertexArray(this->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-        glBufferData(GL_ARRAY_BUFFER, this->GetVertexBufferLengthBytes(), this->vertex_buffer.Raw(),
-                     this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            glBindVertexArray(this->vao);
+            glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+            glBufferData(GL_ARRAY_BUFFER, this->GetVertexBufferLengthBytes(), this->vertex_buffer.Raw(),
+                         this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        }
     }
 
     void Mesh::ResizeElementBuffer(const uint count, const uint offset)
     {
-        if (count > 0) {
-            uint* new_buffer = new uint[count];
-            memset(new_buffer, 0, count * sizeof(uint));
-            if (this->element_buffer != nullptr) {
-                if (offset < count) {
-                    uint space = ((count - offset) > this->element_count) ? this->element_count : (count - offset);
-                    memcpy(new_buffer + offset, this->element_buffer.Raw(), space * sizeof(uint));
+        if (this->element_count != count) {
+            if (count > 0) {
+                uint* new_buffer = new uint[count];
+                memset(new_buffer, 0, count * sizeof(uint));
+                if (this->element_buffer != nullptr) {
+                    if (offset < count) {
+                        uint space = ((count - offset) > this->element_count) ? this->element_count : (count - offset);
+                        memcpy(new_buffer + offset, this->element_buffer.Raw(), space * sizeof(uint));
+                    }
                 }
+                this->element_buffer = new_buffer;
+            } else if (this->element_buffer != nullptr) {
+                this->element_buffer = nullptr;
             }
-            this->element_buffer = new_buffer;
-        } else if (this->element_buffer != nullptr) {
-            this->element_buffer = nullptr;
+
+            this->element_count = count;
+
+            glBindVertexArray(this->vao);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer.Raw(),
+                         this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            glBindVertexArray(0);
         }
-
-        this->element_count = count;
-
-        glBindVertexArray(this->vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->GetElementBufferLengthBytes(), this->element_buffer.Raw(),
-                     this->dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-        glBindVertexArray(0);
     }
     
     void Mesh::AddVertexBufferSpace(const uint count, const bool before)

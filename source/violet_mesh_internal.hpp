@@ -39,10 +39,10 @@ namespace Violet
             uint           attribute_count  { 0 };
             Pointer<uint>  attribute_lengths{ nullptr };
             Pointer<float> vertex_buffer    { nullptr };
-            uint           vertex_count     { 0 };
+            uint           vertex_count     { 0xFFFFFFFF };
             uint           vertex_stride    { 0 };
             Pointer<uint>  element_buffer   { nullptr };
-            uint           element_count    { 0 };
+            uint           element_count    { 0xFFFFFFFF };
             GLuint         vbo              { 0 };
             GLuint         ebo              { 0 };
             GLuint         vao              { 0 };

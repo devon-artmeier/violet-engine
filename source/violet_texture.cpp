@@ -118,6 +118,50 @@ namespace Violet
 #endif
     }
 
+    Texture::Texture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    {
+        this->id = id;
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Loading");
+#endif
+
+        this->width  = width;
+        this->height = height;
+
+        GLenum format = 0;
+        switch (bpp) {
+            case 1:
+                format = GL_RED;
+                break;
+            case 2:
+                format = GL_RG;
+                break;
+            case 3:
+                format = GL_RGB;
+                break;
+            case 4:
+                format = GL_RGBA;
+                break;
+            default:
+#ifdef VIOLET_DEBUG
+                LogError(this->id + ": Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
+#endif
+                return;
+        }
+
+        glGenTextures(1, &this->gl_id);
+        this->Bind();
+        glTexImage2D(GL_TEXTURE_2D, 0, format, this->width, this->height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        this->loaded = true;
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Loaded successfully");
+#endif
+    }
+
     Texture::~Texture()
     {
         if (this->loaded) {
