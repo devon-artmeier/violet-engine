@@ -11,6 +11,8 @@ namespace Violet
         InitResources();
         InitWindow();
         InitVideo();
+        InitSprites();
+        InitText();
         InitAudio();
 
         GameInit();
@@ -21,6 +23,8 @@ namespace Violet
         GameClose();
 
         CloseAudio();
+        CloseText();
+        CloseSprites();
         CloseVideo();
         CloseWindow();
         CloseResources();

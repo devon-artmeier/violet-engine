@@ -18,7 +18,7 @@
 #include "violet_shader_internal.hpp"
 #include "violet_sprite_internal.hpp"
 #include "violet_texture_internal.hpp"
-#include "violet_font_internal.hpp"
+#include "violet_text_internal.hpp"
 #include "violet_resource_internal.hpp"
 
 #endif

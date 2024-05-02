@@ -2,6 +2,46 @@
 
 namespace Violet
 {
+    static Pointer<Shader> sprite_shader{ nullptr };
+    
+    static const char* sprite_shader_vertex =
+        "#version 330 core\n"
+        "\n"
+        "layout (location = 0) in vec2 inVecCoord;\n"
+        "layout (location = 1) in vec2 inTexCoord;\n"
+        "\n"
+        "uniform mat4 inProjection;\n"
+        "uniform mat4 inTransform;\n"
+        "out vec2 fragTexCoord;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	gl_Position = inProjection * inTransform * vec4(inVecCoord, 0.0f, 1.0f);\n"
+        "	fragTexCoord = inTexCoord;\n"
+        "}";
+
+    static const char* sprite_shader_frag =
+        "#version 330 core\n"
+        "\n"
+        "in vec2 fragTexCoord;\n"
+        "uniform sampler2D fragTexture;\n"
+        "out vec4 outColor;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	outColor = texture(fragTexture, fragTexCoord);\n"
+        "}";
+
+    void InitSprites()
+    {
+        sprite_shader = new Shader("[INTERNAL] shader_sprite", sprite_shader_vertex, sprite_shader_frag);
+    }
+
+    void CloseSprites()
+    {
+        sprite_shader = nullptr;
+    }
+
     void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y)
     {
         DrawSprite(sprite_sheet_id, layer, frame, x, y, 1.0f, 1.0f, 0.0f);
@@ -204,7 +244,7 @@ namespace Violet
             for (int i = 0; i < this->draw_queue[layer].size(); i++) {
                 const SpriteDraw& draw = this->draw_queue[layer][i];
                 
-                AttachShader("shader_sprite_internal");
+                sprite_shader->Attach();
                 SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
                 SetShaderMatrix4x4("inTransform", false, 1,
                     glm::value_ptr(Get2dTransformMatrix(draw.x, draw.y, draw.x_scale, draw.y_scale, draw.angle)));

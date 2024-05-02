@@ -1,5 +1,5 @@
-#ifndef VIOLET_ENGINE_FONT_INTERNAL_HPP
-#define VIOLET_ENGINE_FONT_INTERNAL_HPP
+#ifndef VIOLET_ENGINE_TEXT_INTERNAL_HPP
+#define VIOLET_ENGINE_TEXT_INTERNAL_HPP
 
 #include <stb_truetype.h>
 
@@ -30,10 +30,13 @@ namespace Violet
             Pointer<Mesh>                                       mesh           { nullptr };
 			std::unordered_map<uint, Pointer<stbtt_packedchar>> packs;
 			std::unordered_map<uint, std::string>               textures;
+			std::unordered_map<uint, float>	                    heights;
 			std::vector<FontDraw>                               draw_queue[256];
 	};
 
+	extern void InitText     ();
+	extern void CloseText    ();
 	extern void DrawTextLayer(uint layer);
 }
 
-#endif // VIOLET_ENGINE_FONT_INTERNAL_HPP
+#endif // VIOLET_ENGINE_TEXT_INTERNAL_HPP

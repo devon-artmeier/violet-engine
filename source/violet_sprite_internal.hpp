@@ -31,6 +31,8 @@ namespace Violet
             std::vector<SpriteDraw> draw_queue[256];
     };
 
+    extern void InitSprites();
+    extern void CloseSprites();
     extern void DrawSpriteLayer(uint layer);
 }
 
