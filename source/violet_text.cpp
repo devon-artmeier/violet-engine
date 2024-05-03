@@ -126,7 +126,7 @@ namespace Violet
             float              min_y     = 0;
             float              max_y     = 0;
 
-            for (int i = 0; i < 256; i++) {
+            for (int i = 32; i < 127; i++) {
                 stbtt_GetPackedQuad(this->packs[size].Raw(), AtlasWidth, AtlasHeight, i, &char_x, &char_y, &char_quad, 0);
 
                 if (char_quad.y0 < min_y) {
@@ -191,7 +191,7 @@ namespace Violet
                 float              char_x       = 0;
                 float              char_y       = 0;
                 float              x_off        = 0;
-                float              y_off        = 0;
+                float              y_off        = this->heights[draw.size];
                 bool               new_line     = false;
                 int                element_id   = 0;
                 stbtt_aligned_quad char_quad    = { 0 };
