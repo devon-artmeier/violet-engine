@@ -17,6 +17,7 @@ list(APPEND VIOLET_SRC
     "source/violet_sprite.cpp"
     "source/violet_text.cpp"
     "source/violet_texture.cpp"
+    "source/violet_vector.cpp"
     "source/violet_video.cpp"
     "source/violet_window.cpp"
     "dependencies/stb/stb_vorbis.c"
