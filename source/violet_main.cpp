@@ -1,4 +1,5 @@
 #include "violet_engine_internal.hpp"
+#include <SDL3/SDL_main.h>
 
 #if defined(_DEBUG) && defined(_MSC_VER)
 #define _CRTDBG_MAP_ALLOC
