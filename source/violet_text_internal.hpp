@@ -8,8 +8,7 @@ namespace Violet
 	struct FontDraw {
 		std::string text;
 		uint        size;
-		float       x;
-		float       y;
+		Vector2D    pos;
 		Color       color;
 	};
 

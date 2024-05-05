@@ -42,17 +42,12 @@ namespace Violet
         sprite_shader = nullptr;
     }
 
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y)
-    {
-        DrawSprite(sprite_sheet_id, layer, frame, x, y, 1.0f, 1.0f, 0.0f);
-    }
-
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const float x, const float y,
-                    const float x_scale, const float y_scale, const float angle)
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2D& pos,
+                    const float angle, const Vector2D& scale)
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
         if (sprite_sheet != nullptr) {
-            sprite_sheet->QueueDraw(layer, { frame, x, y, x_scale, y_scale, angle });
+            sprite_sheet->QueueDraw(layer, { frame, pos, Math::Radians(angle), scale});
         }
     }
 
@@ -245,9 +240,8 @@ namespace Violet
                 const SpriteDraw& draw = this->draw_queue[layer][i];
                 
                 sprite_shader->Attach();
-                SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
-                SetShaderMatrix4x4("inTransform", false, 1,
-                    glm::value_ptr(Get2dTransformMatrix(draw.x, draw.y, draw.x_scale, draw.y_scale, draw.angle)));
+                SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
+                SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, draw.angle, draw.scale).data);
                 SetShaderTexture(this->texture, 0);
 
                 this->mesh->DrawPartial(2, draw.frame * 2);

@@ -8,9 +8,6 @@
 [submodule "dependencies/glad"]
 	path = dependencies/glad
 	url = https://github.com/devon-artmeier/glad-opengl-3.2.git
-[submodule "dependencies/glm"]
-	path = dependencies/glm
-	url = https://github.com/icaven/glm.git
 [submodule "dependencies/miniaudio"]
 	path = dependencies/miniaudio
 	url = https://github.com/mackron/miniaudio.git

@@ -4,12 +4,10 @@
 namespace Violet
 {
     struct SpriteDraw {
-        uint  frame;
-        float x;
-        float y;
-        float x_scale;
-        float y_scale;
-        float angle;
+        uint     frame;
+        Vector2D pos;
+        float    angle;
+        Vector2D scale;
     };
 
     class SpriteSheet

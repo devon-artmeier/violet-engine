@@ -2,11 +2,11 @@
 
 namespace Violet
 {
-    static bool multisampling{ false };
+    static bool      multisampling{ false };
+    static Matrix4x4 projection_2d;
 
     void InitVideo()
     {
-        UpdateProjectionMatrices();
         EnableVideoMultisampling();
 
         glEnable(GL_BLEND);
@@ -20,6 +20,10 @@ namespace Violet
 
     void UpdateVideo()
     {
+        projection_2d = OrthoMatrix(Vector2D(0.0f, static_cast<float>(GetWindowWidthPixels())),
+                        Vector2D(0.0f, static_cast<float>(GetWindowHeightPixels())));
+        glViewport(0, 0, static_cast<float>(GetWindowWidthPixels()), static_cast<float>(GetWindowHeightPixels()));
+
         glClearColor(0, 1, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         
@@ -50,5 +54,10 @@ namespace Violet
     bool IsVideoMultisampled()
     {
         return multisampling;
+    }
+
+    Matrix4x4 Get2dProjectionMatrix()
+    {
+        return projection_2d;
     }
 }

@@ -55,11 +55,11 @@ namespace Violet
         text_shader = nullptr;
     }
 
-    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const float x, const float y, const Color color)
+    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2D& pos, const Color color)
     {
         Pointer<Font> font = GetFont(font_id);
         if (font != nullptr) {
-            font->QueueDraw(layer, { text, size, x, y, color });
+            font->QueueDraw(layer, { text, size, pos, color });
         }
     }
 
@@ -267,9 +267,8 @@ namespace Violet
                 this->mesh->RefreshElementBuffer();
 
                 text_shader->Attach();
-                SetShaderMatrix4x4("inProjection", false, 1, glm::value_ptr(Get2dProjectionMatrix()));
-                SetShaderMatrix4x4("inTransform", false, 1,
-                    glm::value_ptr(Get2dTransformMatrix(draw.x, draw.y, 1.0f, 1.0f, 0.0f)));
+                SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
+                SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2D(1.0f)).data);
                 SetShaderTexture(this->textures[draw.size], 0);
 
                 this->mesh->Draw();

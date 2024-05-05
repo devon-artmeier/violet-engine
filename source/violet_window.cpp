@@ -104,19 +104,16 @@ namespace Violet
     void SetWindowWidth(const int width)
     {
         SDL_SetWindowSize(window, width, GetWindowHeight());
-        UpdateProjectionMatrices();
     }
     
     void SetWindowHeight(const int height)
     {
         SDL_SetWindowSize(window, GetWindowWidth(), height);
-        UpdateProjectionMatrices();
     }
     
     void SetWindowSize(const int width, const int height)
     {
         SDL_SetWindowSize(window, width, height);
-        UpdateProjectionMatrices();
     }
     
     void SwapWindowBuffer()

@@ -10,13 +10,16 @@ list(APPEND VIOLET_SRC
     "source/violet_main.cpp"
     "source/violet_math.cpp"
     "source/violet_mesh.cpp"
-    "source/violet_matrix.cpp"
+    "source/violet_matrix_4x4.cpp"
     "source/violet_message.cpp"
     "source/violet_resource.cpp"
     "source/violet_shader.cpp"
     "source/violet_sprite.cpp"
     "source/violet_text.cpp"
     "source/violet_texture.cpp"
+    "source/violet_vector_2d.cpp"
+    "source/violet_vector_3d.cpp"
+    "source/violet_vector_4d.cpp"
     "source/violet_video.cpp"
     "source/violet_window.cpp"
     "dependencies/stb/stb_vorbis.c"
@@ -33,15 +36,6 @@ elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/SDL/CMakeLists.txt")
     add_subdirectory("dependencies/SDL")
     target_include_directories(violet-engine PRIVATE "dependencies/SDL/include")
     target_link_libraries(violet-engine PRIVATE SDL3::SDL3)
-endif()
-
-find_package(glm QUIET)
-if (GLM_FOUND)
-    target_link_libraries(violet-engine PRIVATE glm::glm)
-elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/glm/CMakeLists.txt")
-    add_subdirectory("dependencies/glm")
-    target_include_directories(violet-engine PRIVATE "dependencies/glm")
-    target_link_libraries(violet-engine PRIVATE glm::glm)
 endif()
 
 target_include_directories(violet-engine PRIVATE "include")

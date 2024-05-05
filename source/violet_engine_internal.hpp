@@ -9,7 +9,6 @@
 #include "violet_audio_internal.hpp"
 #include "violet_core_internal.hpp"
 #include "violet_game_internal.hpp"
-#include "violet_matrix_internal.hpp"
 #include "violet_message_internal.hpp"
 #include "violet_video_internal.hpp"
 #include "violet_window_internal.hpp"

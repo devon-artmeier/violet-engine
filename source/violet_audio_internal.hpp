@@ -13,6 +13,12 @@
 #ifdef DrawText
 #undef DrawText
 #endif
+#ifdef near
+#undef near
+#endif
+#ifdef far
+#undef far
+#endif
 
 namespace Violet
 {
