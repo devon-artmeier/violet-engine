@@ -4,7 +4,10 @@
 namespace Violet
 {
     typedef void (*ShaderCallback)(void* user_data);
-
+    
+    extern void LoadShader          (const std::string& id, const std::string& vertex_code, const std::string& frag_code);
+    extern void DestroyShader       (const std::string& id);
+    extern void DestroyAllShaders   ();
     extern void SetShaderFloat      (const std::string& name, const float value);
     extern void SetShaderInt        (const std::string& name, const int value);
     extern void SetShaderUInt       (const std::string& name, const uint value);

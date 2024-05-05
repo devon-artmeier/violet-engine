@@ -10,11 +10,12 @@ namespace Violet
 
         InitWindow();
         InitVideo();
-        InitShaderGroup();
+        InitAudio();
+
         InitTextureGroup();
+        InitShaderGroup();
         InitSpriteSheetGroup();
         InitFontGroup();
-        InitAudio();
 
         GameInit();
     }
@@ -23,11 +24,12 @@ namespace Violet
     {
         GameClose();
 
-        CloseAudio();
         DestroyFontGroup();
         DestroySpriteSheetGroup();
-        DestroyTextureGroup();
         DestroyShaderGroup();
+        DestroyTextureGroup();
+
+        CloseAudio();
         CloseVideo();
         CloseWindow();
 

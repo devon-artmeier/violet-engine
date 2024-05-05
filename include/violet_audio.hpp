@@ -3,6 +3,9 @@
 
 namespace Violet
 {
+    extern void      LoadSound        (const std::string& id, const std::string& path);
+    extern void      DestroySound     (const std::string& id);
+    extern void      DestroyAllSounds ();
     extern void      PlaySound        (const std::string& id);
     extern void      LoopSound        (const std::string& id);
     extern void      StopSound        (const std::string& id);
