@@ -2,8 +2,6 @@
 
 namespace Violet
 {
-    static Pointer<Shader> sprite_shader{ nullptr };
-    
     static const char* sprite_shader_vertex =
         "#version 330 core\n"
         "\n"
@@ -32,33 +30,14 @@ namespace Violet
         "	outColor = texture(fragTexture, fragTexCoord);\n"
         "}";
 
-    void InitSprites()
+    class SpriteSheetGroup
     {
-        sprite_shader = new Shader("[INTERNAL] shader_sprite", sprite_shader_vertex, sprite_shader_frag);
-    }
-
-    void CloseSprites()
-    {
-        sprite_shader = nullptr;
-    }
-
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2D& pos,
-                    const float angle, const Vector2D& scale)
-    {
-        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
-        if (sprite_sheet != nullptr) {
-            sprite_sheet->QueueDraw(layer, { frame, pos, Math::Radians(angle), scale});
-        }
-    }
-
-    void DrawSpriteLayer(uint layer)
-    {
-        if (layer < 256) {
-            for (auto sprite_sheet : GetAllSpriteSheets()) {
-                sprite_sheet.second->DrawLayer(layer);
-            }
-        }
-    }
+        public:
+            std::unordered_map<std::string, Pointer<SpriteSheet>> sprite_sheets;
+    };
+    
+    static Pointer<SpriteSheetGroup> sprite_sheet_group{ nullptr };
+    static Pointer<Shader>           sprite_shader     { nullptr };
 
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
@@ -210,43 +189,91 @@ namespace Violet
 
     SpriteSheet::~SpriteSheet()
     {
+        if (this->loaded) {
 #ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Destroyed");
+            LogInfo(this->id + ": Destroyed");
 #endif
+        }
     }
 
-    bool SpriteSheet::IsLoaded() const
+    void InitSpriteSheetGroup()
     {
-        return this->loaded;
+        sprite_shader      = new Shader("Default Sprite Shader", sprite_shader_vertex, sprite_shader_frag);
+        sprite_sheet_group = new SpriteSheetGroup();
     }
 
-    void SpriteSheet::QueueDraw(const uint layer, const SpriteDraw& draw)
+    void DestroySpriteSheetGroup()
     {
-        if (layer < 256) {
-            if (draw.frame < this->count) {
-                this->draw_queue[layer].push_back(draw);
+        sprite_sheet_group = nullptr;
+        sprite_shader      = nullptr;
+    }
+
+    static Pointer<SpriteSheet> GetSpriteSheet(const std::string& id)
+    {
+        auto sprite_sheet = sprite_sheet_group->sprite_sheets.find(id);
+        if (sprite_sheet != sprite_sheet_group->sprite_sheets.end()) {
+            return sprite_sheet->second;
+        }
+        return nullptr;
+    }
+
+    void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
+    {
+        if (GetSpriteSheet(id) == nullptr) {
+            Pointer<SpriteSheet> sprite_sheet = new SpriteSheet(id, path, texture);
+            if (sprite_sheet->loaded) {
+                sprite_sheet_group->sprite_sheets.insert({ id, sprite_sheet });
+            }
+        }
+    }
+
+    void DestroySpriteSheet(const std::string& id)
+    {
+        const Pointer<SpriteSheet>& sprite_sheet = GetSpriteSheet(id);
+        if (sprite_sheet != nullptr) {
+            sprite_sheet_group->sprite_sheets.erase(id);
+        }
+    }
+
+    void DestroyAllSpriteSheets()
+    {
+        sprite_sheet_group->sprite_sheets.clear();
+    }
+
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2D& pos,
+                    const float angle, const Vector2D& scale)
+    {
+        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
+        if (sprite_sheet != nullptr) {
+            if (frame < sprite_sheet->count) {
+                sprite_sheet->draw_queue[layer].push_back({ frame, pos, Math::Radians(angle), scale });
             } else {
 #ifdef VIOLET_DEBUG
-                LogError(this->id + ": Attempted to draw invalid sprite " + std::to_string(draw.frame));
+                LogError(sprite_sheet->id + ": Attempted to draw invalid sprite " + std::to_string(frame));
 #endif
             }
         }
     }
-    
-    void SpriteSheet::DrawLayer(const uint layer)
+
+    void DrawSpriteLayer(uint layer)
     {
         if (layer < 256) {
-            for (int i = 0; i < this->draw_queue[layer].size(); i++) {
-                const SpriteDraw& draw = this->draw_queue[layer][i];
-                
-                sprite_shader->Attach();
-                SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, draw.angle, draw.scale).data);
-                SetShaderTexture(this->texture, 0);
+            for (auto sprite_sheet_pair : sprite_sheet_group->sprite_sheets) {
+                Pointer<SpriteSheet> sprite_sheet = sprite_sheet_pair.second;
 
-                this->mesh->DrawPartial(2, draw.frame * 2);
+                for (int i = 0; i < sprite_sheet->draw_queue[layer].size(); i++) {
+                    const SpriteDraw& draw = sprite_sheet->draw_queue[layer][i];
+                
+                    sprite_shader->Attach();
+                    SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
+                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, draw.angle, draw.scale).data);
+                    SetShaderTexture(sprite_sheet->texture, 0);
+
+                    sprite_sheet->mesh->DrawPartial(2, draw.frame * 2);
+                }
+
+                sprite_sheet->draw_queue[layer].clear();
             }
-            this->draw_queue[layer].clear();
         }
     }
 }

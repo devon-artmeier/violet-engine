@@ -14,10 +14,9 @@
 #include "violet_window_internal.hpp"
 
 #include "violet_mesh_internal.hpp"
+#include "violet_texture_internal.hpp"
 #include "violet_shader_internal.hpp"
 #include "violet_sprite_internal.hpp"
-#include "violet_texture_internal.hpp"
 #include "violet_text_internal.hpp"
-#include "violet_resource_internal.hpp"
 
 #endif

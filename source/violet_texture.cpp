@@ -5,83 +5,34 @@
 
 namespace Violet
 {
-    static GLuint current_texture{ 0 };
+    class TextureGroup
+    {
+        public:
+            typedef std::unordered_map<std::string, Pointer<Texture>> TextureMap;
 
-    void BindTexture(const std::string& id)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            texture->Bind();
-        }
-    }
+            TextureMap textures;
+            GLuint     current_texture{ 0 };
+    };
 
-    int GetTextureWidth(const std::string& id)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->GetWidth();
-        }
-        return 0;
-    }
+    static Pointer<TextureGroup> texture_group{ nullptr };
 
-    int GetTextureHeight(const std::string& id)
+    static GLenum GetBppFormat(const uint bpp)
     {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->GetHeight();
+        switch (bpp) {
+            case 1:
+                return GL_RED;
+            case 2:
+                return GL_RG;
+            case 3:
+                return GL_RGB;
+            case 4:
+                return GL_RGBA;
         }
-        return 0;
-    }
 
-    TextureFilter GetTextureFilter(const std::string& id)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->GetFilter();
-        }
-        return TextureFilter::Nearest;
-    }
-    
-    void SetTextureFilter(const std::string& id, const TextureFilter filter)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            texture->SetFilter(filter);
-        }
-    }
-
-    TextureWrap GetTextureWrapX(const std::string& id)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->GetWrapX();
-        }
-        return TextureWrap::Repeat;
-    }
-
-    TextureWrap GetTextureWrapY(const std::string& id)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->GetWrapY();
-        }
-        return TextureWrap::Repeat;
-    }
-    
-    void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            texture->SetWrapX(wrap);
-        }
-    }
-    
-    void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
-    {
-        const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            texture->SetWrapY(wrap);
-        }
+#ifdef VIOLET_DEBUG
+        LogError("Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
+#endif
+        return GL_RGBA;
     }
 
     Texture::Texture(const std::string& id, const std::string& path)
@@ -106,11 +57,13 @@ namespace Violet
 
         glGenTextures(1, &this->gl_id);
         this->Bind();
+
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
 
         loaded = true;
 #ifdef VIOLET_DEBUG
@@ -128,30 +81,12 @@ namespace Violet
         this->width  = width;
         this->height = height;
 
-        GLenum format = 0;
-        switch (bpp) {
-            case 1:
-                format = GL_RED;
-                break;
-            case 2:
-                format = GL_RG;
-                break;
-            case 3:
-                format = GL_RGB;
-                break;
-            case 4:
-                format = GL_RGBA;
-                break;
-            default:
-#ifdef VIOLET_DEBUG
-                LogError(this->id + ": Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
-#endif
-                return;
-        }
-
         glGenTextures(1, &this->gl_id);
         this->Bind();
+
+        GLenum format = GetBppFormat(bpp);
         glTexImage2D(GL_TEXTURE_2D, 0, format, this->width, this->height, 0, format, GL_UNSIGNED_BYTE, data);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -165,8 +100,8 @@ namespace Violet
     Texture::~Texture()
     {
         if (this->loaded) {
-            if (current_texture == this->gl_id) {
-                current_texture = 0;
+            if (texture_group->current_texture == this->gl_id) {
+                texture_group->current_texture = 0;
             }
             glDeleteTextures(1, &this->gl_id);
 #ifdef VIOLET_DEBUG
@@ -175,39 +110,24 @@ namespace Violet
         }
     }
 
-    bool Texture::IsLoaded() const
+    void Texture::Bind()
     {
-        return this->loaded;
-    }
-
-    void Texture::Bind() const
-    {
-        if (current_texture != this->gl_id) {
-            current_texture = this->gl_id;
-            glBindTexture(GL_TEXTURE_2D, this->gl_id);  
+        if (texture_group->current_texture != this->gl_id) {
+            texture_group->current_texture = this->gl_id;
+            glBindTexture(GL_TEXTURE_2D, this->gl_id);
         }
     }
-    
-    int Texture::GetWidth() const
+
+    void Texture::UpdatePixels(const void* const data, const int width, const int height, const uint bpp, const int x, const int y)
     {
-        return this->width;
-    }
-    
-    int Texture::GetHeight() const
-    {
-        return this->height;
+        this->Bind();
+        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, this->width, this->height, GetBppFormat(bpp), GL_UNSIGNED_BYTE, data);
     }
 
-    TextureFilter Texture::GetFilter() const
-    {
-        return this->filter;
-    }
-    
     void Texture::SetFilter(const TextureFilter filter)
     {
         if (this->filter != filter) {
             this->filter = filter;
-
             this->Bind();
             switch (filter) {
                 case TextureFilter::Nearest:
@@ -235,33 +155,149 @@ namespace Violet
         return GL_REPEAT;
     }
 
-    TextureWrap Texture::GetWrapX() const
-    {
-        return this->wrap_x;
-    }
-    
-    TextureWrap Texture::GetWrapY() const
-    {
-        return this->wrap_y;
-    }
-    
     void Texture::SetWrapX(const TextureWrap wrap)
     {
         if (this->wrap_x != wrap) {
             this->wrap_x = wrap;
-
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetGlWrapValue(wrap));
         }
     }
-    
+
     void Texture::SetWrapY(const TextureWrap wrap)
     {
         if (this->wrap_y != wrap) {
             this->wrap_y = wrap;
-
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGlWrapValue(wrap));
+        }
+    }
+
+    void InitTextureGroup()
+    {
+        texture_group = new TextureGroup();
+    }
+
+    void DestroyTextureGroup()
+    {
+        texture_group = nullptr;
+    }
+
+    static Pointer<Texture> GetTexture(const std::string& id)
+    {
+        auto texture = texture_group->textures.find(id);
+        if (texture != texture_group->textures.end()) {
+            return texture->second;
+        }
+        return nullptr;
+    }
+
+    void LoadTexture(const std::string& id, const std::string& path)
+    {
+        if (GetTexture(id) == nullptr) {
+            Pointer<Texture> texture = new Texture(id, path);
+            if (texture->loaded) {
+                texture_group->textures.insert({ id, texture });
+            }
+        }
+    }
+
+    void LoadTexture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    {
+        if (GetTexture(id) == nullptr) {
+            Pointer<Texture> texture = new Texture(id, data, width, height, bpp);
+            if (texture->loaded) {
+                texture_group->textures.insert({ id, texture });
+            }
+        }
+    }
+
+    void DestroyTexture(const std::string& id)
+    {
+        if (GetTexture(id) != nullptr) {
+            texture_group->textures.erase(id);
+        }
+    }
+
+    void DestroyAllTextures()
+    {
+        texture_group->textures.clear();
+    }
+
+    void BindTexture(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            texture->Bind();
+        }
+    }
+
+    int GetTextureWidth(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->width;
+        }
+        return 0;
+    }
+
+    int GetTextureHeight(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->height;
+        }
+        return 0;
+    }
+
+    TextureFilter GetTextureFilter(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->filter;
+        }
+        return TextureFilter::Nearest;
+    }
+    
+    void SetTextureFilter(const std::string& id, const TextureFilter filter)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            texture->SetFilter(filter);
+        }
+    }
+
+    TextureWrap GetTextureWrapX(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->wrap_x;
+        }
+        return TextureWrap::Repeat;
+    }
+
+    TextureWrap GetTextureWrapY(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->wrap_y;
+        }
+        return TextureWrap::Repeat;
+    }
+    
+    void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            texture->SetWrapX(wrap);
+        }
+    }
+    
+    void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            texture->SetWrapY(wrap);
         }
     }
 }

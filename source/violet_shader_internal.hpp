@@ -9,19 +9,18 @@ namespace Violet
             Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code);
             ~Shader();
 
-            bool   IsLoaded  () const;
-            GLuint GetProgram() const;
-            void   Attach    () const;
-            GLint  GetUniform(const std::string& name) const;
+            void Attach() const;
 
-        private:
             std::string id     { "" };
             bool        loaded { false };
             GLuint      program{ 0 };
     };
 
-    extern void AttachShader(const std::string& id);
-    extern void DetachShader();
+    extern void InitShaderGroup   ();
+    extern void DestroyShaderGroup();
+    extern void AttachShader      (const std::string& id);
+    extern void DetachShader      ();
+    extern void SetShaderTexture  (const Pointer<Texture>& texture, const uint slot);
 }
 
 #endif // VIOLET_ENGINE_SHADER_INTERNAL_HPP

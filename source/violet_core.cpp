@@ -8,11 +8,12 @@ namespace Violet
             Fatal((std::string)"Failed to initialize SDL2: " + SDL_GetError());
         }
 
-        InitResources();
         InitWindow();
         InitVideo();
-        InitSprites();
-        InitText();
+        InitShaderGroup();
+        InitTextureGroup();
+        InitSpriteSheetGroup();
+        InitFontGroup();
         InitAudio();
 
         GameInit();
@@ -23,11 +24,12 @@ namespace Violet
         GameClose();
 
         CloseAudio();
-        CloseText();
-        CloseSprites();
+        DestroyFontGroup();
+        DestroySpriteSheetGroup();
+        DestroyTextureGroup();
+        DestroyShaderGroup();
         CloseVideo();
         CloseWindow();
-        CloseResources();
 
         SDL_Quit();
     }

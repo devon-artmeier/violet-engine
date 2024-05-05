@@ -2,7 +2,126 @@
 
 namespace Violet
 {
-    static GLuint current_shader{ 0 };
+    class ShaderGroup
+    {
+        public:
+            typedef std::unordered_map<std::string, Pointer<Shader>> ShaderMap;
+
+            ShaderMap shaders;
+            GLuint    current_shader{ 0 };
+    };
+
+    static Pointer<ShaderGroup> shader_group{ nullptr };
+
+    Shader::Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    {
+        this->id = id;
+
+        char        log[512];
+        int         success;
+        const char* vertex_code_c = vertex_code.c_str();
+        const char* frag_code_c   = frag_code.c_str();
+
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Compiling vertex shader");
+#endif
+
+        uint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &vertex_code_c, nullptr);
+        glCompileShader(vertex_shader);
+        glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+        glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
+
+        if (success == 0) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Failed to compile vertex shader:\n" + log);
+#endif
+            return;
+        }
+
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Compiling fragment shader");
+#endif
+
+        uint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(frag_shader, 1, &frag_code_c, nullptr);
+        glCompileShader(frag_shader);
+        glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
+        glGetShaderInfoLog(frag_shader, 512, nullptr, log);
+
+        if (success == 0) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Failed to compile fragment shader:\n" + log);
+#endif
+            glDeleteShader(vertex_shader);
+            return;
+        }
+
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Linking shaders");
+#endif
+
+        this->program = glCreateProgram();
+        glAttachShader(this->program, vertex_shader);
+        glAttachShader(this->program, frag_shader);
+        glLinkProgram(this->program);
+        glGetProgramiv(this->program, GL_LINK_STATUS, &success);
+        glGetProgramInfoLog(this->program, 512, nullptr, log);
+        glDeleteShader(vertex_shader);
+        glDeleteShader(frag_shader);
+
+        if (success == 0) {
+#ifdef VIOLET_DEBUG
+            LogError(this->id + ": Failed to link shaders:\n" + log);
+#endif
+            return;
+        }
+
+#ifdef VIOLET_DEBUG
+        LogInfo(this->id + ": Compiled successfully");
+#endif
+        this->loaded = true;
+    }
+
+    Shader::~Shader()
+    {
+        if (this->loaded) {
+            if (shader_group->current_shader == this->program) {
+                shader_group->current_shader = 0;
+            }
+            glDeleteProgram(this->program);
+#ifdef VIOLET_DEBUG
+            LogInfo(this->id + ": Destroyed");
+#endif
+        }
+    }
+
+    void Shader::Attach() const
+    {
+        if (shader_group->current_shader != this->program) {
+            shader_group->current_shader = this->program;
+            glUseProgram(this->program);
+        }
+    }
+
+    Pointer<Shader> GetShader(const std::string& id)
+    {
+        auto shader = shader_group->shaders.find(id);
+        if (shader != shader_group->shaders.end()) {
+            return shader->second;
+        }
+        return Pointer<Shader>(nullptr);
+    }
+
+    void InitShaderGroup()
+    {
+        shader_group = new ShaderGroup();
+    }
+
+    void DestroyShaderGroup()
+    {
+        shader_group = nullptr;
+    }
 
     void AttachShader(const std::string& id)
     {
@@ -14,12 +133,12 @@ namespace Violet
 
     void DetachShader()
     {
-        current_shader = 0;
+        shader_group->current_shader = 0;
     }
     
     static bool CheckShaderSetFail(const std::string& type_name)
     {
-        if (current_shader == 0) {
+        if (shader_group->current_shader == 0) {
 #ifdef VIOLET_DEBUG
             LogError("Tried to set " + type_name + " when no shader is attached");
 #endif
@@ -30,8 +149,8 @@ namespace Violet
 
     static int GetUniformLocation(const std::string& name)
     {
-        if (current_shader != 0) {
-            return glGetUniformLocation(current_shader, name.c_str());
+        if (shader_group->current_shader != 0) {
+            return glGetUniformLocation(shader_group->current_shader, name.c_str());
         }
         return 0;
     }
@@ -275,109 +394,11 @@ namespace Violet
         }
     }
 
-    Shader::Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
+    void SetShaderTexture(const Pointer<Texture>& texture, const uint slot)
     {
-        this->id = id;
-
-        char        log[512];
-        int         success;
-        const char* vertex_code_c = vertex_code.c_str();
-        const char* frag_code_c   = frag_code.c_str();
-
-#ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Compiling vertex shader");
-#endif
-
-        uint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertex_shader, 1, &vertex_code_c, nullptr);
-        glCompileShader(vertex_shader);
-        glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-        glGetShaderInfoLog(vertex_shader, 512, nullptr, log);
-
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            LogError(this->id + ": Failed to compile vertex shader:\n" + log);
-#endif
-            return;
+        if (!CheckShaderSetFail("texture")) {
+            glActiveTexture(GL_TEXTURE0 + slot);
+            texture->Bind();
         }
-
-#ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Compiling fragment shader");
-#endif
-
-        uint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(frag_shader, 1, &frag_code_c, nullptr);
-        glCompileShader(frag_shader);
-        glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
-        glGetShaderInfoLog(frag_shader, 512, nullptr, log);
-
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            LogError(this->id + ": Failed to compile fragment shader:\n" + log);
-#endif
-            glDeleteShader(vertex_shader);
-            return;
-        }
-
-#ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Linking shaders");
-#endif
-
-        this->program = glCreateProgram();
-        glAttachShader(this->program, vertex_shader);
-        glAttachShader(this->program, frag_shader);
-        glLinkProgram(this->program);
-        glGetProgramiv(this->program, GL_LINK_STATUS, &success);
-        glGetProgramInfoLog(this->program, 512, nullptr, log);
-        glDeleteShader(vertex_shader);
-        glDeleteShader(frag_shader);
-
-        if (success == 0) {
-#ifdef VIOLET_DEBUG
-            LogError(this->id + ": Failed to link shaders:\n" + log);
-#endif
-            return;
-        }
-
-#ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Compiled successfully");
-#endif
-        this->loaded = true;
-    }
-
-    Shader::~Shader()
-    {
-        if (this->loaded) {
-            if (current_shader == this->program) {
-                current_shader = 0;
-            }
-            glDeleteProgram(this->program);
-#ifdef VIOLET_DEBUG
-            LogInfo(this->id + ": Destroyed");
-#endif
-        }
-    }
-
-    bool Shader::IsLoaded() const
-    {
-        return this->loaded;
-    }
-
-    GLuint Shader::GetProgram() const
-    {
-        return this->program;
-    }
-
-    void Shader::Attach() const
-    {
-        if (current_shader != this->program) {
-            current_shader = this->program;
-            glUseProgram(this->program);
-        }
-    }
-
-    GLint Shader::GetUniform(const std::string& name) const
-    {
-        return glGetUniformLocation(this->program, name.c_str());
     }
 }

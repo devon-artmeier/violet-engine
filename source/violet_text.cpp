@@ -3,16 +3,11 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <stb_truetype.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-
 namespace Violet
 {
     constexpr int AtlasWidth  = 1024;
     constexpr int AtlasHeight = 1024;
 
-    static Pointer<Shader> text_shader{ nullptr };
-    
     static const char* text_shader_vertex =
         "#version 330 core\n"
         "\n"
@@ -45,32 +40,14 @@ namespace Violet
         "   outColor = fragColor * vec4(1, 1, 1, texture(fragTexture, fragTexCoord).r);\n"
         "}";
 
-    void InitText()
+    class FontGroup
     {
-        text_shader = new Shader("[INTERNAL] shader_text", text_shader_vertex, text_shader_frag);
-    }
+        public:
+            std::unordered_map<std::string, Pointer<Font>> fonts;
+    };
 
-    void CloseText()
-    {
-        text_shader = nullptr;
-    }
-
-    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2D& pos, const Color color)
-    {
-        Pointer<Font> font = GetFont(font_id);
-        if (font != nullptr) {
-            font->QueueDraw(layer, { text, size, pos, color });
-        }
-    }
-
-    void DrawTextLayer(uint layer)
-    {
-        if (layer < 256) {
-            for (auto font : GetAllFonts()) {
-                font.second->DrawLayer(layer);
-            }
-        }
-    }
+    static Pointer<FontGroup> font_group { nullptr };
+    static Pointer<Shader>    text_shader{ nullptr };
 
 	Font::Font(const std::string& id, const std::string& path)
 	{
@@ -100,18 +77,17 @@ namespace Violet
 
         Pointer<uchar>     atlas        = new uchar[AtlasWidth * AtlasHeight * 4];
         stbtt_pack_context pack_context = {0};
+        Pointer<Texture>   texture      = new Texture(this->id + " Texture 0", nullptr, AtlasWidth, AtlasHeight, 1);
         int                cur_texture  = 0;
-        std::string        texture_id;
 
         stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
         
         for (float size = 1; size < 72; size++) {
             this->packs.insert({ static_cast<uint>(size), new stbtt_packedchar[256]});
-            texture_id = this->id + "_texture_" + std::to_string(cur_texture);
             
             if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
-                LoadTexture(texture_id, atlas.Raw(), AtlasWidth, AtlasHeight, 1);
-                cur_texture++;
+                texture->UpdatePixels(atlas.Raw(), AtlasWidth, AtlasHeight, 1, 0, 0);
+                texture = new Texture(this->id + " Texture " + std::to_string(++cur_texture), nullptr, AtlasWidth, AtlasHeight, 1);
                 stbtt_PackEnd(&pack_context);
                 
                 stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
@@ -128,7 +104,6 @@ namespace Violet
 
             for (int i = 32; i < 127; i++) {
                 stbtt_GetPackedQuad(this->packs[size].Raw(), AtlasWidth, AtlasHeight, i, &char_x, &char_y, &char_quad, 0);
-
                 if (char_quad.y0 < min_y) {
                     min_y = char_quad.y0;
                 }
@@ -138,10 +113,10 @@ namespace Violet
             }
 
             this->heights.insert({ static_cast<uint>(size), max_y - min_y });
-            this->textures.insert({ static_cast<uint>(size), texture_id });
+            this->textures.insert({ static_cast<uint>(size), texture });
         }
 
-        LoadTexture(texture_id, atlas.Raw(), AtlasWidth, AtlasHeight, 1);
+        texture->UpdatePixels(atlas.Raw(), AtlasWidth, AtlasHeight, 1, 0, 0);
         stbtt_PackEnd(&pack_context);
 
         this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });
@@ -161,119 +136,163 @@ namespace Violet
         }
     }
 
-    bool Font::IsLoaded() const
+    void InitFontGroup()
     {
-        return this->loaded;
+        text_shader = new Shader("Default Text Shader", text_shader_vertex, text_shader_frag);
+        font_group  = new FontGroup();
     }
 
-    void Font::QueueDraw(const uint layer, const FontDraw& draw)
+    void DestroyFontGroup()
     {
-        if (layer < 256) {
-            if (draw.size > 0 && draw.size < this->packs.size() - 1) {
-                this->draw_queue[layer].push_back(draw);
+        font_group  = nullptr;
+        text_shader = nullptr;
+    }
+
+    static Pointer<Font> GetFont(const std::string& id)
+    {
+        auto font = font_group->fonts.find(id);
+        if (font != font_group->fonts.end()) {
+            return font->second;
+        }
+        return Pointer<Font>(nullptr);
+    }
+
+    void LoadFont(const std::string& id, const std::string& path)
+    {
+        if (GetFont(id) == nullptr) {
+            Pointer<Font> font = new Font(id, path);
+            if (font->loaded) {
+                font_group->fonts.insert({ id, font });
+            }
+        }
+    }
+
+    void DestroyFont(const std::string& id)
+    {
+        if (GetFont(id) != nullptr) {
+            font_group->fonts.erase(id);
+        }
+    }
+
+    void DestroyAllFonts()
+    {
+        font_group->fonts.clear();
+    }
+
+    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2D& pos, const Color color)
+    {
+        Pointer<Font> font = GetFont(font_id);
+        if (font != nullptr) {
+            if (size > 0 && size < font->packs.size() - 1) {
+                font->draw_queue[layer].push_back({ text, size, pos, color });
             } else {
 #ifdef VIOLET_DEBUG
-                LogError(this->id + ": Attempted to draw text at invalid size " + std::to_string(draw.size));
+                LogError(font_id + ": Attempted to draw text at invalid size " + std::to_string(size));
 #endif
             }
         }
     }
 
-    void Font::DrawLayer(const uint layer)
+    void DrawTextLayer(uint layer)
     {
         if (layer < 256) {
-            for (int i = 0; i < this->draw_queue[layer].size(); i++) {
-                const FontDraw& draw = this->draw_queue[layer][i];
+            for (auto font_pair : font_group->fonts) {
+                Pointer<Font> font = font_pair.second;
 
-                this->mesh->ResizeVertexBuffer(draw.text.length() * 4, 0);
-                this->mesh->ResizeElementBuffer(draw.text.length() * 6, 0);
+                for (int i = 0; i < font->draw_queue[layer].size(); i++) {
+                    const FontDraw& draw = font->draw_queue[layer][i];
 
-                float              char_x       = 0;
-                float              char_y       = 0;
-                float              x_off        = 0;
-                float              y_off        = this->heights[draw.size];
-                bool               new_line     = false;
-                int                element_id   = 0;
-                stbtt_aligned_quad char_quad    = { 0 };
-                Pointer<float>     vertex_data  = this->mesh->GetVertexBuffer();
-                Pointer<uint>      element_data = this->mesh->GetElementBuffer();
+                    font->mesh->ResizeVertexBuffer(draw.text.length() * 4, 0);
+                    font->mesh->ResizeElementBuffer(draw.text.length() * 6, 0);
 
-                for (size_t i = 0; i < draw.text.length(); i++) {
-                    if (draw.text[i] == '\n') {
-                        new_line  = true;
-                        y_off    += this->heights[draw.size];
-                    } else if (draw.text[i] == '\r') {
-                        new_line = true;
-                    } else {
-                        stbtt_GetPackedQuad(this->packs[draw.size].Raw(), AtlasWidth, AtlasHeight, draw.text[i], &char_x, &char_y, &char_quad, 0);
+                    float              char_x       = 0;
+                    float              char_y       = 0;
+                    float              x_off        = 0;
+                    float              y_off        = font->heights[draw.size];
+                    bool               new_line     = false;
+                    int                element_id   = 0;
+                    stbtt_aligned_quad char_quad    = { 0 };
+                    Pointer<float>     vertex_data  = font->mesh->GetVertexBuffer();
+                    Pointer<uint>      element_data = font->mesh->GetElementBuffer();
 
-                        if (new_line) {
-                            x_off    = -char_quad.x0;
-                            new_line = false;
+                    for (size_t i = 0; i < draw.text.length(); i++) {
+                        if (draw.text[i] == '\n') {
+                            new_line  = true;
+                            y_off    += font->heights[draw.size];
+                        } else if (draw.text[i] == '\r') {
+                            new_line = true;
+                        } else {
+                            stbtt_GetPackedQuad(font->packs[draw.size].Raw(), AtlasWidth, AtlasHeight, draw.text[i], &char_x, &char_y, &char_quad, 0);
+
+                            if (new_line) {
+                                x_off    = -char_quad.x0;
+                                new_line = false;
+                            }
+
+                            char_quad.x0 += x_off;
+                            char_quad.x1 += x_off;
+                            char_quad.y0 += y_off;
+                            char_quad.y1 += y_off;
+
+                            *(vertex_data++) = char_quad.x0;
+                            *(vertex_data++) = char_quad.y0;
+                            *(vertex_data++) = draw.color.red / 255.0f;
+                            *(vertex_data++) = draw.color.green / 255.0f;
+                            *(vertex_data++) = draw.color.blue / 255.0f;
+                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = char_quad.s0;
+                            *(vertex_data++) = char_quad.t0;
+
+                            *(vertex_data++) = char_quad.x1;
+                            *(vertex_data++) = char_quad.y0;
+                            *(vertex_data++) = draw.color.red / 255.0f;
+                            *(vertex_data++) = draw.color.green / 255.0f;
+                            *(vertex_data++) = draw.color.blue / 255.0f;
+                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = char_quad.s1;
+                            *(vertex_data++) = char_quad.t0;
+
+                            *(vertex_data++) = char_quad.x0;
+                            *(vertex_data++) = char_quad.y1;
+                            *(vertex_data++) = draw.color.red / 255.0f;
+                            *(vertex_data++) = draw.color.green / 255.0f;
+                            *(vertex_data++) = draw.color.blue / 255.0f;
+                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = char_quad.s0;
+                            *(vertex_data++) = char_quad.t1;
+
+                            *(vertex_data++) = char_quad.x1;
+                            *(vertex_data++) = char_quad.y1;
+                            *(vertex_data++) = draw.color.red / 255.0f;
+                            *(vertex_data++) = draw.color.green / 255.0f;
+                            *(vertex_data++) = draw.color.blue / 255.0f;
+                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = char_quad.s1;
+                            *(vertex_data++) = char_quad.t1;
+
+                            *(element_data++) = element_id + 0;
+                            *(element_data++) = element_id + 1;
+                            *(element_data++) = element_id + 2;
+                            *(element_data++) = element_id + 1;
+                            *(element_data++) = element_id + 2;
+                            *(element_data++) = element_id + 3;
+                            element_id += 4;
                         }
-
-                        char_quad.x0 += x_off;
-                        char_quad.x1 += x_off;
-                        char_quad.y0 += y_off;
-                        char_quad.y1 += y_off;
-
-                        *(vertex_data++) = char_quad.x0;
-                        *(vertex_data++) = char_quad.y0;
-                        *(vertex_data++) = draw.color.red / 255.0f;
-                        *(vertex_data++) = draw.color.green / 255.0f;
-                        *(vertex_data++) = draw.color.blue / 255.0f;
-                        *(vertex_data++) = draw.color.alpha / 255.0f;
-                        *(vertex_data++) = char_quad.s0;
-                        *(vertex_data++) = char_quad.t0;
-
-                        *(vertex_data++) = char_quad.x1;
-                        *(vertex_data++) = char_quad.y0;
-                        *(vertex_data++) = draw.color.red / 255.0f;
-                        *(vertex_data++) = draw.color.green / 255.0f;
-                        *(vertex_data++) = draw.color.blue / 255.0f;
-                        *(vertex_data++) = draw.color.alpha / 255.0f;
-                        *(vertex_data++) = char_quad.s1;
-                        *(vertex_data++) = char_quad.t0;
-
-                        *(vertex_data++) = char_quad.x0;
-                        *(vertex_data++) = char_quad.y1;
-                        *(vertex_data++) = draw.color.red / 255.0f;
-                        *(vertex_data++) = draw.color.green / 255.0f;
-                        *(vertex_data++) = draw.color.blue / 255.0f;
-                        *(vertex_data++) = draw.color.alpha / 255.0f;
-                        *(vertex_data++) = char_quad.s0;
-                        *(vertex_data++) = char_quad.t1;
-
-                        *(vertex_data++) = char_quad.x1;
-                        *(vertex_data++) = char_quad.y1;
-                        *(vertex_data++) = draw.color.red / 255.0f;
-                        *(vertex_data++) = draw.color.green / 255.0f;
-                        *(vertex_data++) = draw.color.blue / 255.0f;
-                        *(vertex_data++) = draw.color.alpha / 255.0f;
-                        *(vertex_data++) = char_quad.s1;
-                        *(vertex_data++) = char_quad.t1;
-
-                        *(element_data++) = element_id + 0;
-                        *(element_data++) = element_id + 1;
-                        *(element_data++) = element_id + 2;
-                        *(element_data++) = element_id + 1;
-                        *(element_data++) = element_id + 2;
-                        *(element_data++) = element_id + 3;
-                        element_id += 4;
                     }
+
+                    font->mesh->RefreshVertexBuffer();
+                    font->mesh->RefreshElementBuffer();
+
+                    text_shader->Attach();
+                    SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
+                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2D(1.0f)).data);
+                    SetShaderTexture(font->textures[draw.size], 0);
+
+                    font->mesh->Draw();
                 }
 
-                this->mesh->RefreshVertexBuffer();
-                this->mesh->RefreshElementBuffer();
-
-                text_shader->Attach();
-                SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2D(1.0f)).data);
-                SetShaderTexture(this->textures[draw.size], 0);
-
-                this->mesh->Draw();
+                font->draw_queue[layer].clear();
             }
-            this->draw_queue[layer].clear();
         }
     }
 }

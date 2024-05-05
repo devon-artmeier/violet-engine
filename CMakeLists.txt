@@ -4,7 +4,6 @@ project(violet-engine LANGUAGES C CXX)
 list(APPEND VIOLET_SRC
     "dependencies/glad/glad.c"
     "source/violet_audio.cpp"
-    "source/violet_audio_miniaudio.c"
     "source/violet_core.cpp"
     "source/violet_file.cpp"
     "source/violet_main.cpp"
@@ -12,7 +11,6 @@ list(APPEND VIOLET_SRC
     "source/violet_mesh.cpp"
     "source/violet_matrix_4x4.cpp"
     "source/violet_message.cpp"
-    "source/violet_resource.cpp"
     "source/violet_shader.cpp"
     "source/violet_sprite.cpp"
     "source/violet_text.cpp"
