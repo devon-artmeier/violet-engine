@@ -225,7 +225,7 @@ namespace Violet
 
     namespace Math
     {
-        constexpr double Pi = 3.14159265358979323846;
+        constexpr float Pi = 3.14159265358979323846f;
 
         extern float  Sin       (const float angle);
         extern double Sin       (const double angle);

@@ -46,7 +46,7 @@ namespace Violet
 
         float Radians(const float degrees)
         {
-            return degrees * (static_cast<float>(Pi) / 180.0f);
+            return degrees * (Pi / 180.0f);
         }
 
         double Radians(const double degrees)
@@ -56,7 +56,7 @@ namespace Violet
 
         float Degrees(const float radians)
         {
-            return radians * (180.0f / static_cast<float>(Pi));
+            return radians * (180.0f / Pi);
         }
 
         double Degrees(const double radians)
