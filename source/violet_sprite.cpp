@@ -240,8 +240,8 @@ namespace Violet
         sprite_sheet_group->sprite_sheets.clear();
     }
 
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2D& pos,
-                    const float angle, const Vector2D& scale)
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2& pos,
+                    const float angle, const Vector2& scale)
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
         if (sprite_sheet != nullptr) {

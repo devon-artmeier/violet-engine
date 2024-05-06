@@ -2,42 +2,52 @@
 
 namespace Violet
 {
-    Vector3D::Vector3D(const float value)
+    IVector3::IVector3(const int value)
     {
         this->data[0] = value;
         this->data[1] = value;
         this->data[2] = value;
     }
 
-    Vector3D::Vector3D(const float arr[3])
+    IVector3::IVector3(const int arr[3])
     {
         this->data[0] = arr[0];
         this->data[1] = arr[1];
         this->data[2] = arr[2];
     }
 
-    Vector3D::Vector3D(const float x, const float y, const float z)
+    IVector3::IVector3(const int x, const int y, const int z)
     {
         this->data[0] = x;
         this->data[1] = y;
         this->data[2] = z;
     }
 
-    Vector3D::Vector3D(const Vector2D& vec, const float z)
+    IVector3::IVector3(const IVector2& vec, const int z)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
         this->data[2] = z;
     }
 
-    Vector3D::Vector3D(const Vector3D& vec)
+    IVector3::IVector3(const IVector3& vec)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
         this->data[2] = vec.data[2];
     }
 
-    Vector3D& Vector3D::operator=(const float value)
+    IVector3::operator Vector3() const
+    {
+        return Vector3(this->data[0], this->data[1], this->data[2]);
+    }
+
+    IVector3::operator UIVector3() const
+    {
+        return UIVector3(this->data[0], this->data[1], this->data[2]);
+    }
+
+    IVector3& IVector3::operator=(const int value)
     {
         this->data[0] = value;
         this->data[1] = value;
@@ -45,7 +55,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator=(const float arr[3])
+    IVector3& IVector3::operator=(const int arr[3])
     {
         this->data[0] = arr[0];
         this->data[1] = arr[1];
@@ -53,7 +63,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator=(const Vector3D& vec)
+    IVector3& IVector3::operator=(const IVector3& vec)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
@@ -61,91 +71,91 @@ namespace Violet
         return *this;
     }
 
-    Vector3D Vector3D::operator+(const float value) const
+    IVector3 IVector3::operator+(const int value) const
     {
-        return Vector3D(this->data[0] + value,
+        return IVector3(this->data[0] + value,
                         this->data[1] + value,
                         this->data[2] + value);
     }
 
-    Vector3D Vector3D::operator+(const float arr[3]) const
+    IVector3 IVector3::operator+(const int arr[3]) const
     {
-        return Vector3D(this->data[0] + arr[0],
+        return IVector3(this->data[0] + arr[0],
                         this->data[1] + arr[1],
                         this->data[2] + arr[2]);
     }
 
-    Vector3D Vector3D::operator+(const Vector3D& vec) const
+    IVector3 IVector3::operator+(const IVector3& vec) const
     {
-        return Vector3D(this->data[0] + vec.data[0],
+        return IVector3(this->data[0] + vec.data[0],
                         this->data[1] + vec.data[1],
                         this->data[2] + vec.data[2]);
     }
 
-    Vector3D Vector3D::operator-(const float value) const
+    IVector3 IVector3::operator-(const int value) const
     {
-        return Vector3D(this->data[0] - value,
+        return IVector3(this->data[0] - value,
                         this->data[1] - value,
                         this->data[2] - value);
     }
 
-    Vector3D Vector3D::operator-(const float arr[3]) const
+    IVector3 IVector3::operator-(const int arr[3]) const
     {
-        return Vector3D(this->data[0] - arr[0],
+        return IVector3(this->data[0] - arr[0],
                         this->data[1] - arr[1],
                         this->data[2] - arr[2]);
     }
 
-    Vector3D Vector3D::operator-(const Vector3D& vec) const
+    IVector3 IVector3::operator-(const IVector3& vec) const
     {
-        return Vector3D(this->data[0] - vec.data[0],
+        return IVector3(this->data[0] - vec.data[0],
                         this->data[1] - vec.data[1],
                         this->data[2] - vec.data[2]);
     }
 
-    Vector3D Vector3D::operator*(const float value) const
+    IVector3 IVector3::operator*(const int value) const
     {
-        return Vector3D(this->data[0] * value,
+        return IVector3(this->data[0] * value,
                         this->data[1] * value,
                         this->data[2] * value);
     }
 
-    Vector3D Vector3D::operator*(const float arr[3]) const
+    IVector3 IVector3::operator*(const int arr[3]) const
     {
-        return Vector3D(this->data[0] * arr[0],
+        return IVector3(this->data[0] * arr[0],
                         this->data[1] * arr[1],
                         this->data[2] * arr[2]);
     }
 
-    Vector3D Vector3D::operator*(const Vector3D& vec) const
+    IVector3 IVector3::operator*(const IVector3& vec) const
     {
-        return Vector3D(this->data[0] * vec.data[0],
+        return IVector3(this->data[0] * vec.data[0],
                         this->data[1] * vec.data[1],
                         this->data[2] * vec.data[2]);
     }
 
-    Vector3D Vector3D::operator/(const float value) const
+    IVector3 IVector3::operator/(const int value) const
     {
-        return Vector3D(this->data[0] / value,
+        return IVector3(this->data[0] / value,
                         this->data[1] / value,
                         this->data[2] / value);
     }
 
-    Vector3D Vector3D::operator/(const float arr[3]) const
+    IVector3 IVector3::operator/(const int arr[3]) const
     {
-        return Vector3D(this->data[0] / arr[0],
+        return IVector3(this->data[0] / arr[0],
                         this->data[1] / arr[1],
                         this->data[2] / arr[2]);
     }
 
-    Vector3D Vector3D::operator/(const Vector3D& vec) const
+    IVector3 IVector3::operator/(const IVector3& vec) const
     {
-        return Vector3D(this->data[0] / vec.data[0],
+        return IVector3(this->data[0] / vec.data[0],
                         this->data[1] / vec.data[1],
                         this->data[2] / vec.data[2]);
     }
 
-    Vector3D& Vector3D::operator+=(const float value)
+    IVector3& IVector3::operator+=(const int value)
     {
         this->data[0] += value;
         this->data[1] += value;
@@ -153,7 +163,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator+=(const float arr[3])
+    IVector3& IVector3::operator+=(const int arr[3])
     {
         this->data[0] += arr[0];
         this->data[1] += arr[1];
@@ -161,7 +171,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator+=(const Vector3D& vec)
+    IVector3& IVector3::operator+=(const IVector3& vec)
     {
         this->data[0] += vec.data[0];
         this->data[1] += vec.data[1];
@@ -169,7 +179,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator-=(const float value)
+    IVector3& IVector3::operator-=(const int value)
     {
         this->data[0] -= value;
         this->data[1] -= value;
@@ -177,7 +187,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator-=(const float arr[3])
+    IVector3& IVector3::operator-=(const int arr[3])
     {
         this->data[0] -= arr[0];
         this->data[1] -= arr[1];
@@ -185,7 +195,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator-=(const Vector3D& vec)
+    IVector3& IVector3::operator-=(const IVector3& vec)
     {
         this->data[0] -= vec.data[0];
         this->data[1] -= vec.data[1];
@@ -193,7 +203,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator*=(const float value)
+    IVector3& IVector3::operator*=(const int value)
     {
         this->data[0] *= value;
         this->data[1] *= value;
@@ -201,7 +211,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator*=(const float arr[3])
+    IVector3& IVector3::operator*=(const int arr[3])
     {
         this->data[0] *= arr[0];
         this->data[1] *= arr[1];
@@ -209,7 +219,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator*=(const Vector3D& vec)
+    IVector3& IVector3::operator*=(const IVector3& vec)
     {
         this->data[0] *= vec.data[0];
         this->data[1] *= vec.data[1];
@@ -217,7 +227,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator/=(const float value)
+    IVector3& IVector3::operator/=(const int value)
     {
         this->data[0] /= value;
         this->data[1] /= value;
@@ -225,7 +235,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator/=(const float arr[3])
+    IVector3& IVector3::operator/=(const int arr[3])
     {
         this->data[0] /= arr[0];
         this->data[1] /= arr[1];
@@ -233,7 +243,7 @@ namespace Violet
         return *this;
     }
 
-    Vector3D& Vector3D::operator/=(const Vector3D& vec)
+    IVector3& IVector3::operator/=(const IVector3& vec)
     {
         this->data[0] /= vec.data[0];
         this->data[1] /= vec.data[1];
@@ -241,96 +251,96 @@ namespace Violet
         return *this;
     }
 
-    bool Vector3D::operator==(const float value)
+    bool IVector3::operator==(const int value)
     {
         return this->data[0] == value &&
                this->data[1] == value &&
                this->data[2] == value;
     }
 
-    bool Vector3D::operator==(const float arr[3])
+    bool IVector3::operator==(const int arr[3])
     {
         return this->data[0] == arr[0] &&
                this->data[1] == arr[1] &&
                this->data[2] == arr[2];
     }
 
-    bool Vector3D::operator==(const Vector3D& vec)
+    bool IVector3::operator==(const IVector3& vec)
     {
         return this->data[0] == vec.data[0] &&
                this->data[1] == vec.data[1] &&
                this->data[2] == vec.data[2];
     }
 
-    float& Vector3D::operator[](const size_t index)
+    int& IVector3::operator[](const size_t index)
     {
         return this->data[index];
     }
 
-    const float& Vector3D::operator[](const size_t index) const
+    const int& IVector3::operator[](const size_t index) const
     {
         return this->data[index];
     }
 
-    float& Vector3D::X()
+    int& IVector3::X()
     {
         return this->data[0];
     }
 
-    const float& Vector3D::X() const
+    const int& IVector3::X() const
     {
         return this->data[0];
     }
 
-    float& Vector3D::Y()
+    int& IVector3::Y()
     {
         return this->data[1];
     }
 
-    const float& Vector3D::Y() const
+    const int& IVector3::Y() const
     {
         return this->data[1];
     }
 
-    float& Vector3D::Z()
+    int& IVector3::Z()
     {
         return this->data[2];
     }
 
-    const float& Vector3D::Z() const
+    const int& IVector3::Z() const
     {
         return this->data[2];
     }
 
-    float Vector3D::Dot(const Vector3D& vec) const
+    int IVector3::Dot(const IVector3& vec) const
     {
         return (this->data[0] * vec.data[0]) +
                (this->data[1] * vec.data[1]) +
                (this->data[2] * vec.data[2]);
     }
 
-    Vector3D Vector3D::Cross(const Vector3D& vec) const
+    IVector3 IVector3::Cross(const IVector3& vec) const
     {
-        return Vector3D((this->data[1] * vec.data[2]) - (vec.data[1] * this->data[2]),
+        return IVector3((this->data[1] * vec.data[2]) - (vec.data[1] * this->data[2]),
                         (this->data[2] * vec.data[0]) - (vec.data[2] * this->data[0]),
                         (this->data[0] * vec.data[1]) - (vec.data[0] * this->data[1]));
     }
 
-    float Vector3D::Length() const
+    float IVector3::Length() const
     {
         return sqrt((this->data[0] * this->data[0]) +
                     (this->data[1] * this->data[1]) +
                     (this->data[2] * this->data[2]));
     }
 
-    Vector3D Vector3D::Normalize() const
+    Vector3 IVector3::Normalize() const
     {
-        return Vector3D(this->data[0] / this->Length(),
-                        this->data[1] / this->Length(),
-                        this->data[2] / this->Length());
+        return Vector3(this->data[0] / this->Length(),
+                       this->data[1] / this->Length(),
+                       this->data[2] / this->Length());
     }
 
-    float Vector3D::Distance(const Vector3D& vec) const
+    float IVector3::Distance(const IVector3& vec) const
     {
         return (*this - vec).Length();
     }

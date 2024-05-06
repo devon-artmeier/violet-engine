@@ -2,7 +2,7 @@
 
 namespace Violet
 {
-    Vector4D::Vector4D(const float value)
+    IVector4::IVector4(const int value)
     {
         this->data[0] = value;
         this->data[1] = value;
@@ -10,7 +10,7 @@ namespace Violet
         this->data[3] = value;
     }
 
-    Vector4D::Vector4D(const float arr[4])
+    IVector4::IVector4(const int arr[4])
     {
         this->data[0] = arr[0];
         this->data[1] = arr[1];
@@ -18,7 +18,7 @@ namespace Violet
         this->data[3] = arr[3];
     }
 
-    Vector4D::Vector4D(const float x, const float y, const float z, const float w)
+    IVector4::IVector4(const int x, const int y, const int z, const int w)
     {
         this->data[0] = x;
         this->data[1] = y;
@@ -26,7 +26,7 @@ namespace Violet
         this->data[3] = w;
     }
 
-    Vector4D::Vector4D(const Vector2D& vec, const float z, const float w)
+    IVector4::IVector4(const IVector2& vec, const int z, const int w)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
@@ -34,7 +34,7 @@ namespace Violet
         this->data[3] = w;
     }
 
-    Vector4D::Vector4D(const Vector3D& vec, const float w)
+    IVector4::IVector4(const IVector3& vec, const int w)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
@@ -42,7 +42,7 @@ namespace Violet
         this->data[3] = w;
     }
 
-    Vector4D::Vector4D(const Vector4D& vec)
+    IVector4::IVector4(const IVector4& vec)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
@@ -50,7 +50,17 @@ namespace Violet
         this->data[3] = vec.data[3];
     }
 
-    Vector4D& Vector4D::operator=(const float value)
+    IVector4::operator Vector4() const
+    {
+        return Vector4(this->data[0], this->data[1], this->data[2], this->data[3]);
+    }
+
+    IVector4::operator UIVector4() const
+    {
+        return UIVector4(this->data[0], this->data[1], this->data[2], this->data[3]);
+    }
+
+    IVector4& IVector4::operator=(const int value)
     {
         this->data[0] = value;
         this->data[1] = value;
@@ -59,7 +69,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator=(const float arr[4])
+    IVector4& IVector4::operator=(const int arr[4])
     {
         this->data[0] = arr[0];
         this->data[1] = arr[1];
@@ -68,7 +78,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator=(const Vector4D& vec)
+    IVector4& IVector4::operator=(const IVector4& vec)
     {
         this->data[0] = vec.data[0];
         this->data[1] = vec.data[1];
@@ -77,113 +87,111 @@ namespace Violet
         return *this;
     }
 
-    Vector4D Vector4D::operator+(const float value) const
+    IVector4 IVector4::operator+(const int value) const
     {
-        return Vector4D(this->data[0] + value,
+        return IVector4(this->data[0] + value,
                         this->data[1] + value,
                         this->data[2] + value,
                         this->data[3] + value);
     }
 
-    Vector4D Vector4D::operator+(const float arr[4]) const
+    IVector4 IVector4::operator+(const int arr[4]) const
     {
-        return Vector4D(this->data[0] + arr[0],
+        return IVector4(this->data[0] + arr[0],
                         this->data[1] + arr[1],
                         this->data[2] + arr[2],
                         this->data[3] + arr[3]);
     }
 
-    Vector4D Vector4D::operator+(const Vector4D& vec) const
+    IVector4 IVector4::operator+(const IVector4& vec) const
     {
-        return Vector4D(this->data[0] + vec.data[0],
+        return IVector4(this->data[0] + vec.data[0],
                         this->data[1] + vec.data[1],
                         this->data[2] + vec.data[2],
                         this->data[3] + vec.data[3]);
     }
 
-    Vector4D Vector4D::operator-(const float value) const
+    IVector4 IVector4::operator-(const int value) const
     {
-        return Vector4D(this->data[0] - value,
+        return IVector4(this->data[0] - value,
                         this->data[1] - value,
                         this->data[2] - value,
                         this->data[3] - value);
     }
 
-    Vector4D Vector4D::operator-(const float arr[4]) const
+    IVector4 IVector4::operator-(const int arr[4]) const
     {
-        return Vector4D(this->data[0] - arr[0],
+        return IVector4(this->data[0] - arr[0],
                         this->data[1] - arr[1],
                         this->data[2] - arr[2],
                         this->data[3] - arr[3]);
     }
 
-    Vector4D Vector4D::operator-(const Vector4D& vec) const
+    IVector4 IVector4::operator-(const IVector4& vec) const
     {
-        return Vector4D(this->data[0] - vec.data[0],
+        return IVector4(this->data[0] - vec.data[0],
                         this->data[1] - vec.data[1],
                         this->data[2] - vec.data[2],
                         this->data[3] - vec.data[3]);
     }
 
-    Vector4D Vector4D::operator*(const float value) const
+    IVector4 IVector4::operator*(const int value) const
     {
-        return Vector4D(this->data[0] * value,
+        return IVector4(this->data[0] * value,
                         this->data[1] * value,
                         this->data[2] * value,
                         this->data[3] * value);
     }
 
-    Vector4D Vector4D::operator*(const float arr[4]) const
+    IVector4 IVector4::operator*(const int arr[4]) const
     {
-        return Vector4D(this->data[0] * arr[0],
+        return IVector4(this->data[0] * arr[0],
                         this->data[1] * arr[1],
                         this->data[2] * arr[2],
                         this->data[3] * arr[3]);
     }
 
-    Vector4D Vector4D::operator*(const Vector4D& vec) const
+    IVector4 IVector4::operator*(const IVector4& vec) const
     {
-        return Vector4D(this->data[0] * vec.data[0],
+        return IVector4(this->data[0] * vec.data[0],
                         this->data[1] * vec.data[1],
                         this->data[2] * vec.data[2],
                         this->data[3] * vec.data[3]);
     }
 
-    Vector4D Vector4D::operator*(const Matrix4x4& mat) const
+    IVector4 IVector4::operator*(const Matrix4x4& mat) const
     {
-        return Vector4D(
-            (this->data[0] * mat.data[0]) + (this->data[1] * mat.data[4]) + (this->data[2] * mat.data[8])  + (this->data[3] * mat.data[12]),
-            (this->data[0] * mat.data[1]) + (this->data[1] * mat.data[5]) + (this->data[2] * mat.data[9])  + (this->data[3] * mat.data[13]),
-            (this->data[0] * mat.data[2]) + (this->data[1] * mat.data[6]) + (this->data[2] * mat.data[10]) + (this->data[3] * mat.data[14]),
-            (this->data[0] * mat.data[3]) + (this->data[1] * mat.data[7]) + (this->data[2] * mat.data[11]) + (this->data[3] * mat.data[15])
-        );
+        return IVector4((this->data[0] * mat.data[0]) + (this->data[1] * mat.data[4]) + (this->data[2] * mat.data[8])  + (this->data[3] * mat.data[12]),
+                        (this->data[0] * mat.data[1]) + (this->data[1] * mat.data[5]) + (this->data[2] * mat.data[9])  + (this->data[3] * mat.data[13]),
+                        (this->data[0] * mat.data[2]) + (this->data[1] * mat.data[6]) + (this->data[2] * mat.data[10]) + (this->data[3] * mat.data[14]),
+                        (this->data[0] * mat.data[3]) + (this->data[1] * mat.data[7]) + (this->data[2] * mat.data[11]) + (this->data[3] * mat.data[15]));
     }
 
-    Vector4D Vector4D::operator/(const float value) const
+    IVector4 IVector4::operator/(const int value) const
     {
-        return Vector4D(this->data[0] / value,
+        return IVector4(this->data[0] / value,
                         this->data[1] / value,
                         this->data[2] / value,
                         this->data[3] / value);
     }
 
-    Vector4D Vector4D::operator/(const float arr[4]) const
+    IVector4 IVector4::operator/(const int arr[4]) const
     {
-        return Vector4D(this->data[0] / arr[0],
+        return IVector4(this->data[0] / arr[0],
                         this->data[1] / arr[1],
                         this->data[2] / arr[2],
                         this->data[3] / arr[3]);
     }
 
-    Vector4D Vector4D::operator/(const Vector4D& vec) const
+    IVector4 IVector4::operator/(const IVector4& vec) const
     {
-        return Vector4D(this->data[0] / vec.data[0],
+        return IVector4(this->data[0] / vec.data[0],
                         this->data[1] / vec.data[1],
                         this->data[2] / vec.data[2],
                         this->data[3] / vec.data[3]);
     }
 
-    Vector4D& Vector4D::operator+=(const float value)
+    IVector4& IVector4::operator+=(const int value)
     {
         this->data[0] += value;
         this->data[1] += value;
@@ -192,7 +200,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator+=(const float arr[4])
+    IVector4& IVector4::operator+=(const int arr[4])
     {
         this->data[0] += arr[0];
         this->data[1] += arr[1];
@@ -201,7 +209,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator+=(const Vector4D& vec)
+    IVector4& IVector4::operator+=(const IVector4& vec)
     {
         this->data[0] += vec.data[0];
         this->data[1] += vec.data[1];
@@ -210,7 +218,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator-=(const float value)
+    IVector4& IVector4::operator-=(const int value)
     {
         this->data[0] -= value;
         this->data[1] -= value;
@@ -219,7 +227,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator-=(const float arr[4])
+    IVector4& IVector4::operator-=(const int arr[4])
     {
         this->data[0] -= arr[0];
         this->data[1] -= arr[1];
@@ -228,7 +236,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator-=(const Vector4D& vec)
+    IVector4& IVector4::operator-=(const IVector4& vec)
     {
         this->data[0] -= vec.data[0];
         this->data[1] -= vec.data[1];
@@ -237,7 +245,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator*=(const float value)
+    IVector4& IVector4::operator*=(const int value)
     {
         this->data[0] *= value;
         this->data[1] *= value;
@@ -246,7 +254,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator*=(const float arr[4])
+    IVector4& IVector4::operator*=(const int arr[4])
     {
         this->data[0] *= arr[0];
         this->data[1] *= arr[1];
@@ -255,7 +263,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator*=(const Vector4D& vec)
+    IVector4& IVector4::operator*=(const IVector4& vec)
     {
         this->data[0] *= vec.data[0];
         this->data[1] *= vec.data[1];
@@ -264,7 +272,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator*=(const Matrix4x4& vec)
+    IVector4& IVector4::operator*=(const Matrix4x4& vec)
     {
         this->data[0] = (this->data[0] * vec.data[0]) + (this->data[1] * vec.data[4]) + (this->data[2] * vec.data[8])  + (this->data[3] * vec.data[12]);
         this->data[1] = (this->data[0] * vec.data[1]) + (this->data[1] * vec.data[5]) + (this->data[2] * vec.data[9])  + (this->data[3] * vec.data[13]);
@@ -273,7 +281,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator/=(const float value)
+    IVector4& IVector4::operator/=(const int value)
     {
         this->data[0] /= value;
         this->data[1] /= value;
@@ -282,7 +290,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator/=(const float arr[4])
+    IVector4& IVector4::operator/=(const int arr[4])
     {
         this->data[0] /= arr[0];
         this->data[1] /= arr[1];
@@ -291,7 +299,7 @@ namespace Violet
         return *this;
     }
 
-    Vector4D& Vector4D::operator/=(const Vector4D& vec)
+    IVector4& IVector4::operator/=(const IVector4& vec)
     {
         this->data[0] /= vec.data[0];
         this->data[1] /= vec.data[1];
@@ -300,7 +308,7 @@ namespace Violet
         return *this;
     }
 
-    bool Vector4D::operator==(const float value)
+    bool IVector4::operator==(const int value)
     {
         return this->data[0] == value &&
                this->data[1] == value &&
@@ -308,7 +316,7 @@ namespace Violet
                this->data[3] == value;
     }
 
-    bool Vector4D::operator==(const float arr[4])
+    bool IVector4::operator==(const int arr[4])
     {
         return this->data[0] == arr[0] &&
                this->data[1] == arr[1] &&
@@ -316,7 +324,7 @@ namespace Violet
                this->data[3] == arr[3];
     }
 
-    bool Vector4D::operator==(const Vector4D& vec)
+    bool IVector4::operator==(const IVector4& vec)
     {
         return this->data[0] == vec.data[0] &&
                this->data[1] == vec.data[1] &&
@@ -324,57 +332,57 @@ namespace Violet
                this->data[3] == vec.data[3];
     }
 
-    float& Vector4D::operator[](const size_t index)
+    int& IVector4::operator[](const size_t index)
     {
         return this->data[index];
     }
 
-    const float& Vector4D::operator[](const size_t index) const
+    const int& IVector4::operator[](const size_t index) const
     {
         return this->data[index];
     }
 
-    float& Vector4D::X()
+    int& IVector4::X()
     {
         return this->data[0];
     }
 
-    const float& Vector4D::X() const
+    const int& IVector4::X() const
     {
         return this->data[0];
     }
 
-    float& Vector4D::Y()
+    int& IVector4::Y()
     {
         return this->data[1];
     }
 
-    const float& Vector4D::Y() const
+    const int& IVector4::Y() const
     {
         return this->data[1];
     }
 
-    float& Vector4D::Z()
+    int& IVector4::Z()
     {
         return this->data[2];
     }
 
-    const float& Vector4D::Z() const
+    const int& IVector4::Z() const
     {
         return this->data[2];
     }
 
-    float& Vector4D::W()
+    int& IVector4::W()
     {
         return this->data[3];
     }
 
-    const float& Vector4D::W() const
+    const int& IVector4::W() const
     {
         return this->data[3];
     }
 
-    float Vector4D::Dot(const Vector4D& vec) const
+    int IVector4::Dot(const IVector4& vec) const
     {
         return (this->data[0] * vec.data[0]) +
                (this->data[1] * vec.data[1]) +
@@ -382,7 +390,7 @@ namespace Violet
                (this->data[3] * vec.data[3]);
     }
 
-    float Vector4D::Length() const
+    float IVector4::Length() const
     {
         return sqrt((this->data[0] * this->data[0]) +
                     (this->data[1] * this->data[1]) +
@@ -390,15 +398,15 @@ namespace Violet
                     (this->data[3] * this->data[3]));
     }
 
-    Vector4D Vector4D::Normalize() const
+    Vector4 IVector4::Normalize() const
     {
-        return Vector4D(this->data[0] / this->Length(),
-                        this->data[1] / this->Length(),
-                        this->data[2] / this->Length(),
-                        this->data[3] / this->Length());
+        return Vector4(this->data[0] / this->Length(),
+                       this->data[1] / this->Length(),
+                       this->data[2] / this->Length(),
+                       this->data[3] / this->Length());
     }
 
-    float Vector4D::Distance(const Vector4D& vec) const
+    float IVector4::Distance(const IVector4& vec) const
     {
         return (*this - vec).Length();
     }

@@ -20,8 +20,8 @@ namespace Violet
 
     void UpdateVideo()
     {
-        projection_2d = OrthoMatrix(Vector2D(0.0f, static_cast<float>(GetWindowWidthPixels())),
-                        Vector2D(0.0f, static_cast<float>(GetWindowHeightPixels())));
+        projection_2d = OrthoMatrix(Vector2(0.0f, static_cast<float>(GetWindowWidthPixels())),
+                                    Vector2(0.0f, static_cast<float>(GetWindowHeightPixels())));
         glViewport(0, 0, static_cast<float>(GetWindowWidthPixels()), static_cast<float>(GetWindowHeightPixels()));
 
         glClearColor(0, 1, 0, 1);

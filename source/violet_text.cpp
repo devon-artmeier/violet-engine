@@ -179,7 +179,7 @@ namespace Violet
         font_group->fonts.clear();
     }
 
-    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2D& pos, const Color color)
+    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2& pos, const Color color)
     {
         Pointer<Font> font = GetFont(font_id);
         if (font != nullptr) {
@@ -285,7 +285,7 @@ namespace Violet
 
                     text_shader->Attach();
                     SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2D(1.0f)).data);
+                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2(1.0f)).data);
                     SetShaderTexture(font->textures[draw.size], 0);
 
                     font->mesh->Draw();
