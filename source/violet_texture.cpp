@@ -55,7 +55,7 @@ namespace Violet
             return;
         }
 
-        glGenTextures(1, &this->gl_id);
+        glGenTextures(1, &this->texture);
         this->Bind();
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -81,7 +81,7 @@ namespace Violet
         this->width  = width;
         this->height = height;
 
-        glGenTextures(1, &this->gl_id);
+        glGenTextures(1, &this->texture);
         this->Bind();
 
         GLenum format = GetBppFormat(bpp);
@@ -100,10 +100,10 @@ namespace Violet
     Texture::~Texture()
     {
         if (this->loaded) {
-            if (texture_group->current_texture == this->gl_id) {
+            if (texture_group->current_texture == this->texture) {
                 texture_group->current_texture = 0;
             }
-            glDeleteTextures(1, &this->gl_id);
+            glDeleteTextures(1, &this->texture);
 #ifdef VIOLET_DEBUG
             LogInfo(this->id + ": Destroyed");
 #endif
@@ -112,9 +112,9 @@ namespace Violet
 
     void Texture::Bind()
     {
-        if (texture_group->current_texture != this->gl_id) {
-            texture_group->current_texture = this->gl_id;
-            glBindTexture(GL_TEXTURE_2D, this->gl_id);
+        if (texture_group->current_texture != this->texture) {
+            texture_group->current_texture = this->texture;
+            glBindTexture(GL_TEXTURE_2D, this->texture);
         }
     }
 

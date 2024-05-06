@@ -27,7 +27,7 @@ namespace Violet
     extern void SetShaderIVec2Array (const std::string& name, const uint count, const int* const value);
     extern void SetShaderUIVec2Array(const std::string& name, const uint count, const uint* const value);
     extern void SetShaderVec3Array  (const std::string& name, const uint count, const float* const value);
-    extern void SetShaderIVec3Array (const std::string& name, const uint count, const int* const);
+    extern void SetShaderIVec3Array (const std::string& name, const uint count, const int* const value);
     extern void SetShaderUIVec3Array(const std::string& name, const uint count, const uint* const value);
     extern void SetShaderVec4Array  (const std::string& name, const uint count, const float* const value);
     extern void SetShaderIVec4Array (const std::string& name, const uint count, const int* const value);
