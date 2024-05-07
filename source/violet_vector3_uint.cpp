@@ -25,16 +25,16 @@ namespace Violet
 
     UIVector3::UIVector3(const UIVector2& vec, const uint z)
     {
-        this->data[0] = vec.data[0];
-        this->data[1] = vec.data[1];
+        this->data[0] = vec[0];
+        this->data[1] = vec[1];
         this->data[2] = z;
     }
 
     UIVector3::UIVector3(const UIVector3& vec)
     {
-        this->data[0] = vec.data[0];
-        this->data[1] = vec.data[1];
-        this->data[2] = vec.data[2];
+        this->data[0] = vec[0];
+        this->data[1] = vec[1];
+        this->data[2] = vec[2];
     }
 
     UIVector3::operator Vector3() const
@@ -65,9 +65,9 @@ namespace Violet
 
     UIVector3& UIVector3::operator=(const UIVector3& vec)
     {
-        this->data[0] = vec.data[0];
-        this->data[1] = vec.data[1];
-        this->data[2] = vec.data[2];
+        this->data[0] = vec[0];
+        this->data[1] = vec[1];
+        this->data[2] = vec[2];
         return *this;
     }
 
@@ -87,9 +87,9 @@ namespace Violet
 
     UIVector3 UIVector3::operator+(const UIVector3& vec) const
     {
-        return UIVector3(this->data[0] + vec.data[0],
-                         this->data[1] + vec.data[1],
-                         this->data[2] + vec.data[2]);
+        return UIVector3(this->data[0] + vec[0],
+                         this->data[1] + vec[1],
+                         this->data[2] + vec[2]);
     }
 
     UIVector3 UIVector3::operator-(const uint value) const
@@ -108,9 +108,9 @@ namespace Violet
 
     UIVector3 UIVector3::operator-(const UIVector3& vec) const
     {
-        return UIVector3(this->data[0] - vec.data[0],
-                         this->data[1] - vec.data[1],
-                         this->data[2] - vec.data[2]);
+        return UIVector3(this->data[0] - vec[0],
+                         this->data[1] - vec[1],
+                         this->data[2] - vec[2]);
     }
 
     UIVector3 UIVector3::operator*(const uint value) const
@@ -129,9 +129,9 @@ namespace Violet
 
     UIVector3 UIVector3::operator*(const UIVector3& vec) const
     {
-        return UIVector3(this->data[0] * vec.data[0],
-                         this->data[1] * vec.data[1],
-                         this->data[2] * vec.data[2]);
+        return UIVector3(this->data[0] * vec[0],
+                         this->data[1] * vec[1],
+                         this->data[2] * vec[2]);
     }
 
     UIVector3 UIVector3::operator/(const uint value) const
@@ -150,9 +150,9 @@ namespace Violet
 
     UIVector3 UIVector3::operator/(const UIVector3& vec) const
     {
-        return UIVector3(this->data[0] / vec.data[0],
-                         this->data[1] / vec.data[1],
-                         this->data[2] / vec.data[2]);
+        return UIVector3(this->data[0] / vec[0],
+                         this->data[1] / vec[1],
+                         this->data[2] / vec[2]);
     }
 
     UIVector3& UIVector3::operator+=(const uint value)
@@ -173,9 +173,9 @@ namespace Violet
 
     UIVector3& UIVector3::operator+=(const UIVector3& vec)
     {
-        this->data[0] += vec.data[0];
-        this->data[1] += vec.data[1];
-        this->data[2] += vec.data[2];
+        this->data[0] += vec[0];
+        this->data[1] += vec[1];
+        this->data[2] += vec[2];
         return *this;
     }
 
@@ -197,9 +197,9 @@ namespace Violet
 
     UIVector3& UIVector3::operator-=(const UIVector3& vec)
     {
-        this->data[0] -= vec.data[0];
-        this->data[1] -= vec.data[1];
-        this->data[2] -= vec.data[2];
+        this->data[0] -= vec[0];
+        this->data[1] -= vec[1];
+        this->data[2] -= vec[2];
         return *this;
     }
 
@@ -221,9 +221,9 @@ namespace Violet
 
     UIVector3& UIVector3::operator*=(const UIVector3& vec)
     {
-        this->data[0] *= vec.data[0];
-        this->data[1] *= vec.data[1];
-        this->data[2] *= vec.data[2];
+        this->data[0] *= vec[0];
+        this->data[1] *= vec[1];
+        this->data[2] *= vec[2];
         return *this;
     }
 
@@ -245,9 +245,9 @@ namespace Violet
 
     UIVector3& UIVector3::operator/=(const UIVector3& vec)
     {
-        this->data[0] /= vec.data[0];
-        this->data[1] /= vec.data[1];
-        this->data[2] /= vec.data[2];
+        this->data[0] /= vec[0];
+        this->data[1] /= vec[1];
+        this->data[2] /= vec[2];
         return *this;
     }
 
@@ -267,9 +267,9 @@ namespace Violet
 
     bool UIVector3::operator==(const UIVector3& vec)
     {
-        return this->data[0] == vec.data[0] &&
-               this->data[1] == vec.data[1] &&
-               this->data[2] == vec.data[2];
+        return this->data[0] == vec[0] &&
+               this->data[1] == vec[1] &&
+               this->data[2] == vec[2];
     }
 
     uint& UIVector3::operator[](const size_t index)
@@ -314,16 +314,16 @@ namespace Violet
 
     uint UIVector3::Dot(const UIVector3& vec) const
     {
-        return (this->data[0] * vec.data[0]) +
-               (this->data[1] * vec.data[1]) +
-               (this->data[2] * vec.data[2]);
+        return (this->data[0] * vec[0]) +
+               (this->data[1] * vec[1]) +
+               (this->data[2] * vec[2]);
     }
 
     UIVector3 UIVector3::Cross(const UIVector3& vec) const
     {
-        return UIVector3((this->data[1] * vec.data[2]) - (vec.data[1] * this->data[2]),
-                         (this->data[2] * vec.data[0]) - (vec.data[2] * this->data[0]),
-                         (this->data[0] * vec.data[1]) - (vec.data[0] * this->data[1]));
+        return UIVector3((this->data[1] * vec[2]) - (vec[1] * this->data[2]),
+                         (this->data[2] * vec[0]) - (vec[2] * this->data[0]),
+                         (this->data[0] * vec[1]) - (vec[0] * this->data[1]));
     }
 
     float UIVector3::Length() const

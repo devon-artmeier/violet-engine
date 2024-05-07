@@ -77,7 +77,7 @@ namespace Violet
 
         Pointer<uchar>     atlas        = new uchar[AtlasWidth * AtlasHeight * 4];
         stbtt_pack_context pack_context = {0};
-        Pointer<Texture>   texture      = new Texture(this->id + " Texture 0", nullptr, AtlasWidth, AtlasHeight, 1);
+        Pointer<Texture>   texture      = new Texture(this->id + " Atlas 0", nullptr, AtlasWidth, AtlasHeight, 1);
         int                cur_texture  = 0;
 
         stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
@@ -87,7 +87,7 @@ namespace Violet
             
             if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
                 texture->UpdatePixels(atlas.Raw(), AtlasWidth, AtlasHeight, 1, 0, 0);
-                texture = new Texture(this->id + " Texture " + std::to_string(++cur_texture), nullptr, AtlasWidth, AtlasHeight, 1);
+                texture = new Texture(this->id + " Atlas " + std::to_string(++cur_texture), nullptr, AtlasWidth, AtlasHeight, 1);
                 stbtt_PackEnd(&pack_context);
                 
                 stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);

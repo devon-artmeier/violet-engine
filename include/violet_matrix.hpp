@@ -13,6 +13,8 @@ namespace Violet
                       const float value9,  const float value10, const float value11, const float value12,
                       const float value13, const float value14, const float value15, const float value16);
             Matrix4x4(const float arr[16]);
+            Matrix4x4(const float arr1[4], const float arr2[4], const float arr3[4], const float arr4[4]);
+            Matrix4x4(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4);
             Matrix4x4(const Matrix4x4& mat);
             
             Matrix4x4&   operator= (const float value);
@@ -24,12 +26,12 @@ namespace Violet
             Matrix4x4&   operator+=(const Matrix4x4& mat);
             Matrix4x4&   operator-=(const Matrix4x4& mat);
             Matrix4x4&   operator*=(const Matrix4x4& mat);
-            float&       operator[](const size_t index);
-            const float& operator[](const size_t index) const;
+            float*       operator[](const size_t index);
+            const float* operator[](const size_t index) const;
 
             static Matrix4x4 Identity();
 
-            float data[16]{ { 0 } };
+            float data[4][4]{ { 0 } };
     };
 
     extern Matrix4x4 OrthoMatrix    (const Vector2& x, const Vector2& y, const Vector2& z);

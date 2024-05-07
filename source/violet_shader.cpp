@@ -445,7 +445,13 @@ namespace Violet
     void SetShaderMatrix4x4(const std::string& name, const Matrix4x4& mat)
     {
         if (!CheckShaderSetFail("4x4 matrix")) {
-            glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, mat.data);
+            float values[16] = {
+                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                mat[3][0], mat[3][1], mat[3][2], mat[3][3]
+            };
+            glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, values);
         }
     }
 
@@ -455,22 +461,22 @@ namespace Violet
             Pointer<float> values = new float[mats.size() * 16];
             int i = 0;
             for (const Matrix4x4& mat : mats) {
-                values[i++] = mat[0];
-                values[i++] = mat[1];
-                values[i++] = mat[2];
-                values[i++] = mat[3];
-                values[i++] = mat[4];
-                values[i++] = mat[5];
-                values[i++] = mat[6];
-                values[i++] = mat[7];
-                values[i++] = mat[8];
-                values[i++] = mat[9];
-                values[i++] = mat[10];
-                values[i++] = mat[11];
-                values[i++] = mat[12];
-                values[i++] = mat[13];
-                values[i++] = mat[14];
-                values[i++] = mat[15];
+                values[i++] = mat[0][0];
+                values[i++] = mat[0][1];
+                values[i++] = mat[0][2];
+                values[i++] = mat[0][3];
+                values[i++] = mat[1][0];
+                values[i++] = mat[1][1];
+                values[i++] = mat[1][2];
+                values[i++] = mat[1][3];
+                values[i++] = mat[2][0];
+                values[i++] = mat[2][1];
+                values[i++] = mat[2][2];
+                values[i++] = mat[2][3];
+                values[i++] = mat[3][0];
+                values[i++] = mat[3][1];
+                values[i++] = mat[3][2];
+                values[i++] = mat[3][3];
             }
             glUniformMatrix4fv(GetUniformLocation(name), mats.size(), GL_FALSE, values.Raw());
         }

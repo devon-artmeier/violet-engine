@@ -159,7 +159,7 @@ namespace Violet
             Vector4      operator* (const float value) const;
             Vector4      operator* (const float arr[4]) const;
             Vector4      operator* (const Vector4& vec) const;
-            Vector4      operator* (const Matrix4x4& vec) const;
+            Vector4      operator* (const Matrix4x4& mat) const;
             Vector4      operator/ (const float value) const;
             Vector4      operator/ (const float arr[4]) const;
             Vector4      operator/ (const Vector4& vec) const;
@@ -172,7 +172,7 @@ namespace Violet
             Vector4&     operator*=(const float value);
             Vector4&     operator*=(const float arr[4]);
             Vector4&     operator*=(const Vector4& vec);
-            Vector4&     operator*=(const Matrix4x4& vec);
+            Vector4&     operator*=(const Matrix4x4& mat);
             Vector4&     operator/=(const float value);
             Vector4&     operator/=(const float arr[4]);
             Vector4&     operator/=(const Vector4& vec);
@@ -345,7 +345,7 @@ namespace Violet
             IVector4   operator* (const int value) const;
             IVector4   operator* (const int arr[4]) const;
             IVector4   operator* (const IVector4& vec) const;
-            IVector4   operator* (const Matrix4x4& vec) const;
+            IVector4   operator* (const Matrix4x4& mat) const;
             IVector4   operator/ (const int value) const;
             IVector4   operator/ (const int arr[4]) const;
             IVector4   operator/ (const IVector4& vec) const;
@@ -358,7 +358,7 @@ namespace Violet
             IVector4&  operator*=(const int value);
             IVector4&  operator*=(const int arr[4]);
             IVector4&  operator*=(const IVector4& vec);
-            IVector4&  operator*=(const Matrix4x4& vec);
+            IVector4&  operator*=(const Matrix4x4& mat);
             IVector4&  operator/=(const int value);
             IVector4&  operator/=(const int arr[4]);
             IVector4&  operator/=(const IVector4& vec);
@@ -531,7 +531,7 @@ namespace Violet
             UIVector4   operator* (const uint value) const;
             UIVector4   operator* (const uint arr[4]) const;
             UIVector4   operator* (const UIVector4& vec) const;
-            UIVector4   operator* (const Matrix4x4& vec) const;
+            UIVector4   operator* (const Matrix4x4& mat) const;
             UIVector4   operator/ (const uint value) const;
             UIVector4   operator/ (const uint arr[4]) const;
             UIVector4   operator/ (const UIVector4& vec) const;
@@ -544,7 +544,7 @@ namespace Violet
             UIVector4&  operator*=(const uint value);
             UIVector4&  operator*=(const uint arr[4]);
             UIVector4&  operator*=(const UIVector4& vec);
-            UIVector4&  operator*=(const Matrix4x4& vec);
+            UIVector4&  operator*=(const Matrix4x4& mat);
             UIVector4&  operator/=(const uint value);
             UIVector4&  operator/=(const uint arr[4]);
             UIVector4&  operator/=(const UIVector4& vec);

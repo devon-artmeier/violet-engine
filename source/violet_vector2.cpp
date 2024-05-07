@@ -22,8 +22,8 @@ namespace Violet
 
     Vector2::Vector2(const Vector2& vec)
     {
-        this->data[0] = vec.data[0];
-        this->data[1] = vec.data[1];
+        this->data[0] = vec[0];
+        this->data[1] = vec[1];
     }
 
     Vector2::operator IVector2() const
@@ -52,8 +52,8 @@ namespace Violet
 
     Vector2& Vector2::operator=(const Vector2& vec)
     {
-        this->data[0] = vec.data[0];
-        this->data[1] = vec.data[1];
+        this->data[0] = vec[0];
+        this->data[1] = vec[1];
         return *this;
     }
 
@@ -71,8 +71,8 @@ namespace Violet
 
     Vector2 Vector2::operator+(const Vector2& vec) const
     {
-        return Vector2(this->data[0] + vec.data[0],
-                       this->data[1] + vec.data[1]);
+        return Vector2(this->data[0] + vec[0],
+                       this->data[1] + vec[1]);
     }
 
     Vector2 Vector2::operator-(const float value) const
@@ -89,8 +89,8 @@ namespace Violet
 
     Vector2 Vector2::operator-(const Vector2& vec) const
     {
-        return Vector2(this->data[0] - vec.data[0],
-                       this->data[1] - vec.data[1]);
+        return Vector2(this->data[0] - vec[0],
+                       this->data[1] - vec[1]);
     }
 
     Vector2 Vector2::operator*(const float value) const
@@ -107,8 +107,8 @@ namespace Violet
 
     Vector2 Vector2::operator*(const Vector2& vec) const
     {
-        return Vector2(this->data[0] * vec.data[0],
-                       this->data[1] * vec.data[1]);
+        return Vector2(this->data[0] * vec[0],
+                       this->data[1] * vec[1]);
     }
 
     Vector2 Vector2::operator/(const float value) const
@@ -125,8 +125,8 @@ namespace Violet
 
     Vector2 Vector2::operator/(const Vector2& vec) const
     {
-        return Vector2(this->data[0] / vec.data[0],
-                       this->data[1] / vec.data[1]);
+        return Vector2(this->data[0] / vec[0],
+                       this->data[1] / vec[1]);
     }
 
     Vector2& Vector2::operator+=(const float value)
@@ -145,8 +145,8 @@ namespace Violet
 
     Vector2& Vector2::operator+=(const Vector2& vec)
     {
-        this->data[0] += vec.data[0];
-        this->data[1] += vec.data[1];
+        this->data[0] += vec[0];
+        this->data[1] += vec[1];
         return *this;
     }
 
@@ -166,8 +166,8 @@ namespace Violet
 
     Vector2& Vector2::operator-=(const Vector2& vec)
     {
-        this->data[0] -= vec.data[0];
-        this->data[1] -= vec.data[1];
+        this->data[0] -= vec[0];
+        this->data[1] -= vec[1];
         return *this;
     }
 
@@ -187,8 +187,8 @@ namespace Violet
 
     Vector2& Vector2::operator*=(const Vector2& vec)
     {
-        this->data[0] *= vec.data[0];
-        this->data[1] *= vec.data[1];
+        this->data[0] *= vec[0];
+        this->data[1] *= vec[1];
         return *this;
     }
 
@@ -208,8 +208,8 @@ namespace Violet
 
     Vector2& Vector2::operator/=(const Vector2& vec)
     {
-        this->data[0] /= vec.data[0];
-        this->data[1] /= vec.data[1];
+        this->data[0] /= vec[0];
+        this->data[1] /= vec[1];
         return *this;
     }
 
@@ -227,8 +227,8 @@ namespace Violet
 
     bool Vector2::operator==(const Vector2& vec)
     {
-        return this->data[0] == vec.data[0] &&
-               this->data[1] == vec.data[1];
+        return this->data[0] == vec[0] &&
+               this->data[1] == vec[1];
     }
 
     float& Vector2::operator[](const size_t index)
@@ -263,8 +263,8 @@ namespace Violet
 
     float Vector2::Dot(const Vector2& vec) const
     {
-        return (this->data[0] * vec.data[0]) +
-               (this->data[1] * vec.data[1]);
+        return (this->data[0] * vec[0]) +
+               (this->data[1] * vec[1]);
     }
 
     float Vector2::Length() const
