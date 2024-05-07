@@ -1,8 +1,11 @@
 #include "violet_engine_internal.hpp"
 
-#ifdef WIN32
+#if defined(WIN32) && defined(APIENTRY)
+#undef APIENTRY
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#if defined(WIN32) && defined(MessageBox)
 #undef MessageBox
 #endif
 
