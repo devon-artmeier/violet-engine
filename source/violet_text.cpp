@@ -284,8 +284,8 @@ namespace Violet
                     font->mesh->RefreshElementBuffer();
 
                     text_shader->Attach();
-                    SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, 0.0f, Vector2(1.0f)).data);
+                    SetShaderMatrix4x4("inProjection", Get2dProjectionMatrix());
+                    SetShaderMatrix4x4("inTransform", TransformMatrix(draw.pos, 0.0f, Vector2(1.0f)));
                     SetShaderTexture(font->textures[draw.size], 0);
 
                     font->mesh->Draw();

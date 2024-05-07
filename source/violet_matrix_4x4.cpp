@@ -258,6 +258,16 @@ namespace Violet
         return *this;
     }
 
+    float& Matrix4x4::operator[](const size_t index)
+    {
+        return this->data[index];
+    }
+
+    const float& Matrix4x4::operator[](const size_t index) const
+    {
+        return this->data[index];
+    }
+
     Matrix4x4 Matrix4x4::Identity()
     {
         return Matrix4x4(1, 0, 0, 0,

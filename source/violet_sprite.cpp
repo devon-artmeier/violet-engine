@@ -265,8 +265,8 @@ namespace Violet
                     const SpriteDraw& draw = sprite_sheet->draw_queue[layer][i];
                 
                     sprite_shader->Attach();
-                    SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, draw.angle, draw.scale).data);
+                    SetShaderMatrix4x4("inProjection", Get2dProjectionMatrix());
+                    SetShaderMatrix4x4("inTransform", TransformMatrix(draw.pos, draw.angle, draw.scale));
                     SetShaderTexture(sprite_sheet->texture, 0);
 
                     sprite_sheet->mesh->DrawPartial(2, draw.frame * 2);

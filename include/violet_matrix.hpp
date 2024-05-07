@@ -15,15 +15,17 @@ namespace Violet
             Matrix4x4(const float arr[16]);
             Matrix4x4(const Matrix4x4& mat);
             
-            Matrix4x4& operator= (const float value);
-            Matrix4x4& operator= (const Matrix4x4& mat);
-            Matrix4x4  operator+ (const Matrix4x4& mat) const;
-            Matrix4x4  operator- (const Matrix4x4& mat) const;
-            Vector4    operator* (const Vector4& vec) const;
-            Matrix4x4  operator* (const Matrix4x4& mat) const;
-            Matrix4x4& operator+=(const Matrix4x4& mat);
-            Matrix4x4& operator-=(const Matrix4x4& mat);
-            Matrix4x4& operator*=(const Matrix4x4& mat);
+            Matrix4x4&   operator= (const float value);
+            Matrix4x4&   operator= (const Matrix4x4& mat);
+            Matrix4x4    operator+ (const Matrix4x4& mat) const;
+            Matrix4x4    operator- (const Matrix4x4& mat) const;
+            Vector4      operator* (const Vector4& vec) const;
+            Matrix4x4    operator* (const Matrix4x4& mat) const;
+            Matrix4x4&   operator+=(const Matrix4x4& mat);
+            Matrix4x4&   operator-=(const Matrix4x4& mat);
+            Matrix4x4&   operator*=(const Matrix4x4& mat);
+            float&       operator[](const size_t index);
+            const float& operator[](const size_t index) const;
 
             static Matrix4x4 Identity();
 

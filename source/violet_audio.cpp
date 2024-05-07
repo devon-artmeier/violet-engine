@@ -8,6 +8,9 @@
 #ifdef VIOLET_DEBUG
 #define MA_DEBUG_OUTPUT
 #endif
+#ifdef APIENTRY
+#undef APIENTRY
+#endif
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 #ifdef PlaySound
