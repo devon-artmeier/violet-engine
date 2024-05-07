@@ -111,6 +111,12 @@ namespace Violet
                         this->data[1] * vec[1]);
     }
 
+    IVector2 IVector2::operator*(const Matrix2x2& mat) const
+    {
+        return IVector2((this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]),
+                        (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]));
+    }
+
     IVector2 IVector2::operator/(const int value) const
     {
         return IVector2(this->data[0] / value,
@@ -189,6 +195,13 @@ namespace Violet
     {
         this->data[0] *= vec[0];
         this->data[1] *= vec[1];
+        return *this;
+    }
+
+    IVector2& IVector2::operator*=(const Matrix2x2& mat)
+    {
+        this->data[0] = (this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]);
+        this->data[1] = (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]);
         return *this;
     }
 

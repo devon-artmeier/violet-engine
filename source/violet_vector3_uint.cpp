@@ -134,6 +134,13 @@ namespace Violet
                          this->data[2] * vec[2]);
     }
 
+    UIVector3 UIVector3::operator*(const Matrix3x3& mat) const
+    {
+        return UIVector3((this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]) + (this->data[2] * mat[2][0]),
+                         (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]) + (this->data[2] * mat[2][1]),
+                         (this->data[0] * mat[0][2]) + (this->data[1] * mat[1][2]) + (this->data[2] * mat[2][2]));
+    }
+
     UIVector3 UIVector3::operator/(const uint value) const
     {
         return UIVector3(this->data[0] / value,
@@ -224,6 +231,14 @@ namespace Violet
         this->data[0] *= vec[0];
         this->data[1] *= vec[1];
         this->data[2] *= vec[2];
+        return *this;
+    }
+
+    UIVector3& UIVector3::operator*=(const Matrix3x3& mat)
+    {
+        this->data[0] = (this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]) + (this->data[2] * mat[2][0]);
+        this->data[1] = (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]) + (this->data[2] * mat[2][1]);
+        this->data[2] = (this->data[0] * mat[0][2]) + (this->data[1] * mat[1][2]) + (this->data[2] * mat[2][2]);
         return *this;
     }
 

@@ -9,6 +9,8 @@ list(APPEND VIOLET_SRC
     "source/violet_main.cpp"
     "source/violet_math.cpp"
     "source/violet_mesh.cpp"
+    "source/violet_matrix_2x2.cpp"
+    "source/violet_matrix_3x3.cpp"
     "source/violet_matrix_4x4.cpp"
     "source/violet_message.cpp"
     "source/violet_shader.cpp"

@@ -5,6 +5,7 @@ namespace Violet
 {
     class IVector2;
     class UIVector2;
+    class Matrix2x2;
 
     class Vector2
     {
@@ -30,6 +31,7 @@ namespace Violet
             Vector2      operator* (const float value) const;
             Vector2      operator* (const float arr[2]) const;
             Vector2      operator* (const Vector2& vec) const;
+            Vector2      operator* (const Matrix2x2& mat) const;
             Vector2      operator/ (const float value) const;
             Vector2      operator/ (const float arr[2]) const;
             Vector2      operator/ (const Vector2& vec) const;
@@ -42,6 +44,7 @@ namespace Violet
             Vector2&     operator*=(const float value);
             Vector2&     operator*=(const float arr[2]);
             Vector2&     operator*=(const Vector2& vec);
+            Vector2&     operator*=(const Matrix2x2& mat);
             Vector2&     operator/=(const float value);
             Vector2&     operator/=(const float arr[2]);
             Vector2&     operator/=(const Vector2& vec);
@@ -66,6 +69,7 @@ namespace Violet
 
     class IVector3;
     class UIVector3;
+    class Matrix3x3;
 
     class Vector3
     {
@@ -92,6 +96,7 @@ namespace Violet
             Vector3      operator* (const float value) const;
             Vector3      operator* (const float arr[3]) const;
             Vector3      operator* (const Vector3& vec) const;
+            Vector3      operator* (const Matrix3x3& mat) const;
             Vector3      operator/ (const float value) const;
             Vector3      operator/ (const float arr[3]) const;
             Vector3      operator/ (const Vector3& vec) const;
@@ -104,6 +109,7 @@ namespace Violet
             Vector3&     operator*=(const float value);
             Vector3&     operator*=(const float arr[3]);
             Vector3&     operator*=(const Vector3& vec);
+            Vector3&     operator*=(const Matrix3x3& mat);
             Vector3&     operator/=(const float value);
             Vector3&     operator/=(const float arr[3]);
             Vector3&     operator/=(const Vector3& vec);
@@ -223,6 +229,7 @@ namespace Violet
             IVector2   operator* (const int value) const;
             IVector2   operator* (const int arr[2]) const;
             IVector2   operator* (const IVector2& vec) const;
+            IVector2   operator* (const Matrix2x2& mat) const;
             IVector2   operator/ (const int value) const;
             IVector2   operator/ (const int arr[2]) const;
             IVector2   operator/ (const IVector2& vec) const;
@@ -235,6 +242,7 @@ namespace Violet
             IVector2&  operator*=(const int value);
             IVector2&  operator*=(const int arr[2]);
             IVector2&  operator*=(const IVector2& vec);
+            IVector2&  operator*=(const Matrix2x2& mat);
             IVector2&  operator/=(const int value);
             IVector2&  operator/=(const int arr[2]);
             IVector2&  operator/=(const IVector2& vec);
@@ -282,6 +290,7 @@ namespace Violet
             IVector3   operator* (const int value) const;
             IVector3   operator* (const int arr[3]) const;
             IVector3   operator* (const IVector3& vec) const;
+            IVector3   operator* (const Matrix3x3& mat) const;
             IVector3   operator/ (const int value) const;
             IVector3   operator/ (const int arr[3]) const;
             IVector3   operator/ (const IVector3& vec) const;
@@ -294,6 +303,7 @@ namespace Violet
             IVector3&  operator*=(const int value);
             IVector3&  operator*=(const int arr[3]);
             IVector3&  operator*=(const IVector3& vec);
+            IVector3&  operator*=(const Matrix3x3& mat);
             IVector3&  operator/=(const int value);
             IVector3&  operator/=(const int arr[3]);
             IVector3&  operator/=(const IVector3& vec);
@@ -409,6 +419,7 @@ namespace Violet
             UIVector2   operator* (const uint value) const;
             UIVector2   operator* (const uint arr[2]) const;
             UIVector2   operator* (const UIVector2& vec) const;
+            UIVector2   operator* (const Matrix2x2& mat) const;
             UIVector2   operator/ (const uint value) const;
             UIVector2   operator/ (const uint arr[2]) const;
             UIVector2   operator/ (const UIVector2& vec) const;
@@ -421,6 +432,7 @@ namespace Violet
             UIVector2&  operator*=(const uint value);
             UIVector2&  operator*=(const uint arr[2]);
             UIVector2&  operator*=(const UIVector2& vec);
+            UIVector2&  operator*=(const Matrix2x2& mat);
             UIVector2&  operator/=(const uint value);
             UIVector2&  operator/=(const uint arr[2]);
             UIVector2&  operator/=(const UIVector2& vec);
@@ -468,6 +480,7 @@ namespace Violet
             UIVector3   operator* (const uint value) const;
             UIVector3   operator* (const uint arr[3]) const;
             UIVector3   operator* (const UIVector3& vec) const;
+            UIVector3   operator* (const Matrix3x3& mat) const;
             UIVector3   operator/ (const uint value) const;
             UIVector3   operator/ (const uint arr[3]) const;
             UIVector3   operator/ (const UIVector3& vec) const;
@@ -480,6 +493,7 @@ namespace Violet
             UIVector3&  operator*=(const uint value);
             UIVector3&  operator*=(const uint arr[3]);
             UIVector3&  operator*=(const UIVector3& vec);
+            UIVector3&  operator*=(const Matrix3x3& mat);
             UIVector3&  operator/=(const uint value);
             UIVector3&  operator/=(const uint arr[3]);
             UIVector3&  operator/=(const UIVector3& vec);
