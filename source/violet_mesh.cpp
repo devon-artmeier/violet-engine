@@ -8,9 +8,9 @@ namespace Violet
         this->attribute_lengths = new uint[this->attribute_count];
 
         int i = 0;
-        for (uint it : attribute_lengths) {
-            this->attribute_lengths[i++]  = it;
-            this->vertex_stride          += it;
+        for (const uint& length : attribute_lengths) {
+            this->attribute_lengths[i++]  = length;
+            this->vertex_stride          += length;
         }
 
         glGenVertexArrays(1, &this->vao);

@@ -16,14 +16,14 @@ namespace Violet
             void SetWrapX    (const TextureWrap wrap);
             void SetWrapY    (const TextureWrap wrap);
 
-            std::string   id    { "" };
-            bool          loaded{ false };
-            GLuint        gl_id { 0 };
-            int           width { 0 };
-            int           height{ 0 };
-            TextureFilter filter{ TextureFilter::Nearest };
-            TextureWrap   wrap_x{ TextureWrap::Repeat };
-            TextureWrap   wrap_y{ TextureWrap::Repeat };
+            std::string   id     { "" };
+            bool          loaded { false };
+            GLuint        texture{ 0 };
+            int           width  { 0 };
+            int           height { 0 };
+            TextureFilter filter { TextureFilter::Nearest };
+            TextureWrap   wrap_x { TextureWrap::Repeat };
+            TextureWrap   wrap_y { TextureWrap::Repeat };
     };
     
     extern void InitTextureGroup   ();

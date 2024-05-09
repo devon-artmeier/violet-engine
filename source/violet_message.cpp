@@ -1,9 +1,14 @@
 #include "violet_engine_internal.hpp"
 
 #ifdef WIN32
+#ifdef APIENTRY
+#undef APIENTRY
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#ifdef MessageBox
 #undef MessageBox
+#endif
 #endif
 
 namespace Violet

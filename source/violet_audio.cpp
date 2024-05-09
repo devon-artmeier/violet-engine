@@ -3,6 +3,9 @@
 #define STB_VORBIS_HEADER_ONLY
 #include <stb_vorbis.c>
 
+#if defined(WIN32) && defined(APIENTRY)
+#undef APIENTRY
+#endif
 #define MA_NO_DEVICE_IO
 #define MA_NO_RUNTIME_LINKING
 #ifdef VIOLET_DEBUG
@@ -10,7 +13,7 @@
 #endif
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
-#ifdef PlaySound
+#if defined(WIN32) && defined(PlaySound)
 #undef PlaySound
 #endif
 

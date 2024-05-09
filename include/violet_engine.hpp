@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "violet_types.hpp"
+#include "violet_vector.hpp"
+#include "violet_matrix.hpp"
 
 #include "violet_audio.hpp"
 #include "violet_file.hpp"

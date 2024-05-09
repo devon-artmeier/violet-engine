@@ -240,8 +240,8 @@ namespace Violet
         sprite_sheet_group->sprite_sheets.clear();
     }
 
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2D& pos,
-                    const float angle, const Vector2D& scale)
+    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2& pos,
+                    const float angle, const Vector2& scale)
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
         if (sprite_sheet != nullptr) {
@@ -265,8 +265,8 @@ namespace Violet
                     const SpriteDraw& draw = sprite_sheet->draw_queue[layer][i];
                 
                     sprite_shader->Attach();
-                    SetShaderMatrix4x4("inProjection", false, 1, Get2dProjectionMatrix().data);
-                    SetShaderMatrix4x4("inTransform", false, 1, TransformMatrix(draw.pos, draw.angle, draw.scale).data);
+                    SetShaderMatrix4x4("inProjection", Get2dProjectionMatrix());
+                    SetShaderMatrix4x4("inTransform", TransformMatrix(draw.pos, draw.angle, draw.scale));
                     SetShaderTexture(sprite_sheet->texture, 0);
 
                     sprite_sheet->mesh->DrawPartial(2, draw.frame * 2);
