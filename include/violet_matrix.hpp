@@ -3,6 +3,8 @@
 
 namespace Violet
 {
+    class Matrix2x3;
+
     class Matrix2x2
     {
         public:
@@ -20,6 +22,7 @@ namespace Violet
             Matrix2x2    operator- (const Matrix2x2& mat) const;
             Vector2      operator* (const Vector2& vec) const;
             Matrix2x2    operator* (const Matrix2x2& mat) const;
+            Matrix2x3    operator* (const Matrix2x3& mat) const;
             Matrix2x2&   operator+=(const Matrix2x2& mat);
             Matrix2x2&   operator-=(const Matrix2x2& mat);
             Matrix2x2&   operator*=(const Matrix2x2& mat);
@@ -29,6 +32,66 @@ namespace Violet
             static Matrix2x2 Identity();
 
             float data[2][2]{ { 0 } };
+    };
+
+    class Matrix3x2;
+    class Matrix3x3;
+
+    class Matrix2x3
+    {
+        public:
+            Matrix2x3() { }
+            Matrix2x3(const float value);
+            Matrix2x3(const float value1, const float value2,
+                      const float value3, const float value4,
+                      const float value5, const float value6);
+            Matrix2x3(const float arr[6]);
+            Matrix2x3(const float arr1[2], const float arr2[2], const float arr3[2]);
+            Matrix2x3(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3);
+            Matrix2x3(const Matrix2x3& mat);
+            
+            Matrix2x3&   operator= (const float value);
+            Matrix2x3&   operator= (const Matrix2x3& mat);
+            Matrix2x3    operator+ (const Matrix2x3& mat) const;
+            Matrix2x3    operator- (const Matrix2x3& mat) const;
+            Vector2      operator* (const Vector3& vec) const;
+            Matrix2x2    operator* (const Matrix3x2& mat) const;
+            Matrix2x3    operator* (const Matrix3x3& mat) const;
+            Matrix2x3&   operator+=(const Matrix2x3& mat);
+            Matrix2x3&   operator-=(const Matrix2x3& mat);
+            Matrix2x3&   operator*=(const Matrix3x3& mat);
+            float*       operator[](const size_t index);
+            const float* operator[](const size_t index) const;
+
+            float data[3][2]{ { 0 } };
+    };
+
+    class Matrix3x2
+    {
+        public:
+            Matrix3x2() { }
+            Matrix3x2(const float value);
+            Matrix3x2(const float value1, const float value2, const float value3,
+                      const float value4, const float value5, const float value6);
+            Matrix3x2(const float arr[6]);
+            Matrix3x2(const float arr1[3], const float arr2[3]);
+            Matrix3x2(const Vector3& vec1, const Vector3& vec2);
+            Matrix3x2(const Matrix3x2& mat);
+            
+            Matrix3x2&   operator= (const float value);
+            Matrix3x2&   operator= (const Matrix3x2& mat);
+            Matrix3x2    operator+ (const Matrix3x2& mat) const;
+            Matrix3x2    operator- (const Matrix3x2& mat) const;
+            Vector3      operator* (const Vector2& vec) const;
+            Matrix3x2    operator* (const Matrix2x2& mat) const;
+            Matrix3x3    operator* (const Matrix2x3& mat) const;
+            Matrix3x2&   operator+=(const Matrix3x2& mat);
+            Matrix3x2&   operator-=(const Matrix3x2& mat);
+            Matrix3x2&   operator*=(const Matrix2x2& mat);
+            float*       operator[](const size_t index);
+            const float* operator[](const size_t index) const;
+
+            float data[2][3]{ { 0 } };
     };
 
     class Matrix3x3
@@ -49,6 +112,7 @@ namespace Violet
             Matrix3x3    operator+ (const Matrix3x3& mat) const;
             Matrix3x3    operator- (const Matrix3x3& mat) const;
             Vector3      operator* (const Vector3& vec) const;
+            Matrix3x2    operator* (const Matrix3x2& mat) const;
             Matrix3x3    operator* (const Matrix3x3& mat) const;
             Matrix3x3&   operator+=(const Matrix3x3& mat);
             Matrix3x3&   operator-=(const Matrix3x3& mat);
