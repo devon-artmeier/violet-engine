@@ -389,108 +389,63 @@ namespace Violet
     void SetShaderMatrix2x2(const std::string& name, const Matrix2x2& mat)
     {
         if (!CheckShaderSetFail("2x2 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1],
-                mat[1][0], mat[1][1]
-            };
-            glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix2fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix2x3(const std::string& name, const Matrix2x3& mat)
     {
         if (!CheckShaderSetFail("2x3 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1],
-                mat[1][0], mat[1][1],
-                mat[2][0], mat[2][1]
-            };
-            glUniformMatrix2x3fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix2x3fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix2x4(const std::string& name, const Matrix2x4& mat)
     {
         if (!CheckShaderSetFail("2x4 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1],
-                mat[1][0], mat[1][1],
-                mat[2][0], mat[2][1],
-                mat[3][0], mat[3][1]
-            };
-            glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix3x2(const std::string& name, const Matrix3x2& mat)
     {
         if (!CheckShaderSetFail("3x2 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2],
-                mat[1][0], mat[1][1], mat[1][2]
-            };
-            glUniformMatrix3x2fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix3x2fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix3x3(const std::string& name, const Matrix3x3& mat)
     {
         if (!CheckShaderSetFail("3x3 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2],
-                mat[1][0], mat[1][1], mat[1][2],
-                mat[2][0], mat[2][1], mat[2][2]
-            };
-            glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix3x4(const std::string& name, const Matrix3x4& mat)
     {
         if (!CheckShaderSetFail("3x4 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2],
-                mat[1][0], mat[1][1], mat[1][2],
-                mat[2][0], mat[2][1], mat[2][2],
-                mat[3][0], mat[3][1], mat[3][2]
-            };
-            glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix4x2(const std::string& name, const Matrix4x2& mat)
     {
         if (!CheckShaderSetFail("4x2 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                mat[1][0], mat[1][1], mat[1][2], mat[1][3]
-            };
-            glUniformMatrix4x2fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix4x2fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix4x3(const std::string& name, const Matrix4x3& mat)
     {
         if (!CheckShaderSetFail("4x3 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                mat[1][0], mat[1][1], mat[1][2], mat[1][3],
-                mat[2][0], mat[2][1], mat[2][2], mat[2][3]
-            };
-            glUniformMatrix4x3fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix4x3fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
     void SetShaderMatrix4x4(const std::string& name, const Matrix4x4& mat)
     {
         if (!CheckShaderSetFail("4x4 matrix")) {
-            float values[] = {
-                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                mat[1][0], mat[1][1], mat[1][2], mat[1][3],
-                mat[2][0], mat[2][1], mat[2][2], mat[2][3],
-                mat[3][0], mat[3][1], mat[3][2], mat[3][3]
-            };
-            glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, values);
+            glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(mat.data));
         }
     }
 
