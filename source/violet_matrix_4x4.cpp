@@ -65,26 +65,6 @@ namespace Violet
         this->data[3][3] = arr[15];
     }
 
-    Matrix4x4::Matrix4x4(const float arr1[4], const float arr2[4], const float arr3[4], const float arr4[4])
-    {
-        this->data[0][0] = arr1[0];
-        this->data[0][1] = arr1[1];
-        this->data[0][2] = arr1[2];
-        this->data[0][3] = arr1[3];
-        this->data[1][0] = arr2[0];
-        this->data[1][1] = arr2[1];
-        this->data[1][2] = arr2[2];
-        this->data[1][3] = arr2[3];
-        this->data[2][0] = arr3[0];
-        this->data[2][1] = arr3[1];
-        this->data[2][2] = arr3[2];
-        this->data[2][3] = arr3[3];
-        this->data[3][0] = arr4[0];
-        this->data[3][1] = arr4[1];
-        this->data[3][2] = arr4[2];
-        this->data[3][3] = arr4[3];
-    }
-
     Matrix4x4::Matrix4x4(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4)
     {
         this->data[0][0] = vec1[0];
@@ -123,27 +103,6 @@ namespace Violet
         this->data[3][1] = mat[3][1];
         this->data[3][2] = mat[3][2];
         this->data[3][3] = mat[3][3];
-    }
-
-    Matrix4x4& Matrix4x4::operator=(const float value)
-    {
-        this->data[0][0] = value;
-        this->data[0][1] = value;
-        this->data[0][2] = value;
-        this->data[0][3] = value;
-        this->data[1][0] = value;
-        this->data[1][1] = value;
-        this->data[1][2] = value;
-        this->data[1][3] = value;
-        this->data[2][0] = value;
-        this->data[2][1] = value;
-        this->data[2][2] = value;
-        this->data[2][3] = value;
-        this->data[3][0] = value;
-        this->data[3][1] = value;
-        this->data[3][2] = value;
-        this->data[3][3] = value;
-        return *this;
     }
 
     Matrix4x4& Matrix4x4::operator=(const Matrix4x4& mat)
@@ -215,6 +174,34 @@ namespace Violet
                        (this->data[0][3] * vec[0]) + (this->data[1][3] * vec[1]) + (this->data[2][3] * vec[2]) + (this->data[3][3] * vec[3]));
     }
 
+    Matrix4x2 Matrix4x4::operator*(const Matrix4x2& mat) const
+    {
+        return Matrix4x2((this->data[0][0] * mat[0][0]) + (this->data[1][0] * mat[0][1]) + (this->data[2][0] * mat[0][2]) + (this->data[3][0] * mat[0][3]),
+                         (this->data[0][1] * mat[0][0]) + (this->data[1][1] * mat[0][1]) + (this->data[2][1] * mat[0][2]) + (this->data[3][1] * mat[0][3]),
+                         (this->data[0][2] * mat[0][0]) + (this->data[1][2] * mat[0][1]) + (this->data[2][2] * mat[0][2]) + (this->data[3][2] * mat[0][3]),
+                         (this->data[0][3] * mat[0][0]) + (this->data[1][3] * mat[0][1]) + (this->data[2][3] * mat[0][2]) + (this->data[3][3] * mat[0][3]),
+                         (this->data[0][0] * mat[1][0]) + (this->data[1][0] * mat[1][1]) + (this->data[2][0] * mat[1][2]) + (this->data[3][0] * mat[1][3]),
+                         (this->data[0][1] * mat[1][0]) + (this->data[1][1] * mat[1][1]) + (this->data[2][1] * mat[1][2]) + (this->data[3][1] * mat[1][3]),
+                         (this->data[0][2] * mat[1][0]) + (this->data[1][2] * mat[1][1]) + (this->data[2][2] * mat[1][2]) + (this->data[3][2] * mat[1][3]),
+                         (this->data[0][3] * mat[1][0]) + (this->data[1][3] * mat[1][1]) + (this->data[2][3] * mat[1][2]) + (this->data[3][3] * mat[1][3]));
+    }
+
+    Matrix4x3 Matrix4x4::operator*(const Matrix4x3& mat) const
+    {
+        return Matrix4x3((this->data[0][0] * mat[0][0]) + (this->data[1][0] * mat[0][1]) + (this->data[2][0] * mat[0][2]) + (this->data[3][0] * mat[0][3]),
+                         (this->data[0][1] * mat[0][0]) + (this->data[1][1] * mat[0][1]) + (this->data[2][1] * mat[0][2]) + (this->data[3][1] * mat[0][3]),
+                         (this->data[0][2] * mat[0][0]) + (this->data[1][2] * mat[0][1]) + (this->data[2][2] * mat[0][2]) + (this->data[3][2] * mat[0][3]),
+                         (this->data[0][3] * mat[0][0]) + (this->data[1][3] * mat[0][1]) + (this->data[2][3] * mat[0][2]) + (this->data[3][3] * mat[0][3]),
+                         (this->data[0][0] * mat[1][0]) + (this->data[1][0] * mat[1][1]) + (this->data[2][0] * mat[1][2]) + (this->data[3][0] * mat[1][3]),
+                         (this->data[0][1] * mat[1][0]) + (this->data[1][1] * mat[1][1]) + (this->data[2][1] * mat[1][2]) + (this->data[3][1] * mat[1][3]),
+                         (this->data[0][2] * mat[1][0]) + (this->data[1][2] * mat[1][1]) + (this->data[2][2] * mat[1][2]) + (this->data[3][2] * mat[1][3]),
+                         (this->data[0][3] * mat[1][0]) + (this->data[1][3] * mat[1][1]) + (this->data[2][3] * mat[1][2]) + (this->data[3][3] * mat[1][3]),
+                         (this->data[0][0] * mat[2][0]) + (this->data[1][0] * mat[2][1]) + (this->data[2][0] * mat[2][2]) + (this->data[3][0] * mat[2][3]),
+                         (this->data[0][1] * mat[2][0]) + (this->data[1][1] * mat[2][1]) + (this->data[2][1] * mat[2][2]) + (this->data[3][1] * mat[2][3]),
+                         (this->data[0][2] * mat[2][0]) + (this->data[1][2] * mat[2][1]) + (this->data[2][2] * mat[2][2]) + (this->data[3][2] * mat[2][3]),
+                         (this->data[0][3] * mat[2][0]) + (this->data[1][3] * mat[2][1]) + (this->data[2][3] * mat[2][2]) + (this->data[3][3] * mat[2][3]));
+    }
+
     Matrix4x4 Matrix4x4::operator*(const Matrix4x4& mat) const
     {
         return Matrix4x4((this->data[0][0] * mat[0][0]) + (this->data[1][0] * mat[0][1]) + (this->data[2][0] * mat[0][2]) + (this->data[3][0] * mat[0][3]),
@@ -233,6 +220,26 @@ namespace Violet
                          (this->data[0][1] * mat[3][0]) + (this->data[1][1] * mat[3][1]) + (this->data[2][1] * mat[3][2]) + (this->data[3][1] * mat[3][3]),
                          (this->data[0][2] * mat[3][0]) + (this->data[1][2] * mat[3][1]) + (this->data[2][2] * mat[3][2]) + (this->data[3][2] * mat[3][3]),
                          (this->data[0][3] * mat[3][0]) + (this->data[1][3] * mat[3][1]) + (this->data[2][3] * mat[3][2]) + (this->data[3][3] * mat[3][3]));
+    }
+
+    Matrix4x4 Matrix4x4::operator/(const Matrix4x4& mat) const
+    {
+        return Matrix4x4(this->data[0][0] / mat[0][0],
+                         this->data[0][1] / mat[0][1],
+                         this->data[0][2] / mat[0][2],
+                         this->data[0][3] / mat[0][3],
+                         this->data[1][0] / mat[1][0],
+                         this->data[1][1] / mat[1][1],
+                         this->data[1][2] / mat[1][2],
+                         this->data[1][3] / mat[1][3],
+                         this->data[2][0] / mat[2][0],
+                         this->data[2][1] / mat[2][1],
+                         this->data[2][2] / mat[2][2],
+                         this->data[2][3] / mat[2][3],
+                         this->data[3][0] / mat[3][0],
+                         this->data[3][1] / mat[3][1],
+                         this->data[3][2] / mat[3][2],
+                         this->data[3][3] / mat[3][3]);
     }
 
     Matrix4x4& Matrix4x4::operator+=(const Matrix4x4& mat)
@@ -296,6 +303,47 @@ namespace Violet
         this->data[3][2] = (this->data[0][2] * mat[3][0]) + (this->data[1][2] * mat[3][1]) + (this->data[2][2] * mat[3][2]) + (this->data[3][2] * mat[3][3]);
         this->data[3][3] = (this->data[0][3] * mat[3][0]) + (this->data[1][3] * mat[3][1]) + (this->data[2][3] * mat[3][2]) + (this->data[3][3] * mat[3][3]);
         return *this;
+    }
+
+    Matrix4x4& Matrix4x4::operator/=(const Matrix4x4& mat)
+    {
+        this->data[0][0] /= mat[0][0];
+        this->data[0][1] /= mat[0][1];
+        this->data[0][2] /= mat[0][2];
+        this->data[0][2] /= mat[0][2];
+        this->data[1][0] /= mat[1][0];
+        this->data[1][1] /= mat[1][1];
+        this->data[1][2] /= mat[1][2];
+        this->data[1][3] /= mat[1][3];
+        this->data[2][0] /= mat[2][0];
+        this->data[2][1] /= mat[2][1];
+        this->data[2][2] /= mat[2][2];
+        this->data[2][3] /= mat[2][3];
+        this->data[3][0] /= mat[3][0];
+        this->data[3][1] /= mat[3][1];
+        this->data[3][2] /= mat[3][2];
+        this->data[3][3] /= mat[3][3];
+        return *this;
+    }
+
+    bool Matrix4x4::operator==(const Matrix4x4& mat)
+    {
+        return this->data[0][0] == mat[0][0] &&
+               this->data[0][1] == mat[0][1] &&
+               this->data[0][2] == mat[0][2] &&
+               this->data[0][3] == mat[0][3] &&
+               this->data[1][0] == mat[1][0] &&
+               this->data[1][1] == mat[1][1] &&
+               this->data[1][2] == mat[1][2] &&
+               this->data[1][3] == mat[1][3] &&
+               this->data[2][0] == mat[2][0] &&
+               this->data[2][1] == mat[2][1] &&
+               this->data[2][2] == mat[2][2] &&
+               this->data[2][3] == mat[2][3] &&
+               this->data[3][0] == mat[3][0] &&
+               this->data[3][1] == mat[3][1] &&
+               this->data[3][2] == mat[3][2] &&
+               this->data[3][3] == mat[3][3];
     }
 
     float* Matrix4x4::operator[](const size_t index)

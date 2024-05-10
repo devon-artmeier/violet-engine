@@ -36,37 +36,11 @@ namespace Violet
         return IVector2(this->data[0], this->data[1]);
     }
 
-    UIVector2& UIVector2::operator=(const uint value)
-    {
-        this->data[0] = value;
-        this->data[1] = value;
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator=(const uint arr[2])
-    {
-        this->data[0] = arr[0];
-        this->data[1] = arr[1];
-        return *this;
-    }
-
     UIVector2& UIVector2::operator=(const UIVector2& vec)
     {
         this->data[0] = vec[0];
         this->data[1] = vec[1];
         return *this;
-    }
-
-    UIVector2 UIVector2::operator+(const uint value) const
-    {
-        return UIVector2(this->data[0] + value,
-                         this->data[1] + value);
-    }
-
-    UIVector2 UIVector2::operator+(const uint arr[2]) const
-    {
-        return UIVector2(this->data[0] + arr[0],
-                         this->data[1] + arr[1]);
     }
 
     UIVector2 UIVector2::operator+(const UIVector2& vec) const
@@ -75,34 +49,10 @@ namespace Violet
                          this->data[1] + vec[1]);
     }
 
-    UIVector2 UIVector2::operator-(const uint value) const
-    {
-        return UIVector2(this->data[0] - value,
-                         this->data[1] - value);
-    }
-
-    UIVector2 UIVector2::operator-(const uint arr[2]) const
-    {
-        return UIVector2(this->data[0] - arr[0],
-                         this->data[1] - arr[1]);
-    }
-
     UIVector2 UIVector2::operator-(const UIVector2& vec) const
     {
         return UIVector2(this->data[0] - vec[0],
                          this->data[1] - vec[1]);
-    }
-
-    UIVector2 UIVector2::operator*(const uint value) const
-    {
-        return UIVector2(this->data[0] * value,
-                         this->data[1] * value);
-    }
-
-    UIVector2 UIVector2::operator*(const uint arr[2]) const
-    {
-        return UIVector2(this->data[0] * arr[0],
-                         this->data[1] * arr[1]);
     }
 
     UIVector2 UIVector2::operator*(const UIVector2& vec) const
@@ -111,62 +61,16 @@ namespace Violet
                          this->data[1] * vec[1]);
     }
 
-    UIVector2 UIVector2::operator*(const Matrix2x2& mat) const
-    {
-        return UIVector2((this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]),
-                         (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]));
-    }
-
-    UIVector2 UIVector2::operator/(const uint value) const
-    {
-        return UIVector2(this->data[0] / value,
-                         this->data[1] / value);
-    }
-
-    UIVector2 UIVector2::operator/(const uint arr[2]) const
-    {
-        return UIVector2(this->data[0] / arr[0],
-                         this->data[1] / arr[1]);
-    }
-
     UIVector2 UIVector2::operator/(const UIVector2& vec) const
     {
         return UIVector2(this->data[0] / vec[0],
                          this->data[1] / vec[1]);
     }
 
-    UIVector2& UIVector2::operator+=(const uint value)
-    {
-        this->data[0] += value;
-        this->data[1] += value;
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator+=(const uint arr[2])
-    {
-        this->data[0] += arr[0];
-        this->data[1] += arr[1];
-        return *this;
-    }
-
     UIVector2& UIVector2::operator+=(const UIVector2& vec)
     {
         this->data[0] += vec[0];
         this->data[1] += vec[1];
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator-=(const uint value)
-    {
-        this->data[0] -= value;
-        this->data[1] -= value;
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator-=(const uint arr[2])
-    {
-        this->data[0] -= arr[0];
-        this->data[1] -= arr[1];
         return *this;
     }
 
@@ -177,45 +81,10 @@ namespace Violet
         return *this;
     }
 
-    UIVector2& UIVector2::operator*=(const uint value)
-    {
-        this->data[0] *= value;
-        this->data[1] *= value;
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator*=(const uint arr[2])
-    {
-        this->data[0] *= arr[0];
-        this->data[1] *= arr[1];
-        return *this;
-    }
-
     UIVector2& UIVector2::operator*=(const UIVector2& vec)
     {
         this->data[0] *= vec[0];
         this->data[1] *= vec[1];
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator*=(const Matrix2x2& mat)
-    {
-        this->data[0] = (this->data[0] * mat[0][0]) + (this->data[1] * mat[1][0]);
-        this->data[1] = (this->data[0] * mat[0][1]) + (this->data[1] * mat[1][1]);
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator/=(const uint value)
-    {
-        this->data[0] /= value;
-        this->data[1] /= value;
-        return *this;
-    }
-
-    UIVector2& UIVector2::operator/=(const uint arr[2])
-    {
-        this->data[0] /= arr[0];
-        this->data[1] /= arr[1];
         return *this;
     }
 
@@ -224,18 +93,6 @@ namespace Violet
         this->data[0] /= vec[0];
         this->data[1] /= vec[1];
         return *this;
-    }
-
-    bool UIVector2::operator==(const uint value)
-    {
-        return this->data[0] == value &&
-               this->data[1] == value;
-    }
-
-    bool UIVector2::operator==(const uint arr[2])
-    {
-        return this->data[0] == arr[0] &&
-               this->data[1] == arr[1];
     }
 
     bool UIVector2::operator==(const UIVector2& vec)

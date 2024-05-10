@@ -34,16 +34,6 @@ namespace Violet
         this->data[2][1] = arr[5];
     }
 
-    Matrix2x3::Matrix2x3(const float arr1[2], const float arr2[2], const float arr3[2])
-    {
-        this->data[0][0] = arr1[0];
-        this->data[0][1] = arr1[1];
-        this->data[1][0] = arr2[0];
-        this->data[1][1] = arr2[1];
-        this->data[2][0] = arr3[0];
-        this->data[2][1] = arr3[1];
-    }
-
     Matrix2x3::Matrix2x3(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3)
     {
         this->data[0][0] = vec1[0];
@@ -62,17 +52,6 @@ namespace Violet
         this->data[1][1] = mat[1][1];
         this->data[2][0] = mat[2][0];
         this->data[2][1] = mat[2][1];
-    }
-
-    Matrix2x3& Matrix2x3::operator=(const float value)
-    {
-        this->data[0][0] = value;
-        this->data[0][1] = value;
-        this->data[1][0] = value;
-        this->data[1][1] = value;
-        this->data[2][0] = value;
-        this->data[2][1] = value;
-        return *this;
     }
 
     Matrix2x3& Matrix2x3::operator=(const Matrix2x3& mat)
@@ -130,6 +109,28 @@ namespace Violet
                          (this->data[0][1] * mat[2][0]) + (this->data[1][1] * mat[2][1]) + (this->data[2][1] * mat[2][2]));
     }
 
+    Matrix2x4 Matrix2x3::operator*(const Matrix3x4& mat) const
+    {
+        return Matrix2x4((this->data[0][0] * mat[0][0]) + (this->data[1][0] * mat[0][1]) + (this->data[2][0] * mat[0][2]),
+                         (this->data[0][1] * mat[0][0]) + (this->data[1][1] * mat[0][1]) + (this->data[2][1] * mat[0][2]),
+                         (this->data[0][0] * mat[1][0]) + (this->data[1][0] * mat[1][1]) + (this->data[2][0] * mat[1][2]),
+                         (this->data[0][1] * mat[1][0]) + (this->data[1][1] * mat[1][1]) + (this->data[2][1] * mat[1][2]),
+                         (this->data[0][0] * mat[2][0]) + (this->data[1][0] * mat[2][1]) + (this->data[2][0] * mat[2][2]),
+                         (this->data[0][1] * mat[2][0]) + (this->data[1][1] * mat[2][1]) + (this->data[2][1] * mat[2][2]),
+                         (this->data[0][0] * mat[3][0]) + (this->data[1][0] * mat[3][1]) + (this->data[2][0] * mat[3][2]),
+                         (this->data[0][1] * mat[3][0]) + (this->data[1][1] * mat[3][1]) + (this->data[2][1] * mat[3][2]));
+    }
+
+    Matrix2x3 Matrix2x3::operator/(const Matrix2x3& mat) const
+    {
+        return Matrix2x3(this->data[0][0] / mat[0][0],
+                         this->data[0][1] / mat[0][1],
+                         this->data[1][0] / mat[1][0],
+                         this->data[1][1] / mat[1][1],
+                         this->data[2][0] / mat[2][0],
+                         this->data[2][1] / mat[2][1]);
+    }
+
     Matrix2x3& Matrix2x3::operator+=(const Matrix2x3& mat)
     {
         this->data[0][0] += mat[0][0];
@@ -161,6 +162,27 @@ namespace Violet
         this->data[2][0] = (this->data[0][0] * mat[2][0]) + (this->data[1][0] * mat[2][1]) + (this->data[2][0] * mat[2][2]);
         this->data[2][1] = (this->data[0][1] * mat[2][0]) + (this->data[1][1] * mat[2][1]) + (this->data[2][1] * mat[2][2]);
         return *this;
+    }
+
+    Matrix2x3& Matrix2x3::operator/=(const Matrix2x3& mat)
+    {
+        this->data[0][0] /= mat[0][0];
+        this->data[0][1] /= mat[0][1];
+        this->data[1][0] /= mat[1][0];
+        this->data[1][1] /= mat[1][1];
+        this->data[2][0] /= mat[2][0];
+        this->data[2][1] /= mat[2][1];
+        return *this;
+    }
+
+    bool Matrix2x3::operator==(const Matrix2x3& mat)
+    {
+        return this->data[0][0] == mat[0][0] &&
+               this->data[0][1] == mat[0][1] &&
+               this->data[1][0] == mat[1][0] &&
+               this->data[1][1] == mat[1][1] &&
+               this->data[2][0] == mat[2][0] &&
+               this->data[2][1] == mat[2][1];
     }
 
     float* Matrix2x3::operator[](const size_t index)
