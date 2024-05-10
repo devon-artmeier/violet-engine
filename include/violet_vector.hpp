@@ -16,6 +16,7 @@ namespace Violet
     {
         public:
             Vector2() { }
+            Vector2(const int value);
             Vector2(const float value);
             Vector2(const float arr[2]);
             Vector2(const float x, const float y);
@@ -90,6 +91,7 @@ namespace Violet
     {
         public:
             UIVector2() { }
+            UIVector2(const int value);
             UIVector2(const uint value);
             UIVector2(const uint arr[2]);
             UIVector2(const uint x, const uint y);
@@ -127,6 +129,7 @@ namespace Violet
     {
         public:
             Vector3() { }
+            Vector3(const int value);
             Vector3(const float value);
             Vector3(const float arr[3]);
             Vector3(const float x, const float y, const float z);
@@ -209,6 +212,7 @@ namespace Violet
     {
         public:
             UIVector3() { }
+            UIVector3(const int value);
             UIVector3(const uint value);
             UIVector3(const uint arr[3]);
             UIVector3(const uint x, const uint y, const uint z);
@@ -250,6 +254,7 @@ namespace Violet
     {
         public:
             Vector4() { }
+            Vector4(const int value);
             Vector4(const float value);
             Vector4(const float arr[4]);
             Vector4(const float x, const float y, const float z, const float w);
@@ -336,6 +341,7 @@ namespace Violet
     {
         public:
             UIVector4() { }
+            UIVector4(const int value);
             UIVector4(const uint value);
             UIVector4(const uint arr[4]);
             UIVector4(const uint x, const uint y, const uint z, const uint w);

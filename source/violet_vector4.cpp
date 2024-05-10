@@ -2,6 +2,14 @@
 
 namespace Violet
 {
+    Vector4::Vector4(const int value)
+    {
+        this->data[0] = static_cast<float>(value);
+        this->data[1] = static_cast<float>(value);
+        this->data[2] = static_cast<float>(value);
+        this->data[3] = static_cast<float>(value);
+    }
+
     Vector4::Vector4(const float value)
     {
         this->data[0] = value;

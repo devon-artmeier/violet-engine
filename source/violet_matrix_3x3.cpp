@@ -2,6 +2,19 @@
 
 namespace Violet
 {
+    Matrix3x3::Matrix3x3(const int value)
+    {
+        this->data[0][0] = static_cast<float>(value);
+        this->data[0][1] = static_cast<float>(value);
+        this->data[0][2] = static_cast<float>(value);
+        this->data[1][0] = static_cast<float>(value);
+        this->data[1][1] = static_cast<float>(value);
+        this->data[1][2] = static_cast<float>(value);
+        this->data[2][0] = static_cast<float>(value);
+        this->data[2][1] = static_cast<float>(value);
+        this->data[2][2] = static_cast<float>(value);
+    }
+
 	Matrix3x3::Matrix3x3(const float value)
     {
         this->data[0][0] = value;

@@ -16,6 +16,7 @@ namespace Violet
     {
         public:
             Matrix2x2() { }
+            Matrix2x2(const int value);
             Matrix2x2(const float value);
             Matrix2x2(const float value1, const float value2,
                       const float value3, const float value4);
@@ -47,6 +48,7 @@ namespace Violet
     {
         public:
             Matrix2x3() { }
+            Matrix2x3(const int value);
             Matrix2x3(const float value);
             Matrix2x3(const float value1, const float value2,
                       const float value3, const float value4,
@@ -77,6 +79,7 @@ namespace Violet
     {
         public:
             Matrix2x4() { }
+            Matrix2x4(const int value);
             Matrix2x4(const float value);
             Matrix2x4(const float value1, const float value2,
                       const float value3, const float value4,
@@ -108,6 +111,7 @@ namespace Violet
     {
         public:
             Matrix3x2() { }
+            Matrix3x2(const int value);
             Matrix3x2(const float value);
             Matrix3x2(const float value1, const float value2, const float value3,
                       const float value4, const float value5, const float value6);
@@ -137,6 +141,7 @@ namespace Violet
     {
         public:
             Matrix3x3() { }
+            Matrix3x3(const int value);
             Matrix3x3(const float value);
             Matrix3x3(const float value1, const float value2, const float value3,
                       const float value4, const float value5, const float value6,
@@ -169,6 +174,7 @@ namespace Violet
     {
         public:
             Matrix3x4() { }
+            Matrix3x4(const int value);
             Matrix3x4(const float value);
             Matrix3x4(const float value1,  const float value2,  const float value3,
                       const float value4,  const float value5,  const float value6,
@@ -200,6 +206,7 @@ namespace Violet
     {
         public:
             Matrix4x2() { }
+            Matrix4x2(const int value);
             Matrix4x2(const float value);
             Matrix4x2(const float value1,  const float value2,  const float value3,  const float value4,
                       const float value5,  const float value6,  const float value7,  const float value8);
@@ -229,6 +236,7 @@ namespace Violet
     {
         public:
             Matrix4x3() { }
+            Matrix4x3(const int value);
             Matrix4x3(const float value);
             Matrix4x3(const float value1,  const float value2,  const float value3,  const float value4,
                       const float value5,  const float value6,  const float value7,  const float value8,
@@ -259,6 +267,7 @@ namespace Violet
     {
         public:
             Matrix4x4() { }
+            Matrix4x4(const int value);
             Matrix4x4(const float value);
             Matrix4x4(const float value1,  const float value2,  const float value3,  const float value4,
                       const float value5,  const float value6,  const float value7,  const float value8,

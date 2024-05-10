@@ -2,6 +2,13 @@
 
 namespace Violet
 {
+    UIVector3::UIVector3(const int value)
+    {
+        this->data[0] = static_cast<uint>(value);
+        this->data[1] = static_cast<uint>(value);
+        this->data[2] = static_cast<uint>(value);
+    }
+
     UIVector3::UIVector3(const uint value)
     {
         this->data[0] = value;
