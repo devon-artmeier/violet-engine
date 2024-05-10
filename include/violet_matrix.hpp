@@ -23,7 +23,6 @@ namespace Violet
             Matrix2x2(const Vector2& vec1, const Vector2& vec2);
             Matrix2x2(const Matrix2x2& mat);
             
-            Matrix2x2&   operator= (const Matrix2x2& mat);
             Matrix2x2    operator+ (const Matrix2x2& mat) const;
             Matrix2x2    operator- (const Matrix2x2& mat) const;
             Vector2      operator* (const Vector2& vec) const;
@@ -56,7 +55,6 @@ namespace Violet
             Matrix2x3(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3);
             Matrix2x3(const Matrix2x3& mat);
             
-            Matrix2x3&   operator= (const Matrix2x3& mat);
             Matrix2x3    operator+ (const Matrix2x3& mat) const;
             Matrix2x3    operator- (const Matrix2x3& mat) const;
             Vector2      operator* (const Vector3& vec) const;
@@ -88,7 +86,6 @@ namespace Violet
             Matrix2x4(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3, const Vector2& vec4);
             Matrix2x4(const Matrix2x4& mat);
             
-            Matrix2x4&   operator= (const Matrix2x4& mat);
             Matrix2x4    operator+ (const Matrix2x4& mat) const;
             Matrix2x4    operator- (const Matrix2x4& mat) const;
             Vector2      operator* (const Vector4& vec) const;
@@ -118,7 +115,6 @@ namespace Violet
             Matrix3x2(const Vector3& vec1, const Vector3& vec2);
             Matrix3x2(const Matrix3x2& mat);
             
-            Matrix3x2&   operator= (const Matrix3x2& mat);
             Matrix3x2    operator+ (const Matrix3x2& mat) const;
             Matrix3x2    operator- (const Matrix3x2& mat) const;
             Vector3      operator* (const Vector2& vec) const;
@@ -149,7 +145,6 @@ namespace Violet
             Matrix3x3(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3);
             Matrix3x3(const Matrix3x3& mat);
             
-            Matrix3x3&   operator= (const Matrix3x3& mat);
             Matrix3x3    operator+ (const Matrix3x3& mat) const;
             Matrix3x3    operator- (const Matrix3x3& mat) const;
             Vector3      operator* (const Vector3& vec) const;
@@ -183,7 +178,6 @@ namespace Violet
             Matrix3x4(const Vector3& vec1, const Vector3& vec2, const Vector3& vec3, const Vector3& vec4);
             Matrix3x4(const Matrix3x4& mat);
             
-            Matrix3x4&   operator= (const Matrix3x4& mat);
             Matrix3x4    operator+ (const Matrix3x4& mat) const;
             Matrix3x4    operator- (const Matrix3x4& mat) const;
             Vector3      operator* (const Vector4& vec) const;
@@ -213,7 +207,6 @@ namespace Violet
             Matrix4x2(const Vector4& vec1, const Vector4& vec2);
             Matrix4x2(const Matrix4x2& mat);
             
-            Matrix4x2&   operator= (const Matrix4x2& mat);
             Matrix4x2    operator+ (const Matrix4x2& mat) const;
             Matrix4x2    operator- (const Matrix4x2& mat) const;
             Vector4      operator* (const Vector2& vec) const;
@@ -244,7 +237,6 @@ namespace Violet
             Matrix4x3(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3);
             Matrix4x3(const Matrix4x3& mat);
             
-            Matrix4x3&   operator= (const Matrix4x3& mat);
             Matrix4x3    operator+ (const Matrix4x3& mat) const;
             Matrix4x3    operator- (const Matrix4x3& mat) const;
             Vector4      operator* (const Vector3& vec) const;
@@ -276,7 +268,6 @@ namespace Violet
             Matrix4x4(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4);
             Matrix4x4(const Matrix4x4& mat);
             
-            Matrix4x4&   operator= (const Matrix4x4& mat);
             Matrix4x4    operator+ (const Matrix4x4& mat) const;
             Matrix4x4    operator- (const Matrix4x4& mat) const;
             Vector4      operator* (const Vector4& vec) const;

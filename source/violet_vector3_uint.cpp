@@ -47,14 +47,6 @@ namespace Violet
         return IVector3(this->data[0], this->data[1], this->data[2]);
     }
 
-    UIVector3& UIVector3::operator=(const UIVector3& vec)
-    {
-        this->data[0] = vec[0];
-        this->data[1] = vec[1];
-        this->data[2] = vec[2];
-        return *this;
-    }
-
     UIVector3 UIVector3::operator+(const UIVector3& vec) const
     {
         return UIVector3(this->data[0] + vec[0],

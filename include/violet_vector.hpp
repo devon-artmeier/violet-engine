@@ -24,7 +24,6 @@ namespace Violet
             operator IVector2 () const;
             operator UIVector2() const;
 
-            Vector2&     operator= (const Vector2& vec);
             Vector2      operator+ (const Vector2& vec) const;
             Vector2      operator- (const Vector2& vec) const;
             Vector2      operator* (const Vector2& vec) const;
@@ -62,7 +61,6 @@ namespace Violet
             operator Vector2  () const;
             operator UIVector2() const;
 
-            IVector2&  operator= (const IVector2& vec);
             IVector2   operator+ (const IVector2& vec) const;
             IVector2   operator- (const IVector2& vec) const;
             IVector2   operator* (const IVector2& vec) const;
@@ -100,7 +98,6 @@ namespace Violet
             operator Vector2 () const;
             operator IVector2() const;
 
-            UIVector2&  operator= (const UIVector2& vec);
             UIVector2   operator+ (const UIVector2& vec) const;
             UIVector2   operator- (const UIVector2& vec) const;
             UIVector2   operator* (const UIVector2& vec) const;
@@ -139,7 +136,6 @@ namespace Violet
             operator IVector3 () const;
             operator UIVector3() const;
 
-            Vector3&     operator= (const Vector3& vec);
             Vector3      operator+ (const Vector3& vec) const;
             Vector3      operator- (const Vector3& vec) const;
             Vector3      operator* (const Vector3& vec) const;
@@ -181,7 +177,6 @@ namespace Violet
             operator Vector3  () const;
             operator UIVector3() const;
 
-            IVector3&  operator= (const IVector3& vec);
             IVector3   operator+ (const IVector3& vec) const;
             IVector3   operator- (const IVector3& vec) const;
             IVector3   operator* (const IVector3& vec) const;
@@ -223,7 +218,6 @@ namespace Violet
             operator Vector3 () const;
             operator IVector3() const;
 
-            UIVector3&  operator= (const UIVector3& vec);
             UIVector3   operator+ (const UIVector3& vec) const;
             UIVector3   operator- (const UIVector3& vec) const;
             UIVector3   operator* (const UIVector3& vec) const;
@@ -266,7 +260,6 @@ namespace Violet
             operator IVector4 () const;
             operator UIVector4() const;
 
-            Vector4&     operator= (const Vector4& vec);
             Vector4      operator+ (const Vector4& vec) const;
             Vector4      operator- (const Vector4& vec) const;
             Vector4      operator* (const Vector4& vec) const;
@@ -310,7 +303,6 @@ namespace Violet
             operator Vector4  () const;
             operator UIVector4() const;
 
-            IVector4&  operator= (const IVector4& vec);
             IVector4   operator+ (const IVector4& vec) const;
             IVector4   operator- (const IVector4& vec) const;
             IVector4   operator* (const IVector4& vec) const;
@@ -354,7 +346,6 @@ namespace Violet
             operator Vector4 () const;
             operator IVector4() const;
 
-            UIVector4&  operator= (const UIVector4& vec);
             UIVector4   operator+ (const UIVector4& vec) const;
             UIVector4   operator- (const UIVector4& vec) const;
             UIVector4   operator* (const UIVector4& vec) const;

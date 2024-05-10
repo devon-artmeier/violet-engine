@@ -43,15 +43,6 @@ namespace Violet
         this->data[1][1] = mat[1][1];
     }
 
-    Matrix2x2& Matrix2x2::operator=(const Matrix2x2& mat)
-    {
-        this->data[0][0] = mat[0][0];
-        this->data[0][1] = mat[0][1];
-        this->data[1][0] = mat[1][0];
-        this->data[1][1] = mat[1][1];
-        return *this;
-    }
-
     Matrix2x2 Matrix2x2::operator+(const Matrix2x2& mat) const
     {
         return Matrix2x2((this->data[0][0] + mat[0][0]),

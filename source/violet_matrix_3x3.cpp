@@ -69,20 +69,6 @@ namespace Violet
         this->data[2][2] = mat[2][2];
     }
 
-    Matrix3x3& Matrix3x3::operator=(const Matrix3x3& mat)
-    {
-        this->data[0][0] = mat[0][0];
-        this->data[0][1] = mat[0][1];
-        this->data[0][2] = mat[0][2];
-        this->data[1][0] = mat[1][0];
-        this->data[1][1] = mat[1][1];
-        this->data[1][2] = mat[1][2];
-        this->data[2][0] = mat[2][0];
-        this->data[2][1] = mat[2][1];
-        this->data[2][2] = mat[2][2];
-        return *this;
-    }
-
     Matrix3x3 Matrix3x3::operator+(const Matrix3x3& mat) const
     {
         return Matrix3x3((this->data[0][0] + mat[0][0]),

@@ -105,27 +105,6 @@ namespace Violet
         this->data[3][3] = mat[3][3];
     }
 
-    Matrix4x4& Matrix4x4::operator=(const Matrix4x4& mat)
-    {
-        this->data[0][0] = mat[0][0];
-        this->data[0][1] = mat[0][1];
-        this->data[0][2] = mat[0][2];
-        this->data[0][3] = mat[0][3];
-        this->data[1][0] = mat[1][0];
-        this->data[1][1] = mat[1][1];
-        this->data[1][2] = mat[1][2];
-        this->data[1][3] = mat[1][3];
-        this->data[2][0] = mat[2][0];
-        this->data[2][1] = mat[2][1];
-        this->data[2][2] = mat[2][2];
-        this->data[2][3] = mat[2][3];
-        this->data[3][0] = mat[3][0];
-        this->data[3][1] = mat[3][1];
-        this->data[3][2] = mat[3][2];
-        this->data[3][3] = mat[3][3];
-        return *this;
-    }
-
     Matrix4x4 Matrix4x4::operator+(const Matrix4x4& mat) const
     {
         return Matrix4x4((this->data[0][0] + mat[0][0]),
