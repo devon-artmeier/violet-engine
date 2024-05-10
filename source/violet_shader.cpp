@@ -386,24 +386,10 @@ namespace Violet
         }
     }
     
-    /*void SetShaderMatrix2x4(const std::string& name, const bool swap, const uint count, const float* const value)
-    {
-        if (!CheckShaderSetFail((std::string)"2x4 matrix" + ((count > 1) ? "array" : ""))) {
-            glUniformMatrix2x4fv(GetUniformLocation(name), count, swap, value);
-        }
-    }
-    
-    void SetShaderMatrix4x2(const std::string& name, const bool swap, const uint count, const float* const value)
+    /*void SetShaderMatrix4x2(const std::string& name, const bool swap, const uint count, const float* const value)
     {
         if (!CheckShaderSetFail((std::string)"4x2 matrix" + ((count > 1) ? "array" : ""))) {
             glUniformMatrix4x2fv(GetUniformLocation(name), count, swap, value);
-        }
-    }
-    
-    void SetShaderMatrix3x4(const std::string& name, const bool swap, const uint count, const float* const value)
-    {
-        if (!CheckShaderSetFail((std::string)"3x4 matrix" + ((count > 1) ? "array" : ""))) {
-            glUniformMatrix3x4fv(GetUniformLocation(name), count, swap, value);
         }
     }
     
@@ -437,6 +423,19 @@ namespace Violet
         }
     }
 
+    void SetShaderMatrix2x4(const std::string& name, const Matrix2x4& mat)
+    {
+        if (!CheckShaderSetFail("2x4 matrix")) {
+            float values[] = {
+                mat[0][0], mat[0][1],
+                mat[1][0], mat[1][1],
+                mat[2][0], mat[2][1],
+                mat[3][0], mat[3][1]
+            };
+            glUniformMatrix2x4fv(GetUniformLocation(name), 1, GL_FALSE, values);
+        }
+    }
+
     void SetShaderMatrix3x2(const std::string& name, const Matrix3x2& mat)
     {
         if (!CheckShaderSetFail("3x2 matrix")) {
@@ -457,6 +456,19 @@ namespace Violet
                 mat[2][0], mat[2][1], mat[2][2]
             };
             glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, values);
+        }
+    }
+
+    void SetShaderMatrix3x4(const std::string& name, const Matrix3x4& mat)
+    {
+        if (!CheckShaderSetFail("3x4 matrix")) {
+            float values[] = {
+                mat[0][0], mat[0][1], mat[0][2],
+                mat[1][0], mat[1][1], mat[1][2],
+                mat[2][0], mat[2][1], mat[2][2],
+                mat[3][0], mat[3][1], mat[3][2]
+            };
+            glUniformMatrix3x4fv(GetUniformLocation(name), 1, GL_FALSE, values);
         }
     }
 
@@ -505,6 +517,25 @@ namespace Violet
         }
     }
 
+    void SetShaderMatrix2x4Array(const std::string& name, std::initializer_list<Matrix2x4> mats)
+    {
+        if (!CheckShaderSetFail("2x4 matrix array")) {
+            Pointer<float> values = new float[mats.size() * 8];
+            int i = 0;
+            for (const Matrix2x4& mat : mats) {
+                values[i++] = mat[0][0];
+                values[i++] = mat[0][1];
+                values[i++] = mat[1][0];
+                values[i++] = mat[1][1];
+                values[i++] = mat[2][0];
+                values[i++] = mat[2][1];
+                values[i++] = mat[3][0];
+                values[i++] = mat[3][1];
+            }
+            glUniformMatrix2x4fv(GetUniformLocation(name), mats.size(), GL_FALSE, values.Raw());
+        }
+    }
+
     void SetShaderMatrix3x2Array(const std::string& name, std::initializer_list<Matrix3x2> mats)
     {
         if (!CheckShaderSetFail("3x2 matrix array")) {
@@ -537,6 +568,29 @@ namespace Violet
                 values[i++] = mat[2][0];
                 values[i++] = mat[2][1];
                 values[i++] = mat[2][2];
+            }
+            glUniformMatrix3fv(GetUniformLocation(name), mats.size(), GL_FALSE, values.Raw());
+        }
+    }
+
+    void SetShaderMatrix3x4Array(const std::string& name, std::initializer_list<Matrix3x4> mats)
+    {
+        if (!CheckShaderSetFail("3x4 matrix array")) {
+            Pointer<float> values = new float[mats.size() * 12];
+            int i = 0;
+            for (const Matrix3x4& mat : mats) {
+                values[i++] = mat[0][0];
+                values[i++] = mat[0][1];
+                values[i++] = mat[0][2];
+                values[i++] = mat[1][0];
+                values[i++] = mat[1][1];
+                values[i++] = mat[1][2];
+                values[i++] = mat[2][0];
+                values[i++] = mat[2][1];
+                values[i++] = mat[2][2];
+                values[i++] = mat[3][0];
+                values[i++] = mat[3][1];
+                values[i++] = mat[3][2];
             }
             glUniformMatrix3fv(GetUniformLocation(name), mats.size(), GL_FALSE, values.Raw());
         }

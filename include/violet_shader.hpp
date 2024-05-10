@@ -32,23 +32,23 @@ namespace Violet
     extern void SetShaderVector4Array  (const std::string& name, std::initializer_list<Vector4> vecs);
     extern void SetShaderIVector4Array (const std::string& name, std::initializer_list<IVector4> vecs);
     extern void SetShaderUIVector4Array(const std::string& name, std::initializer_list<UIVector4> vecs);
-    /*extern void SetShaderMatrix2x4     (const std::string& name, const uint count, const float* const value);
-    extern void SetShaderMatrix4x2     (const std::string& name, const uint count, const float* const value);
-    extern void SetShaderMatrix3x4     (const std::string& name, const uint count, const float* const value);
+    /*extern void SetShaderMatrix4x2     (const std::string& name, const uint count, const float* const value);
     extern void SetShaderMatrix4x3     (const std::string& name, const uint count, const float* const value);*/
     extern void SetShaderMatrix2x2(const std::string& name, const Matrix2x2& mat);
     extern void SetShaderMatrix2x3(const std::string& name, const Matrix2x3& mat);
+    extern void SetShaderMatrix2x4(const std::string& name, const Matrix2x4& mat);
     extern void SetShaderMatrix3x2(const std::string& name, const Matrix3x2& mat);
     extern void SetShaderMatrix3x3(const std::string& name, const Matrix3x3& mat);
+    extern void SetShaderMatrix3x4(const std::string& name, const Matrix3x4& mat);
     extern void SetShaderMatrix4x4(const std::string& name, const Matrix4x4& mat);
-    /*extern void SetShaderMatrix2x4Array(const std::string& name, const uint count, const float* const value);
-    extern void SetShaderMatrix4x2Array(const std::string& name, const uint count, const float* const value);
-    extern void SetShaderMatrix3x4Array(const std::string& name, const uint count, const float* const value);
+    /*extern void SetShaderMatrix4x2Array(const std::string& name, const uint count, const float* const value);
     extern void SetShaderMatrix4x3Array(const std::string& name, const uint count, const float* const value);*/
     extern void SetShaderMatrix2x2Array(const std::string& name, std::initializer_list<Matrix2x2> mats);
     extern void SetShaderMatrix2x3Array(const std::string& name, std::initializer_list<Matrix2x3> mats);
+    extern void SetShaderMatrix2x4Array(const std::string& name, std::initializer_list<Matrix2x4> mats);
     extern void SetShaderMatrix3x2Array(const std::string& name, std::initializer_list<Matrix3x2> mats);
     extern void SetShaderMatrix3x3Array(const std::string& name, std::initializer_list<Matrix3x3> mats);
+    extern void SetShaderMatrix3x4Array(const std::string& name, std::initializer_list<Matrix3x4> mats);
     extern void SetShaderMatrix4x4Array(const std::string& name, std::initializer_list<Matrix4x4> mats);
     extern void SetShaderTexture       (const std::string& texture, const uint slot);
 }

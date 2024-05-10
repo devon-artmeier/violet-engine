@@ -135,6 +135,22 @@ namespace Violet
                          (this->data[0][2] * mat[2][0]) + (this->data[1][2] * mat[2][1]));
     }
 
+    Matrix3x4 Matrix3x2::operator*(const Matrix2x4& mat) const
+    {
+        return Matrix3x4((this->data[0][0] * mat[0][0]) + (this->data[1][0] * mat[0][1]),
+                         (this->data[0][1] * mat[0][0]) + (this->data[1][1] * mat[0][1]),
+                         (this->data[0][2] * mat[0][0]) + (this->data[1][2] * mat[0][1]),
+                         (this->data[0][0] * mat[1][0]) + (this->data[1][0] * mat[1][1]),
+                         (this->data[0][1] * mat[1][0]) + (this->data[1][1] * mat[1][1]),
+                         (this->data[0][2] * mat[1][0]) + (this->data[1][2] * mat[1][1]),
+                         (this->data[0][0] * mat[2][0]) + (this->data[1][0] * mat[2][1]),
+                         (this->data[0][1] * mat[2][0]) + (this->data[1][1] * mat[2][1]),
+                         (this->data[0][2] * mat[2][0]) + (this->data[1][2] * mat[2][1]),
+                         (this->data[0][0] * mat[3][0]) + (this->data[1][0] * mat[3][1]),
+                         (this->data[0][1] * mat[3][0]) + (this->data[1][1] * mat[3][1]),
+                         (this->data[0][2] * mat[3][0]) + (this->data[1][2] * mat[3][1]));
+    }
+
     Matrix3x2& Matrix3x2::operator+=(const Matrix3x2& mat)
     {
         this->data[0][0] += mat[0][0];
