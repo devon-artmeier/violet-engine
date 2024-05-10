@@ -11,6 +11,7 @@ list(APPEND VIOLET_SRC
     "source/violet_mesh.cpp"
     "source/violet_matrix_2x2.cpp"
     "source/violet_matrix_2x3.cpp"
+    "source/violet_matrix_2x4.cpp"
     "source/violet_matrix_3x2.cpp"
     "source/violet_matrix_3x3.cpp"
     "source/violet_matrix_4x4.cpp"
