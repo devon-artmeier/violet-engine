@@ -15,13 +15,12 @@ namespace Violet
 
     Shader::Shader(const std::string& id, const std::string& vertex_code, const std::string& frag_code)
     {
-        this->id = id;
-
         char        log[512];
         int         success;
         const char* vertex_code_c = vertex_code.c_str();
         const char* frag_code_c   = frag_code.c_str();
 
+        this->id = id;
 #ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Compiling vertex shader");
 #endif

@@ -73,47 +73,61 @@ namespace Violet
         return window != nullptr;
     }
 
-    int GetWindowWidth()
+    uint GetWindowWidth()
     {
         int width;
         SDL_GetWindowSize(window, &width, nullptr);
-        return width;
+        return static_cast<uint>(width);
     }
 
-    int GetWindowHeight()
+    uint GetWindowHeight()
     {
         int height;
         SDL_GetWindowSize(window, nullptr, &height);
-        return height;
+        return static_cast<uint>(height);
+    }
+
+    UIVector2 GetWindowSize()
+    {
+        int width, height;
+        SDL_GetWindowSize(window, &width, &height);
+        return { static_cast<uint>(width), static_cast<uint>(height) };
     }
     
-    int GetWindowWidthPixels()
+    uint GetWindowWidthPixels()
     {
         int width;
         SDL_GetWindowSizeInPixels(window, &width, nullptr);
-        return width;
+        return static_cast<uint>(width);
     }
 
-    int GetWindowHeightPixels()
+    uint GetWindowHeightPixels()
     {
         int height;
         SDL_GetWindowSizeInPixels(window, nullptr, &height);
-        return height;
+        return static_cast<uint>(height);
+    }
+
+    UIVector2 GetWindowSizePixels()
+    {
+        int width, height;
+        SDL_GetWindowSizeInPixels(window, &width, &height);
+        return { static_cast<uint>(width), static_cast<uint>(height) };
     }
     
-    void SetWindowWidth(const int width)
+    void SetWindowWidth(const uint width)
     {
         SDL_SetWindowSize(window, width, GetWindowHeight());
     }
     
-    void SetWindowHeight(const int height)
+    void SetWindowHeight(const uint height)
     {
         SDL_SetWindowSize(window, GetWindowWidth(), height);
     }
     
-    void SetWindowSize(const int width, const int height)
+    void SetWindowSize(const UIVector2& size)
     {
-        SDL_SetWindowSize(window, width, height);
+        SDL_SetWindowSize(window, size.X(), size.Y());
     }
     
     void SwapWindowBuffer()

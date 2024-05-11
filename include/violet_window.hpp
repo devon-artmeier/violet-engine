@@ -3,13 +3,15 @@
 
 namespace Violet
 {
-    extern int  GetWindowWidth       ();
-    extern int  GetWindowHeight      ();
-    extern int  GetWindowWidthPixels ();
-    extern int  GetWindowHeightPixels();
-    extern void SetWindowWidth       (const int width);
-    extern void SetWindowHeight      (const int height);
-    extern void SetWindowSize        (const int width, const int height);
+    extern uint      GetWindowWidth       ();
+    extern uint      GetWindowHeight      ();
+    extern UIVector2 GetWindowSize        ();
+    extern uint      GetWindowWidthPixels ();
+    extern uint      GetWindowHeightPixels();
+    extern UIVector2 GetWindowSizePixels  ();
+    extern void      SetWindowWidth       (const uint width);
+    extern void      SetWindowHeight      (const uint height);
+    extern void      SetWindowSize        (const UIVector2& size);
 }
 
 #endif // VIOLET_ENGINE_WINDOW_HPP

@@ -7,11 +7,11 @@ namespace Violet
     {
         public:
             Texture(const std::string& id, const std::string& path);
-            Texture(const std::string& id, const void* const data, const int width, const int height, const uint bpp);
+            Texture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp);
             ~Texture();
 
             void Bind        ();
-            void UpdatePixels(const void* const data, const int width, const int height, const uint bpp, const int x, const int y);
+            void UpdatePixels(const void* const data, const UIVector2& size, const uint bpp, const int x, const int y);
             void SetFilter   (const TextureFilter filter);
             void SetWrapX    (const TextureWrap wrap);
             void SetWrapY    (const TextureWrap wrap);
@@ -19,8 +19,7 @@ namespace Violet
             std::string   id     { "" };
             bool          loaded { false };
             GLuint        texture{ 0 };
-            int           width  { 0 };
-            int           height { 0 };
+            UIVector2     size   { 0 };
             TextureFilter filter { TextureFilter::Nearest };
             TextureWrap   wrap_x { TextureWrap::Repeat };
             TextureWrap   wrap_y { TextureWrap::Repeat };
@@ -28,7 +27,7 @@ namespace Violet
     
     extern void InitTextureGroup   ();
     extern void DestroyTextureGroup();
-    extern void LoadTexture        (const std::string& id, const void* const data, const int width, const int height, const uint bpp);
+    extern void LoadTexture        (const std::string& id, const void* const data, const UIVector2& size, const uint bpp);
     extern void BindTexture        (const std::string& id);
 }
 

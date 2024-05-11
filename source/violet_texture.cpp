@@ -39,10 +39,13 @@ namespace Violet
     {
         this->id = id;
 
-        uchar* data = stbi_load(path.c_str(), &this->width, &this->height, nullptr, 4);
+        int width, height;
+        uchar* data = stbi_load(path.c_str(), &width, &height, nullptr, 4);
 #ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loading \"" + path + "\"");
 #endif
+        this->size.X() = width;
+        this->size.Y() = height;
 
         if (data == nullptr) {
 #ifdef VIOLET_DEBUG
@@ -58,7 +61,7 @@ namespace Violet
         glGenTextures(1, &this->texture);
         this->Bind();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->size.X(), this->size.Y(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         stbi_image_free(data);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -71,21 +74,19 @@ namespace Violet
 #endif
     }
 
-    Texture::Texture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    Texture::Texture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
     {
         this->id = id;
 #ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loading");
 #endif
 
-        this->width  = width;
-        this->height = height;
-
         glGenTextures(1, &this->texture);
         this->Bind();
+        this->size = size;
 
         GLenum format = GetBppFormat(bpp);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, this->width, this->height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, this->size.X(), this->size.Y(), 0, format, GL_UNSIGNED_BYTE, data);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -118,10 +119,10 @@ namespace Violet
         }
     }
 
-    void Texture::UpdatePixels(const void* const data, const int width, const int height, const uint bpp, const int x, const int y)
+    void Texture::UpdatePixels(const void* const data, const UIVector2& size, const uint bpp, const int x, const int y)
     {
         this->Bind();
-        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, this->width, this->height, GetBppFormat(bpp), GL_UNSIGNED_BYTE, data);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, this->size.X(), this->size.Y(), GetBppFormat(bpp), GL_UNSIGNED_BYTE, data);
     }
 
     void Texture::SetFilter(const TextureFilter filter)
@@ -202,10 +203,10 @@ namespace Violet
         }
     }
 
-    void LoadTexture(const std::string& id, const void* const data, const int width, const int height, const uint bpp)
+    void LoadTexture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
     {
         if (GetTexture(id) == nullptr) {
-            Pointer<Texture> texture = new Texture(id, data, width, height, bpp);
+            Pointer<Texture> texture = new Texture(id, data, size, bpp);
             if (texture->loaded) {
                 texture_group->textures.insert({ id, texture });
             }
@@ -232,20 +233,29 @@ namespace Violet
         }
     }
 
-    int GetTextureWidth(const std::string& id)
+    uint GetTextureWidth(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
-            return texture->width;
+            return texture->size.X();
         }
         return 0;
     }
 
-    int GetTextureHeight(const std::string& id)
+    uint GetTextureHeight(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
         if (texture != nullptr) {
-            return texture->height;
+            return texture->size.Y();
+        }
+        return 0;
+    }
+
+    UIVector2 GetTextureSize(const std::string& id)
+    {
+        const Pointer<Texture>& texture = GetTexture(id);
+        if (texture != nullptr) {
+            return texture->size;
         }
         return 0;
     }

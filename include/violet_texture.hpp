@@ -18,8 +18,9 @@ namespace Violet
     extern void          LoadTexture       (const std::string& id, const std::string& path);
     extern void          DestroyTexture    (const std::string& id);
     extern void          DestroyAllTextures();
-    extern int           GetTextureWidth   (const std::string& id);
-    extern int           GetTextureHeight  (const std::string& id);
+    extern uint          GetTextureWidth   (const std::string& id);
+    extern uint          GetTextureHeight  (const std::string& id);
+    extern UIVector2     GetTextureSize    (const std::string& id);
     extern TextureFilter GetTextureFilter  (const std::string& id);
     extern void          SetTextureFilter  (const std::string& id, const TextureFilter filter);
     extern TextureWrap   GetTextureWrapX   (const std::string& id);

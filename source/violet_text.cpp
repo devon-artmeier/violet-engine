@@ -77,7 +77,7 @@ namespace Violet
 
         Pointer<uchar>     atlas        = new uchar[AtlasWidth * AtlasHeight * 4];
         stbtt_pack_context pack_context = {0};
-        Pointer<Texture>   texture      = new Texture(this->id + " Atlas 0", nullptr, AtlasWidth, AtlasHeight, 1);
+        Pointer<Texture>   texture      = new Texture(this->id + " Atlas 0", nullptr, { AtlasWidth, AtlasHeight }, 1);
         int                cur_texture  = 0;
 
         stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
@@ -86,8 +86,8 @@ namespace Violet
             this->packs.insert({ static_cast<uint>(size), new stbtt_packedchar[256]});
             
             if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
-                texture->UpdatePixels(atlas.Raw(), AtlasWidth, AtlasHeight, 1, 0, 0);
-                texture = new Texture(this->id + " Atlas " + std::to_string(++cur_texture), nullptr, AtlasWidth, AtlasHeight, 1);
+                texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
+                texture = new Texture(this->id + " Atlas " + std::to_string(++cur_texture), nullptr, { AtlasWidth, AtlasHeight }, 1);
                 stbtt_PackEnd(&pack_context);
                 
                 stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
@@ -116,7 +116,7 @@ namespace Violet
             this->textures.insert({ static_cast<uint>(size), texture });
         }
 
-        texture->UpdatePixels(atlas.Raw(), AtlasWidth, AtlasHeight, 1, 0, 0);
+        texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
         stbtt_PackEnd(&pack_context);
 
         this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });

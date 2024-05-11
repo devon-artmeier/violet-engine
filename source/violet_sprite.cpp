@@ -42,12 +42,11 @@ namespace Violet
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
         this->id = id;
-
-        Pointer<File> file = new File(path, false);
 #ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loading \"" + path + "\"");
 #endif
 
+        Pointer<File> file = new File(path, false);
         if (!file->IsOpen()) {
 #ifdef VIOLET_DEBUG
             LogError(this->id + ": Failed to open");
