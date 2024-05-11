@@ -25,30 +25,21 @@ namespace Violet
             Sound(const std::string& id, const std::string& path, ma_engine* engine)
             {
                 this->id = id;
-#ifdef VIOLET_DEBUG
-                LogInfo(this->id + ": Loading");
-#endif
-                if (ma_sound_init_from_file(engine, path.c_str(), MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, nullptr, &this->sound) == MA_SUCCESS) {
-                    ma_sound_set_pan_mode(&this->sound, ma_pan_mode_pan);
-                    this->loaded = true;
-#ifdef VIOLET_DEBUG
-                    LogInfo(id + ": Loaded successfully");
-#endif
-                }
+                LogInfo(this->id + ": Loading \"" + path + "\"");
+
+                Assert(ma_sound_init_from_file(engine, path.c_str(), MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, nullptr, &this->sound) == MA_SUCCESS, this->id + ": Failed to load");
+                
+                ma_sound_set_pan_mode(&this->sound, ma_pan_mode_pan);
+                LogInfo(id + ": Loaded successfully");
             }
 
             ~Sound()
             {
-                if (this->loaded) {
-                    ma_sound_uninit(&this->sound);
-#ifdef VIOLET_DEBUG
-                    LogInfo(this->id + ": Destroyed");
-#endif
-                }
+                ma_sound_uninit(&this->sound);
+                LogInfo(this->id + ": Destroyed");
             }
 
             std::string id    { "" };
-            bool        loaded{ false };
             ma_sound    sound { { 0 } };
     };
 
@@ -134,9 +125,7 @@ namespace Violet
     {
         if (GetSound(id) == nullptr) {
             Pointer<Sound> sound = new Sound(id, path, &engine->engine);
-            if (sound->loaded) {
-                engine->sounds.insert({ id, sound });
-            }
+            engine->sounds.insert({ id, sound });
         }
     }
 
@@ -156,9 +145,8 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
         if (sound != nullptr) {
-#ifdef VIOLET_DEBUG
             LogInfo(id + ": Playing");
-#endif
+
             ma_sound_seek_to_pcm_frame(&sound->sound, 0);
             ma_sound_set_looping(&sound->sound, MA_FALSE);
             ma_sound_start(&sound->sound);
@@ -169,9 +157,8 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
         if (sound != nullptr) {
-#ifdef VIOLET_DEBUG
             LogInfo(id + ": Looping");
-#endif
+
             ma_sound_seek_to_pcm_frame(&sound->sound, 0);
             ma_sound_set_looping(&sound->sound, MA_TRUE);
             ma_sound_start(&sound->sound);
@@ -182,9 +169,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
         if (sound != nullptr) {
-#ifdef VIOLET_DEBUG
             LogInfo(id + ": Stopped");
-#endif
             ma_sound_stop(&sound->sound);
         }
     }
@@ -308,13 +293,9 @@ namespace Violet
         if (sound != nullptr) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             if (ma_data_source_set_loop_point_in_pcm_frames(data_source, point, GetSoundLoopEnd(id)) != MA_SUCCESS) {
-#ifdef VIOLET_DEBUG
                 LogError(id + ": Failed to set loop start point");
-#endif
             } else {
-#ifdef VIOLET_DEBUG
                 LogInfo(id + ": Set loop start point to " + std::to_string(point));
-#endif
             }
         }
     }
@@ -325,13 +306,9 @@ namespace Violet
         if (sound != nullptr) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             if (ma_data_source_set_loop_point_in_pcm_frames(data_source, GetSoundLoopStart(id), point) != MA_SUCCESS) {
-#ifdef VIOLET_DEBUG
                 LogError(id + ": Failed to set loop end point");
-#endif
             } else {
-#ifdef VIOLET_DEBUG
                 LogInfo(id + ": Set loop end point to " + std::to_string(point));
-#endif
             }
         }
     }
@@ -342,13 +319,9 @@ namespace Violet
         if (sound != nullptr) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             if (ma_data_source_set_loop_point_in_pcm_frames(data_source, start, end) != MA_SUCCESS) {
-#ifdef VIOLET_DEBUG
                 LogError(id + ": Failed to set loop points");
-#endif
             } else {
-#ifdef VIOLET_DEBUG
                 LogInfo(id + ": Set loop points to " + std::to_string(start) + " and " + std::to_string(end));
-#endif
             }
         }
     }

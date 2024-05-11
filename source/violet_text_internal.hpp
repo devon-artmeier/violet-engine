@@ -23,7 +23,6 @@ namespace Violet
 			~Font();
 
 			std::string           id             { "" };
-			bool                  loaded         { false };
 			stbtt_fontinfo        font           { { 0 } };
             Pointer<Mesh>         mesh           { nullptr };
 			PackMap               packs;

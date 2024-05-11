@@ -52,27 +52,15 @@ namespace Violet
 	Font::Font(const std::string& id, const std::string& path)
 	{
         this->id = id;
+        LogInfo(this->id + ": Loading \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
-#ifdef VIOLET_DEBUG
-            LogInfo(this->id + ": Loading \"" + path + "\"");
-#endif
-
-        if (!file->IsOpen()) {
-#ifdef VIOLET_DEBUG
-            LogError(this->id + ": Failed to open");
-#endif
-            return;
-        }
+        Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"");
 
         Pointer<uchar> file_buffer = new uchar[file->GetSize()];
         file->ReadBuffer(file_buffer.Raw(), file->GetSize());
-        if (file->Failed()) {
-#ifdef VIOLET_DEBUG
-            LogError(this->id + ": Failed to read");
-#endif
-            return;
-        }
+        Assert(!file->Failed(), this->id + ": Failed to read");
+
         stbtt_InitFont(&font, file_buffer.Raw(), stbtt_GetFontOffsetForIndex(file_buffer.Raw(), 0));
 
         Pointer<uchar>     atlas        = new uchar[AtlasWidth * AtlasHeight * 4];
@@ -121,19 +109,12 @@ namespace Violet
 
         this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });
 
-        loaded = true;
-#ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loaded successfully");
-#endif
     }
 
     Font::~Font()
     {
-        if (this->loaded) {
-#ifdef VIOLET_DEBUG
-            LogInfo(this->id + ": Destroyed");
-#endif
-        }
+        LogInfo(this->id + ": Destroyed");
     }
 
     void InitFontGroup()
@@ -160,10 +141,7 @@ namespace Violet
     void LoadFont(const std::string& id, const std::string& path)
     {
         if (GetFont(id) == nullptr) {
-            Pointer<Font> font = new Font(id, path);
-            if (font->loaded) {
-                font_group->fonts.insert({ id, font });
-            }
+            font_group->fonts.insert({ id, new Font(id, path) });
         }
     }
 
@@ -204,16 +182,16 @@ namespace Violet
 
                     font->mesh->ResizeVertexBuffer(draw.text.length() * 4, 0);
                     font->mesh->ResizeElementBuffer(draw.text.length() * 6, 0);
-
+                    
+                    stbtt_aligned_quad char_quad    = { 0 };
+                    Pointer<float>     vertex_data  = font->mesh->GetVertexBuffer();
+                    Pointer<uint>      element_data = font->mesh->GetElementBuffer();
                     float              char_x       = 0;
                     float              char_y       = 0;
                     float              x_off        = 0;
                     float              y_off        = font->heights[draw.size];
                     bool               new_line     = false;
                     int                element_id   = 0;
-                    stbtt_aligned_quad char_quad    = { 0 };
-                    Pointer<float>     vertex_data  = font->mesh->GetVertexBuffer();
-                    Pointer<uint>      element_data = font->mesh->GetElementBuffer();
 
                     for (size_t i = 0; i < draw.text.length(); i++) {
                         if (draw.text[i] == '\n') {

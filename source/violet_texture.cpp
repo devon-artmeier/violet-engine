@@ -18,6 +18,7 @@ namespace Violet
 
     static GLenum GetBppFormat(const uint bpp)
     {
+        Assert(bpp >= 1 && bpp <= 4, "Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
         switch (bpp) {
             case 1:
                 return GL_RED;
@@ -28,35 +29,20 @@ namespace Violet
             case 4:
                 return GL_RGBA;
         }
-
-#ifdef VIOLET_DEBUG
-        LogError("Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
-#endif
         return GL_RGBA;
     }
 
     Texture::Texture(const std::string& id, const std::string& path)
     {
         this->id = id;
+        LogInfo(this->id + ": Loading \"" + path + "\"");
 
         int width, height;
         uchar* data = stbi_load(path.c_str(), &width, &height, nullptr, 4);
-#ifdef VIOLET_DEBUG
-        LogInfo(this->id + ": Loading \"" + path + "\"");
-#endif
         this->size.X() = static_cast<uint>(width);
         this->size.Y() = static_cast<uint>(height);
 
-        if (data == nullptr) {
-#ifdef VIOLET_DEBUG
-            if (stbi_failure_reason() != nullptr) {
-                LogError(this->id + ": Failed to load");
-            } else {
-                LogError(this->id + ": Failed to load:\n" + stbi_failure_reason());
-            }
-#endif
-            return;
-        }
+        Assert(data != nullptr, this->id + ": Failed to load" + (stbi_failure_reason() != nullptr ? (std::string)":\n" + stbi_failure_reason() : ""));
 
         glGenTextures(1, &this->texture);
         this->Bind();
@@ -68,18 +54,13 @@ namespace Violet
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        loaded = true;
-#ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loaded successfully");
-#endif
     }
 
     Texture::Texture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
     {
         this->id = id;
-#ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loading");
-#endif
 
         glGenTextures(1, &this->texture);
         this->Bind();
@@ -92,23 +73,18 @@ namespace Violet
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        this->loaded = true;
-#ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loaded successfully");
-#endif
     }
 
     Texture::~Texture()
     {
-        if (this->loaded) {
+        if (this->texture != 0) {
             if (texture_group->current_texture == this->texture) {
                 texture_group->current_texture = 0;
             }
             glDeleteTextures(1, &this->texture);
-#ifdef VIOLET_DEBUG
-            LogInfo(this->id + ": Destroyed");
-#endif
         }
+        LogInfo(this->id + ": Destroyed");
     }
 
     void Texture::Bind()
@@ -200,9 +176,7 @@ namespace Violet
     {
         if (GetTexture(id) == nullptr) {
             Pointer<Texture> texture = new Texture(id, path);
-            if (texture->loaded) {
-                texture_group->textures.insert({ id, texture });
-            }
+            texture_group->textures.insert({ id, texture });
         }
     }
 
@@ -210,9 +184,7 @@ namespace Violet
     {
         if (GetTexture(id) == nullptr) {
             Pointer<Texture> texture = new Texture(id, data, size, bpp);
-            if (texture->loaded) {
-                texture_group->textures.insert({ id, texture });
-            }
+            texture_group->textures.insert({ id, texture });
         }
     }
 

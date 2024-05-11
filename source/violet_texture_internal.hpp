@@ -17,7 +17,6 @@ namespace Violet
             void SetWrapY    (const TextureWrap wrap);
 
             std::string   id     { "" };
-            bool          loaded { false };
             GLuint        texture{ 0 };
             UIVector2     size   { 0 };
             TextureFilter filter { TextureFilter::Nearest };

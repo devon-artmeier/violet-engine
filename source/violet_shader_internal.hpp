@@ -12,7 +12,6 @@ namespace Violet
             void Attach() const;
 
             std::string id     { "" };
-            bool        loaded { false };
             GLuint      program{ 0 };
     };
 
