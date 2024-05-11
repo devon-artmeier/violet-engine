@@ -25,13 +25,14 @@ namespace Violet
             Sound(const std::string& id, const std::string& path, ma_engine* engine)
             {
                 this->id = id;
-                LogInfo(this->id + ": Loading \"" + path + "\"");
+                LogInfo("Loading sound \"" + this->id + "\" from file \"" + path + "\"");
 
                 ma_result result = ma_sound_init_from_file(engine, path.c_str(), MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, nullptr, &this->sound);
 
-                if (Assert(result == MA_SUCCESS, this->id + ": Failed to load")) {
+                if (Assert(result == MA_SUCCESS, "Failed to load sound \"" + this->id + "\"")) {
                     ma_sound_set_pan_mode(&this->sound, ma_pan_mode_pan);
-                    LogInfo(id + ": Loaded successfully");
+
+                    LogInfo("Loaded sound \"" + this->id + "\" successfully");
                     this->loaded = true;
                 }
             }
@@ -39,7 +40,7 @@ namespace Violet
             ~Sound()
             {
                 ma_sound_uninit(&this->sound);
-                LogInfo(this->id + ": Destroyed");
+                LogInfo("Destroyed sound \"" + this->id + "\"");
             }
 
             std::string id    { "" };
@@ -113,7 +114,7 @@ namespace Violet
 
             stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_OUTPUT, &audio_spec, AudioCallback, nullptr);
 
-            if (Assert(stream != nullptr, "Failed to open audio device stream", true)) {
+            if (Assert(stream != nullptr, "InitAudio: Failed to open audio device stream", true)) {
                 SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(stream));
             }
         }
@@ -128,7 +129,7 @@ namespace Violet
 
     void LoadSound(const std::string& id, const std::string& path)
     {
-        if (Assert(GetSound(id) == nullptr, id + ": Already loaded")) {
+        if (Assert(GetSound(id) == nullptr, "LoadSound: \"" + id + "\" is already loaded")) {
             Pointer<Sound> sound = new Sound(id, path, &engine->engine);
 
             if (sound->loaded) {
@@ -139,7 +140,7 @@ namespace Violet
 
     void DestroySound(const std::string& id)
     {
-        if (Assert(GetSound(id) != nullptr, id + ": Doesn't exist")) {
+        if (Assert(GetSound(id) != nullptr, "DestroySound: \"" + id + "\" doesn't exist")) {
             engine->sounds.erase(id);
         }
     }
@@ -153,9 +154,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
-            LogInfo(id + ": Playing");
-
+        if (Assert(sound != nullptr, "PlaySound: \"" + id + "\" doesn't exist")) {
             ma_sound_seek_to_pcm_frame(&sound->sound, 0);
             ma_sound_set_looping(&sound->sound, MA_FALSE);
             ma_sound_start(&sound->sound);
@@ -166,9 +165,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
-            LogInfo(id + ": Looping");
-
+        if (Assert(sound != nullptr, "LoopSound: \"" + id + "\" doesn't exist")) {
             ma_sound_seek_to_pcm_frame(&sound->sound, 0);
             ma_sound_set_looping(&sound->sound, MA_TRUE);
             ma_sound_start(&sound->sound);
@@ -179,8 +176,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
-            LogInfo(id + ": Stopped");
+        if (Assert(sound != nullptr, "StopSound: \"" + id + "\" doesn't exist")) {
             ma_sound_stop(&sound->sound);
         }
     }
@@ -189,7 +185,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (!Assert(sound != nullptr, "IsSoundPlaying: \"" + id + "\" doesn't exist")) {
             return false;
         }
 
@@ -200,7 +196,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (!Assert(sound != nullptr, "IsSoundLooping: \"" + id + "\" doesn't exist")) {
             return false;
         }
 
@@ -211,7 +207,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (!Assert(sound != nullptr, "IsSoundAtEnd: \"" + id + "\" doesn't exist")) {
             return false;
         }
 
@@ -222,7 +218,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (!Assert(sound != nullptr, "GetSoundVolume: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -233,7 +229,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (Assert(sound != nullptr, "SetSoundVolume: \"" + id + "\" doesn't exist")) {
             ma_sound_set_volume(&sound->sound, volume);
         }
     }
@@ -242,7 +238,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (!Assert(sound != nullptr, "GetSoundPanning: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -253,7 +249,7 @@ namespace Violet
     {
         Pointer<Sound> sound = GetSound(id);
 
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
+        if (Assert(sound != nullptr, "SetSoundPanning: \"" + id + "\" doesn't exist")) {
             ma_sound_set_pan(&sound->sound, panning);
         }
     }
@@ -261,8 +257,8 @@ namespace Violet
     float GetSoundPitch(const std::string& id)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (!Assert(sound != nullptr, "GetSoundPitch: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -272,8 +268,8 @@ namespace Violet
     void SetSoundPitch(const std::string& id, const float pitch)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (Assert(sound != nullptr, "SetSoundPitch: \"" + id + "\" doesn't exist")) {
             ma_sound_set_pitch(&sound->sound, pitch);
         }
     }
@@ -281,8 +277,8 @@ namespace Violet
     ulonglong GetSoundLength(const std::string& id)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (!Assert(sound != nullptr, "GetSoundLength: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -294,8 +290,8 @@ namespace Violet
     ulonglong GetSoundLoopStart(const std::string& id)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (!Assert(sound != nullptr, "GetSoundLoopStart: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -309,8 +305,8 @@ namespace Violet
     ulonglong GetSoundLoopEnd(const std::string& id)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (!Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (!Assert(sound != nullptr, "GetSoundLoopEnd: \"" + id + "\" doesn't exist")) {
             return 0;
         }
 
@@ -324,42 +320,36 @@ namespace Violet
     void SetSoundLoopStart(const std::string& id, const ulonglong point)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (Assert(sound != nullptr, id + ": Doesn't exist")) {
+
+        if (Assert(sound != nullptr, "SetSoundLoopStart: \"" + id + "\" doesn't exist")) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             ma_result result = ma_data_source_set_loop_point_in_pcm_frames(data_source, point, GetSoundLoopEnd(id));
-            
-            if (Assert(result == MA_SUCCESS, id + ": Failed to set loop start point")) {
-                LogInfo(id + ": Set loop start point to " + std::to_string(point));
-            }
+
+            Assert(result == MA_SUCCESS, "SetSoundLoopStart: Failed to set loop start point for \"" + id + "\"");
         }
     }
 
     void SetSoundLoopEnd(const std::string& id, const ulonglong point)
     {
         Pointer<Sound> sound = GetSound(id);
-        
-        if (sound != nullptr) {
+
+        if (Assert(sound != nullptr, "SetSoundLoopEnd: \"" + id + "\" doesn't exist")) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             ma_result result = ma_data_source_set_loop_point_in_pcm_frames(data_source, GetSoundLoopStart(id), point);
-            
-            if (Assert(result == MA_SUCCESS, id + ": Failed to set loop end point")) {
-                LogInfo(id + ": Set loop end point to " + std::to_string(point));
-            }
+
+            Assert(result == MA_SUCCESS, "SetSoundLoopEnd: Failed to set loop end point for \"" + id + "\"");
         }
     }
 
     void SetSoundLoop(const std::string& id, const ulonglong start, const ulonglong end)
     {
         Pointer<Sound> sound = GetSound(id);
-       
-        if (sound != nullptr) {
+
+        if (Assert(sound != nullptr, "SetSoundLoop: \"" + id + "\" doesn't exist")) {
             ma_data_source* data_source = ma_sound_get_data_source(&sound->sound);
             ma_result result = ma_data_source_set_loop_point_in_pcm_frames(data_source, start, end);
 
-            if (Assert(result == MA_SUCCESS, id + ": Failed to set loop points")) {
-                LogInfo(id + ": Set loop points to " + std::to_string(start) + " and " + std::to_string(end));
-            }
+            Assert(result == MA_SUCCESS, "SetSoundLoop: Failed to set loop points for \"" + id + "\"");
         }
     }
 

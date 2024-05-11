@@ -42,22 +42,22 @@ namespace Violet
     SpriteSheet::SpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
         this->id = id;
-        LogInfo(this->id + ": Loading \"" + path + "\"");
+        LogInfo("Loading sprite sheet \"" + this->id + "\" from file \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
 
-        if (Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"") &&
-            Assert(file->ReadString(16).compare("VIOLET SPRITE   ") == 0, this->id + ": Not a valid sprite sheet")) {
+        if (Assert(file->IsOpen(), "Failed to open sprite sheet \"" + this->id + "\"") &&
+            Assert(file->ReadString(16).compare("VIOLET SPRITE   ") == 0, "Invalid file for sprite sheet \"" + this->id + "\"")) {
             bool header_success = true;
 
             uint texture_width = GetTextureWidth(texture);
-            header_success &= Assert(texture_width != 0, this->id + ": Invalid texture width " + std::to_string(texture_width) + " from texture " + texture);
+            header_success &= Assert(texture_width != 0, "Invalid width " + std::to_string(texture_width) + " from texture " + texture);
 
             uint texture_height = GetTextureHeight(texture);
-            header_success &= Assert(texture_height != 0, this->id + ": Invalid texture height " + std::to_string(texture_width) + " from texture " + texture);
+            header_success &= Assert(texture_height != 0, "Invalid height " + std::to_string(texture_width) + " from texture " + texture);
 
             this->count = file->ReadUIntBE();
-            header_success &= Assert(!file->Failed(), this->id + ": Failed to read sprite count");
+            header_success &= Assert(!file->Failed(), "Failed to read sprite count for sprite sheet \"" + this->id + "\"");
 
             if (header_success) {
                 this->texture               = texture;
@@ -69,22 +69,22 @@ namespace Violet
                     bool frame_success = true;
             
                     uint x = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read X offset for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read X offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     uint y = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read Y offset for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read Y offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     uint width = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read width for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read width for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     uint height = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read height for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read height for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     int pivot_x = file->ReadIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read pivot X offset for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read pivot X offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     int pivot_y = file->ReadIntBE();
-                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read pivot Y offset for sprite " + std::to_string(i));
+                    frame_success &= Assert(!file->Failed(), "Failed to read pivot Y offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
                     if (frame_success) {
                         *(vertex_data++) = -pivot_x;
@@ -139,7 +139,7 @@ namespace Violet
                 this->mesh->RefreshVertexBuffer();
                 this->mesh->RefreshElementBuffer();
 
-                LogInfo(this->id + ": Loaded successfully");
+                LogInfo("Loaded sprite sheet \"" + this->id + "\" successfully");
                 this->loaded = true;
             }
         }
@@ -147,7 +147,7 @@ namespace Violet
 
     SpriteSheet::~SpriteSheet()
     {
-        LogInfo(this->id + ": Destroyed");
+        LogInfo("Destroyed sprite sheet \"" + this->id + "\"");
     }
 
     void InitSpriteSheetGroup()
@@ -175,7 +175,7 @@ namespace Violet
 
     void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
-        if (Assert(GetSpriteSheet(id) == nullptr, id + ": Already loaded")) {
+        if (Assert(GetSpriteSheet(id) == nullptr, "LoadSpriteSheet: \"" + id + "\" is already loaded")) {
             Pointer<SpriteSheet> sprite_sheet = new SpriteSheet(id, path, texture);
 
             if (sprite_sheet->loaded) {
@@ -186,7 +186,7 @@ namespace Violet
 
     void DestroySpriteSheet(const std::string& id)
     {
-        if (Assert(GetSpriteSheet(id) != nullptr, id + ": Doesn't exist")) {
+        if (Assert(GetSpriteSheet(id) != nullptr, "DestroySpriteSheet: \"" + id + "\" doesn't exist")) {
             sprite_sheet_group->sprite_sheets.erase(id);
         }
     }
@@ -200,8 +200,8 @@ namespace Violet
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(id);
 
-        if (Assert(sprite_sheet != nullptr, id + ": Doesn't exist")) {
-            if (Assert(frame < sprite_sheet->count, sprite_sheet->id + ": Attempted to draw invalid sprite " + std::to_string(frame))) {
+        if (Assert(sprite_sheet != nullptr, "DrawSprite: \"" + id + "\" doesn't exist")) {
+            if (Assert(frame < sprite_sheet->count, "DrawSprite: Attempted to draw invalid sprite " + std::to_string(frame) + " from " + "\"" + sprite_sheet->id + "\"")) {
                 sprite_sheet->draw_queue[layer].push_back({ frame, pos, Math::Radians(angle), scale });
             }
         }

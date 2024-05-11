@@ -52,16 +52,16 @@ namespace Violet
 	Font::Font(const std::string& id, const std::string& path)
 	{
         this->id = id;
-        LogInfo(this->id + ": Loading \"" + path + "\"");
+        LogInfo("Loading font \"" + this->id + "\" from file \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
 
-        if (Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"")) {
+        if (Assert(file->IsOpen(), "Failed to open file for font \"" + this->id + "\"")) {
             Pointer<uchar> file_buffer = new uchar[file->GetSize()];
 
             file->ReadBuffer(file_buffer.Raw(), file->GetSize());
 
-            if (Assert(!file->Failed(), this->id + ": Failed to read")) {
+            if (Assert(!file->Failed(), "Failed to read data for font \"" + this->id + "\"")) {
                 stbtt_InitFont(&font, file_buffer.Raw(), stbtt_GetFontOffsetForIndex(file_buffer.Raw(), 0));
 
                 Pointer<uchar>     atlas = new uchar[AtlasWidth * AtlasHeight * 4];
@@ -110,7 +110,7 @@ namespace Violet
 
                 this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });
 
-                LogInfo(this->id + ": Loaded successfully");
+                LogInfo("Loaded font \"" + this->id + "\" successfully");
                 this->loaded = true;
             }
         }
@@ -118,7 +118,7 @@ namespace Violet
 
     Font::~Font()
     {
-        LogInfo(this->id + ": Destroyed");
+        LogInfo("Destroyed font \"" + this->id + "\"");
     }
 
     void InitFontGroup()
@@ -146,7 +146,7 @@ namespace Violet
 
     void LoadFont(const std::string& id, const std::string& path)
     {
-        if (Assert(GetFont(id) == nullptr, id + ": Already loaded")) {
+        if (Assert(GetFont(id) == nullptr, "LoadFont: \"" + id + "\" is already loaded")) {
             Pointer<Font> font = new Font(id, path);
 
             if (font->loaded) {
@@ -157,7 +157,7 @@ namespace Violet
 
     void DestroyFont(const std::string& id)
     {
-        if (Assert(GetFont(id) != nullptr, id + ": Doesn't exist")) {
+        if (Assert(GetFont(id) != nullptr, "DestroyFont: \"" + id + "\" doesn't exist")) {
             font_group->fonts.erase(id);
         }
     }
@@ -171,8 +171,8 @@ namespace Violet
     {
         Pointer<Font> font = GetFont(id);
 
-        if (Assert(font != nullptr, id + ": Doesn't exist")) {
-            if (Assert(size > 0 && size < font->packs.size() - 1, id + ": Attempted to draw text at invalid size " + std::to_string(size))) {
+        if (Assert(font != nullptr, "DrawText: \"" + id + "\" doesn't exist")) {
+            if (Assert(size > 0 && size < font->packs.size() - 1, "DrawText: Attempted to draw text at invalid size " + std::to_string(size) + " with \"" + id + "\"")) {
                 font->draw_queue[layer].push_back({ text, size, pos, color });
             }
         }
