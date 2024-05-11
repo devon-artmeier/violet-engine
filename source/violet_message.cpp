@@ -158,10 +158,15 @@ namespace Violet
         throw std::runtime_error(message);
     }
 
-    void Assert(const bool condition, const std::string& message)
+    bool Assert(const bool condition, const std::string& message, const bool show_box)
     {
         if (!condition) {
-            Fatal("Assertion failed" + (message.empty() ? "." : ": " + message));
+            if (show_box) {
+                MessageBoxError(message);
+            } else {
+                LogError(message);
+            }
         }
+        return condition;
     }
 }

@@ -18,16 +18,17 @@ namespace Violet
 
     static GLenum GetBppFormat(const uint bpp)
     {
-        Assert(bpp >= 1 && bpp <= 4, "Invalid bits per pixel \"" + std::to_string(bpp) + "\"");
-        switch (bpp) {
-            case 1:
-                return GL_RED;
-            case 2:
-                return GL_RG;
-            case 3:
-                return GL_RGB;
-            case 4:
-                return GL_RGBA;
+        if (Assert(bpp >= 1 && bpp <= 4, "Invalid bits per pixel \"" + std::to_string(bpp) + "\"")) {
+            switch (bpp) {
+                case 1:
+                    return GL_RED;
+                case 2:
+                    return GL_RG;
+                case 3:
+                    return GL_RGB;
+                case 4:
+                    return GL_RGBA;
+            }
         }
         return GL_RGBA;
     }
@@ -42,19 +43,19 @@ namespace Violet
         this->size.X() = static_cast<uint>(width);
         this->size.Y() = static_cast<uint>(height);
 
-        Assert(data != nullptr, this->id + ": Failed to load" + (stbi_failure_reason() != nullptr ? (std::string)":\n" + stbi_failure_reason() : ""));
+        if (Assert(data != nullptr, this->id + ": Failed to load" + (stbi_failure_reason() != nullptr ? (std::string)":\n" + stbi_failure_reason() : ""))) {
+            glGenTextures(1, &this->texture);
+            this->Bind();
 
-        glGenTextures(1, &this->texture);
-        this->Bind();
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->size.X(), this->size.Y(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->size.X(), this->size.Y(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        stbi_image_free(data);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        LogInfo(this->id + ": Loaded successfully");
+            LogInfo(this->id + ": Loaded successfully");
+        }
     }
 
     Texture::Texture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
@@ -166,23 +167,28 @@ namespace Violet
     static Pointer<Texture> GetTexture(const std::string& id)
     {
         auto texture = texture_group->textures.find(id);
+
         if (texture != texture_group->textures.end()) {
             return texture->second;
         }
+
         return nullptr;
     }
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
-        if (GetTexture(id) == nullptr) {
+        if (Assert(GetTexture(id) == nullptr, id + ": Already loaded")) {
             Pointer<Texture> texture = new Texture(id, path);
-            texture_group->textures.insert({ id, texture });
+
+            if (texture->texture != 0) {
+                texture_group->textures.insert({ id, texture });
+            }
         }
     }
 
     void LoadTexture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
     {
-        if (GetTexture(id) == nullptr) {
+        if (Assert(GetTexture(id) != nullptr, id + ": Doesn't exist")) {
             Pointer<Texture> texture = new Texture(id, data, size, bpp);
             texture_group->textures.insert({ id, texture });
         }
@@ -190,7 +196,7 @@ namespace Violet
 
     void DestroyTexture(const std::string& id)
     {
-        if (GetTexture(id) != nullptr) {
+        if (Assert(GetTexture(id) != nullptr, id + ": Doesn't exist")) {
             texture_group->textures.erase(id);
         }
     }
@@ -203,7 +209,8 @@ namespace Violet
     void BindTexture(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
+
+        if (Assert(texture != nullptr, id + ": Doesn't exist")) {
             texture->Bind();
         }
     }
@@ -211,43 +218,52 @@ namespace Violet
     uint GetTextureWidth(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->size.X();
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return 0;
         }
-        return 0;
+
+        return texture->size.X();
     }
 
     uint GetTextureHeight(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->size.Y();
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return 0;
         }
-        return 0;
+
+        return texture->size.Y();
     }
 
     UIVector2 GetTextureSize(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->size;
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return 0;
         }
-        return 0;
+
+        return texture->size;
     }
 
     TextureFilter GetTextureFilter(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->filter;
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return TextureFilter::Nearest;
         }
-        return TextureFilter::Nearest;
+
+        return texture->filter;
     }
     
     void SetTextureFilter(const std::string& id, const TextureFilter filter)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
+
+        if (Assert(texture != nullptr, id + ": Doesn't exist")) {
             texture->SetFilter(filter);
         }
     }
@@ -255,25 +271,30 @@ namespace Violet
     TextureWrap GetTextureWrapX(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->wrap_x;
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return TextureWrap::Repeat;
         }
-        return TextureWrap::Repeat;
+
+        return texture->wrap_x;
     }
 
     TextureWrap GetTextureWrapY(const std::string& id)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
-            return texture->wrap_y;
+
+        if (!Assert(texture != nullptr, id + ": Doesn't exist")) {
+            return TextureWrap::Repeat;
         }
-        return TextureWrap::Repeat;
+
+        return texture->wrap_y;
     }
     
     void SetTextureWrapX(const std::string& id, const TextureWrap wrap)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
+
+        if (Assert(texture != nullptr, id + ": Doesn't exist")) {
             texture->SetWrapX(wrap);
         }
     }
@@ -281,7 +302,8 @@ namespace Violet
     void SetTextureWrapY(const std::string& id, const TextureWrap wrap)
     {
         const Pointer<Texture>& texture = GetTexture(id);
-        if (texture != nullptr) {
+
+        if (Assert(texture != nullptr, id + ": Doesn't exist")) {
             texture->SetWrapY(wrap);
         }
     }

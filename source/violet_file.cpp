@@ -8,6 +8,7 @@ namespace Violet
         this->write_mode = write_mode;
         
         this->file.open(path, std::ios::binary | (write_mode ? std::ios::out : std::ios::in));
+
         if (this->file.is_open() && !write_mode) {
             file.seekg(0, std::ios::end);
             this->size = file.tellg();

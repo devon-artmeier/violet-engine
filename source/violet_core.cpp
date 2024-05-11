@@ -39,9 +39,10 @@ namespace Violet
     void Update()
     {
         ProcessWindowEvents();
-        if (!IsWindowOpen()) return;
 
-        GameUpdate();
-        UpdateVideo();
+        if (IsWindowOpen()) {
+            GameUpdate();
+            UpdateVideo();
+        }
     }
 }

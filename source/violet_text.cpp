@@ -55,61 +55,65 @@ namespace Violet
         LogInfo(this->id + ": Loading \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
-        Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"");
 
-        Pointer<uchar> file_buffer = new uchar[file->GetSize()];
-        file->ReadBuffer(file_buffer.Raw(), file->GetSize());
-        Assert(!file->Failed(), this->id + ": Failed to read");
+        if (Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"")) {
+            Pointer<uchar> file_buffer = new uchar[file->GetSize()];
 
-        stbtt_InitFont(&font, file_buffer.Raw(), stbtt_GetFontOffsetForIndex(file_buffer.Raw(), 0));
+            file->ReadBuffer(file_buffer.Raw(), file->GetSize());
 
-        Pointer<uchar>     atlas        = new uchar[AtlasWidth * AtlasHeight * 4];
-        stbtt_pack_context pack_context = {0};
-        Pointer<Texture>   texture      = new Texture(this->id + " Atlas 0", nullptr, { AtlasWidth, AtlasHeight }, 1);
-        int                cur_texture  = 0;
+            if (Assert(!file->Failed(), this->id + ": Failed to read")) {
+                stbtt_InitFont(&font, file_buffer.Raw(), stbtt_GetFontOffsetForIndex(file_buffer.Raw(), 0));
 
-        stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
-        
-        for (float size = 1; size < 72; size++) {
-            this->packs.insert({ static_cast<uint>(size), new stbtt_packedchar[256]});
-            
-            if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
-                texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
-                texture = new Texture(this->id + " Atlas " + std::to_string(++cur_texture), nullptr, { AtlasWidth, AtlasHeight }, 1);
-                stbtt_PackEnd(&pack_context);
-                
+                Pointer<uchar>     atlas = new uchar[AtlasWidth * AtlasHeight * 4];
+                stbtt_pack_context pack_context = { 0 };
+                Pointer<Texture>   texture = new Texture(this->id + " Atlas 0", nullptr, { AtlasWidth, AtlasHeight }, 1);
+                int                cur_texture = 0;
+
                 stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
-                if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
-                    break;
-                }
-            }
-            
-            stbtt_aligned_quad char_quad = { 0 };
-            float              char_x    = 0;
-            float              char_y    = 0;
-            float              min_y     = 0;
-            float              max_y     = 0;
 
-            for (int i = 32; i < 127; i++) {
-                stbtt_GetPackedQuad(this->packs[size].Raw(), AtlasWidth, AtlasHeight, i, &char_x, &char_y, &char_quad, 0);
-                if (char_quad.y0 < min_y) {
-                    min_y = char_quad.y0;
-                }
-                if (char_quad.y1 > max_y) {
-                    max_y = char_quad.y1;
-                }
-            }
+                for (float size = 1; size < 72; size++) {
+                    this->packs.insert({ static_cast<uint>(size), new stbtt_packedchar[256] });
 
-            this->heights.insert({ static_cast<uint>(size), max_y - min_y });
-            this->textures.insert({ static_cast<uint>(size), texture });
+                    if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
+                        texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
+                        texture = new Texture(this->id + " Atlas " + std::to_string(++cur_texture), nullptr, { AtlasWidth, AtlasHeight }, 1);
+                        stbtt_PackEnd(&pack_context);
+
+                        stbtt_PackBegin(&pack_context, atlas.Raw(), AtlasWidth, AtlasHeight, AtlasWidth, 1, nullptr);
+                        if (stbtt_PackFontRange(&pack_context, file_buffer.Raw(), 0, size, 0, 256, this->packs[size].Raw()) == 0) {
+                            break;
+                        }
+                    }
+
+                    stbtt_aligned_quad char_quad = { 0 };
+                    float              char_x = 0;
+                    float              char_y = 0;
+                    float              min_y = 0;
+                    float              max_y = 0;
+
+                    for (int i = 32; i < 127; i++) {
+                        stbtt_GetPackedQuad(this->packs[size].Raw(), AtlasWidth, AtlasHeight, i, &char_x, &char_y, &char_quad, 0);
+                        if (char_quad.y0 < min_y) {
+                            min_y = char_quad.y0;
+                        }
+                        if (char_quad.y1 > max_y) {
+                            max_y = char_quad.y1;
+                        }
+                    }
+
+                    this->heights.insert({ static_cast<uint>(size), max_y - min_y });
+                    this->textures.insert({ static_cast<uint>(size), texture });
+                }
+
+                texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
+                stbtt_PackEnd(&pack_context);
+
+                this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });
+
+                LogInfo(this->id + ": Loaded successfully");
+                this->loaded = true;
+            }
         }
-
-        texture->UpdatePixels(atlas.Raw(), { AtlasWidth, AtlasHeight }, 1, 0, 0);
-        stbtt_PackEnd(&pack_context);
-
-        this->mesh = new Mesh(true, 0, 0, { 2, 4, 2 });
-
-        LogInfo(this->id + ": Loaded successfully");
     }
 
     Font::~Font()
@@ -132,22 +136,28 @@ namespace Violet
     static Pointer<Font> GetFont(const std::string& id)
     {
         auto font = font_group->fonts.find(id);
+
         if (font != font_group->fonts.end()) {
             return font->second;
         }
+
         return Pointer<Font>(nullptr);
     }
 
     void LoadFont(const std::string& id, const std::string& path)
     {
-        if (GetFont(id) == nullptr) {
-            font_group->fonts.insert({ id, new Font(id, path) });
+        if (Assert(GetFont(id) == nullptr, id + ": Already loaded")) {
+            Pointer<Font> font = new Font(id, path);
+
+            if (font->loaded) {
+                font_group->fonts.insert({ id, font });
+            }
         }
     }
 
     void DestroyFont(const std::string& id)
     {
-        if (GetFont(id) != nullptr) {
+        if (Assert(GetFont(id) != nullptr, id + ": Doesn't exist")) {
             font_group->fonts.erase(id);
         }
     }
@@ -157,16 +167,13 @@ namespace Violet
         font_group->fonts.clear();
     }
 
-    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2& pos, const Vector4& color)
+    void DrawText(const std::string& id, const uint size, const std::string& text, const uint layer, const Vector2& pos, const Vector4& color)
     {
-        Pointer<Font> font = GetFont(font_id);
-        if (font != nullptr) {
-            if (size > 0 && size < font->packs.size() - 1) {
+        Pointer<Font> font = GetFont(id);
+
+        if (Assert(font != nullptr, id + ": Doesn't exist")) {
+            if (Assert(size > 0 && size < font->packs.size() - 1, id + ": Attempted to draw text at invalid size " + std::to_string(size))) {
                 font->draw_queue[layer].push_back({ text, size, pos, color });
-            } else {
-#ifdef VIOLET_DEBUG
-                LogError(font_id + ": Attempted to draw text at invalid size " + std::to_string(size));
-#endif
             }
         }
     }

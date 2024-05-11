@@ -17,6 +17,7 @@ namespace Violet
             ~SpriteSheet();
 
             std::string             id        { "" };
+            bool                    loaded    { false };
             uint                    count     { 0 };
             std::string             texture   { "" };
             Pointer<Mesh>           mesh      { nullptr };

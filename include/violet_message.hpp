@@ -10,7 +10,7 @@ namespace Violet
     extern void MessageBoxWarn (const std::string& message);
     extern void MessageBoxError(const std::string& message);
     extern void Fatal          (const std::string& message);
-    extern void Assert         (const bool condition, const std::string& message = "");
+    extern bool Assert         (const bool condition, const std::string& message = "", const bool show_box = false);
 }
 
 #endif // VIOLET_ENGINE_MESSAGE_HPP

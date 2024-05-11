@@ -45,75 +45,104 @@ namespace Violet
         LogInfo(this->id + ": Loading \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
-        Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"");
 
-        Assert(file->ReadString(16).compare("VIOLET SPRITE   ") == 0, this->id + ": Not a valid sprite sheet");
+        if (Assert(file->IsOpen(), this->id + ": Failed to open \"" + path + "\"") &&
+            Assert(file->ReadString(16).compare("VIOLET SPRITE   ") == 0, this->id + ": Not a valid sprite sheet")) {
+            bool header_success = true;
 
-        this->count = file->ReadUIntBE();
-        Assert(!file->Failed(), this->id + ": Failed to read sprite count");
+            uint texture_width = GetTextureWidth(texture);
+            header_success &= Assert(texture_width != 0, this->id + ": Invalid texture width " + std::to_string(texture_width) + " from texture " + texture);
 
-        uint texture_width = GetTextureWidth(texture);
-        Assert(texture_width != 0, this->id + ": Invalid texture width " + std::to_string(texture_width) + " from texture " + texture);
+            uint texture_height = GetTextureHeight(texture);
+            header_success &= Assert(texture_height != 0, this->id + ": Invalid texture height " + std::to_string(texture_width) + " from texture " + texture);
 
-        uint texture_height = GetTextureHeight(texture);
-        Assert(texture_height != 0, this->id + ": Invalid texture height " + std::to_string(texture_width) + " from texture " + texture);
+            this->count = file->ReadUIntBE();
+            header_success &= Assert(!file->Failed(), this->id + ": Failed to read sprite count");
 
-        this->texture               = texture;
-        this->mesh                  = new Mesh(false, this->count * 4, this->count * 6, { 2, 2 });
-        Pointer<float> vertex_data  = this->mesh->GetVertexBuffer();
-        Pointer<uint>  element_data = this->mesh->GetElementBuffer();
+            if (header_success) {
+                this->texture               = texture;
+                this->mesh                  = new Mesh(false, this->count * 4, this->count * 6, { 2, 2 });
+                Pointer<float> vertex_data  = this->mesh->GetVertexBuffer();
+                Pointer<uint>  element_data = this->mesh->GetElementBuffer();
 
-        for (uint i = 0; i < this->count; i++) {
-            uint x = file->ReadUIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read X offset for sprite " + std::to_string(i));
+                for (uint i = 0; i < this->count; i++) {
+                    bool frame_success = true;
+            
+                    uint x = file->ReadUIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read X offset for sprite " + std::to_string(i));
 
-            uint y = file->ReadUIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read Y offset for sprite " + std::to_string(i));
+                    uint y = file->ReadUIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read Y offset for sprite " + std::to_string(i));
 
-            uint width = file->ReadUIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read width for sprite " + std::to_string(i));
+                    uint width = file->ReadUIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read width for sprite " + std::to_string(i));
 
-            uint height = file->ReadUIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read height for sprite " + std::to_string(i));
+                    uint height = file->ReadUIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read height for sprite " + std::to_string(i));
 
-            int pivot_x = file->ReadIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read pivot X offset for sprite " + std::to_string(i));
+                    int pivot_x = file->ReadIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read pivot X offset for sprite " + std::to_string(i));
 
-            int pivot_y = file->ReadIntBE();
-            Assert(!file->Failed(), this->id + ": Failed to read pivot Y offset for sprite " + std::to_string(i));
+                    int pivot_y = file->ReadIntBE();
+                    frame_success &= Assert(!file->Failed(), this->id + ": Failed to read pivot Y offset for sprite " + std::to_string(i));
 
-            *(vertex_data++) = -pivot_x;
-            *(vertex_data++) = -pivot_y;
-            *(vertex_data++) = x / static_cast<float>(texture_width);
-            *(vertex_data++) = y / static_cast<float>(texture_height);
+                    if (frame_success) {
+                        *(vertex_data++) = -pivot_x;
+                        *(vertex_data++) = -pivot_y;
+                        *(vertex_data++) = x / static_cast<float>(texture_width);
+                        *(vertex_data++) = y / static_cast<float>(texture_height);
 
-            *(vertex_data++) = -pivot_x + width;
-            *(vertex_data++) = -pivot_y;
-            *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
-            *(vertex_data++) = y / static_cast<float>(texture_height);
+                        *(vertex_data++) = -pivot_x + width;
+                        *(vertex_data++) = -pivot_y;
+                        *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
+                        *(vertex_data++) = y / static_cast<float>(texture_height);
 
-            *(vertex_data++) = -pivot_x;
-            *(vertex_data++) = -pivot_y + height;
-            *(vertex_data++) = x / static_cast<float>(texture_width);
-            *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
+                        *(vertex_data++) = -pivot_x;
+                        *(vertex_data++) = -pivot_y + height;
+                        *(vertex_data++) = x / static_cast<float>(texture_width);
+                        *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
 
-            *(vertex_data++) = -pivot_x + width;
-            *(vertex_data++) = -pivot_y + height;
-            *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
-            *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
+                        *(vertex_data++) = -pivot_x + width;
+                        *(vertex_data++) = -pivot_y + height;
+                        *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
+                        *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
+                    } else {
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
 
-            *(element_data++) = 0;
-            *(element_data++) = 1;
-            *(element_data++) = 2;
-            *(element_data++) = 1;
-            *(element_data++) = 2;
-            *(element_data++) = 3;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                    }
+
+                    *(element_data++) = 0;
+                    *(element_data++) = 1;
+                    *(element_data++) = 2;
+                    *(element_data++) = 1;
+                    *(element_data++) = 2;
+                    *(element_data++) = 3;
+                }
+
+                this->mesh->RefreshVertexBuffer();
+                this->mesh->RefreshElementBuffer();
+
+                LogInfo(this->id + ": Loaded successfully");
+                this->loaded = true;
+            }
         }
-
-        this->mesh->RefreshVertexBuffer();
-        this->mesh->RefreshElementBuffer();
-
-        LogInfo(this->id + ": Loaded successfully");
     }
 
     SpriteSheet::~SpriteSheet()
@@ -132,27 +161,32 @@ namespace Violet
         sprite_sheet_group = nullptr;
         sprite_shader      = nullptr;
     }
-
+    
     static Pointer<SpriteSheet> GetSpriteSheet(const std::string& id)
     {
         auto sprite_sheet = sprite_sheet_group->sprite_sheets.find(id);
+
         if (sprite_sheet != sprite_sheet_group->sprite_sheets.end()) {
             return sprite_sheet->second;
         }
+
         return nullptr;
     }
 
     void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
-        if (GetSpriteSheet(id) == nullptr) {
-            sprite_sheet_group->sprite_sheets.insert({ id, new SpriteSheet(id, path, texture) });
+        if (Assert(GetSpriteSheet(id) == nullptr, id + ": Already loaded")) {
+            Pointer<SpriteSheet> sprite_sheet = new SpriteSheet(id, path, texture);
+
+            if (sprite_sheet->loaded) {
+                sprite_sheet_group->sprite_sheets.insert({ id, sprite_sheet });
+            }
         }
     }
 
     void DestroySpriteSheet(const std::string& id)
     {
-        const Pointer<SpriteSheet>& sprite_sheet = GetSpriteSheet(id);
-        if (sprite_sheet != nullptr) {
+        if (Assert(GetSpriteSheet(id) != nullptr, id + ": Doesn't exist")) {
             sprite_sheet_group->sprite_sheets.erase(id);
         }
     }
@@ -162,13 +196,14 @@ namespace Violet
         sprite_sheet_group->sprite_sheets.clear();
     }
 
-    void DrawSprite(const std::string& sprite_sheet_id, const uint layer, const uint frame, const Vector2& pos,
-                    const float angle, const Vector2& scale)
+    void DrawSprite(const std::string& id, const uint layer, const uint frame, const Vector2& pos, const float angle, const Vector2& scale)
     {
-        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(sprite_sheet_id);
-        if (sprite_sheet != nullptr) {
-            Assert(frame < sprite_sheet->count, sprite_sheet->id + ": Attempted to draw invalid sprite " + std::to_string(frame));
-            sprite_sheet->draw_queue[layer].push_back({ frame, pos, Math::Radians(angle), scale });
+        Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(id);
+
+        if (Assert(sprite_sheet != nullptr, id + ": Doesn't exist")) {
+            if (Assert(frame < sprite_sheet->count, sprite_sheet->id + ": Attempted to draw invalid sprite " + std::to_string(frame))) {
+                sprite_sheet->draw_queue[layer].push_back({ frame, pos, Math::Radians(angle), scale });
+            }
         }
     }
 
