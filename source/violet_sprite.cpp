@@ -45,21 +45,20 @@ namespace Violet
         LogInfo("Loading sprite sheet \"" + this->id + "\" from file \"" + path + "\"");
 
         Pointer<File> file = new File(path, false);
+        UIVector2 texture_size = GetTextureSize(texture);
 
-        if (Assert(file->IsOpen(), "Failed to open sprite sheet \"" + this->id + "\"") &&
-            Assert(file->ReadString(16).compare("VIOLET SPRITE   ") == 0, "Invalid file for sprite sheet \"" + this->id + "\"")) {
-            bool header_success = true;
-
-            uint texture_width = GetTextureWidth(texture);
-            header_success &= Assert(texture_width != 0, "Invalid width " + std::to_string(texture_width) + " from texture " + texture);
-
-            uint texture_height = GetTextureHeight(texture);
-            header_success &= Assert(texture_height != 0, "Invalid height " + std::to_string(texture_width) + " from texture " + texture);
-
+        if (!file->IsOpen()) {
+            LogError("Failed to open sprite sheet \"" + this->id + "\"");
+        } else if (file->ReadString(16).compare("VIOLET SPRITE   ") != 0) {
+            LogError("Invalid file for sprite sheet \"" + this->id + "\"");
+        } else if (texture_size.X() == 0 || texture_size.Y() == 0) {
+            LogError("Invalid size " + std::to_string(texture_size.X()) + "x" + std::to_string(texture_size.Y()) + " from texture " + texture);
+        } else {
             this->count = file->ReadUIntBE();
-            header_success &= Assert(!file->Failed(), "Failed to read sprite count for sprite sheet \"" + this->id + "\"");
 
-            if (header_success) {
+            if (file->Failed()) {
+                LogError("Failed to read sprite count for sprite sheet \"" + this->id + "\"");
+            } else {
                 this->texture               = texture;
                 this->mesh                  = new Mesh(false, this->count * 4, this->count * 6, { 2, 2 });
                 Pointer<float> vertex_data  = this->mesh->GetVertexBuffer();
@@ -69,63 +68,65 @@ namespace Violet
                     bool frame_success = true;
             
                     uint x = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read X offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
                     uint y = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read Y offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
                     uint width = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read width for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
                     uint height = file->ReadUIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read height for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
                     int pivot_x = file->ReadIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read pivot X offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
                     int pivot_y = file->ReadIntBE();
-                    frame_success &= Assert(!file->Failed(), "Failed to read pivot Y offset for sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
+                    frame_success &= !file->Failed();
 
-                    if (frame_success) {
-                        *(vertex_data++) = -pivot_x;
-                        *(vertex_data++) = -pivot_y;
-                        *(vertex_data++) = x / static_cast<float>(texture_width);
-                        *(vertex_data++) = y / static_cast<float>(texture_height);
+                    if (!frame_success) {
+                        LogError("Failed to read sprite " + std::to_string(i) + " for sprite sheet \"" + this->id + "\"");
 
-                        *(vertex_data++) = -pivot_x + width;
-                        *(vertex_data++) = -pivot_y;
-                        *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
-                        *(vertex_data++) = y / static_cast<float>(texture_height);
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
 
-                        *(vertex_data++) = -pivot_x;
-                        *(vertex_data++) = -pivot_y + height;
-                        *(vertex_data++) = x / static_cast<float>(texture_width);
-                        *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
 
-                        *(vertex_data++) = -pivot_x + width;
-                        *(vertex_data++) = -pivot_y + height;
-                        *(vertex_data++) = (x + width) / static_cast<float>(texture_width);
-                        *(vertex_data++) = (y + height) / static_cast<float>(texture_height);
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
+                        *(vertex_data++) = 0;
                     } else {
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
+                        *(vertex_data++) = -pivot_x;
+                        *(vertex_data++) = -pivot_y;
+                        *(vertex_data++) = x / static_cast<float>(texture_size.X());
+                        *(vertex_data++) = y / static_cast<float>(texture_size.Y());
 
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
+                        *(vertex_data++) = -pivot_x + width;
+                        *(vertex_data++) = -pivot_y;
+                        *(vertex_data++) = (x + width) / static_cast<float>(texture_size.X());
+                        *(vertex_data++) = y / static_cast<float>(texture_size.Y());
 
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
+                        *(vertex_data++) = -pivot_x;
+                        *(vertex_data++) = -pivot_y + height;
+                        *(vertex_data++) = x / static_cast<float>(texture_size.X());
+                        *(vertex_data++) = (y + height) / static_cast<float>(texture_size.Y());
 
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
-                        *(vertex_data++) = 0;
+                        *(vertex_data++) = -pivot_x + width;
+                        *(vertex_data++) = -pivot_y + height;
+                        *(vertex_data++) = (x + width) / static_cast<float>(texture_size.X());
+                        *(vertex_data++) = (y + height) / static_cast<float>(texture_size.Y());
                     }
 
                     *(element_data++) = 0;
@@ -175,19 +176,23 @@ namespace Violet
 
     void LoadSpriteSheet(const std::string& id, const std::string& path, const std::string& texture)
     {
-        if (Assert(GetSpriteSheet(id) == nullptr, "LoadSpriteSheet: \"" + id + "\" is already loaded")) {
+        if (GetSpriteSheet(id) == nullptr) {
             Pointer<SpriteSheet> sprite_sheet = new SpriteSheet(id, path, texture);
 
             if (sprite_sheet->loaded) {
                 sprite_sheet_group->sprite_sheets.insert({ id, sprite_sheet });
             }
+        } else {
+            LogError("LoadSpriteSheet: \"" + id + "\" is already loaded");
         }
     }
 
     void DestroySpriteSheet(const std::string& id)
     {
-        if (Assert(GetSpriteSheet(id) != nullptr, "DestroySpriteSheet: \"" + id + "\" doesn't exist")) {
+        if (GetSpriteSheet(id) != nullptr) {
             sprite_sheet_group->sprite_sheets.erase(id);
+        } else {
+            LogError("DestroySpriteSheet: \"" + id + "\" doesn't exist");
         }
     }
 
@@ -200,10 +205,14 @@ namespace Violet
     {
         Pointer<SpriteSheet> sprite_sheet = GetSpriteSheet(id);
 
-        if (Assert(sprite_sheet != nullptr, "DrawSprite: \"" + id + "\" doesn't exist")) {
-            if (Assert(frame < sprite_sheet->count, "DrawSprite: Attempted to draw invalid sprite " + std::to_string(frame) + " from " + "\"" + sprite_sheet->id + "\"")) {
+        if (sprite_sheet != nullptr) {
+            if (frame < sprite_sheet->count) {
                 sprite_sheet->draw_queue[layer].push_back({ frame, pos, Math::Radians(angle), scale });
+            } else {
+                LogError("DrawSprite: Attempted to draw invalid sprite " + std::to_string(frame) + " from " + "\"" + sprite_sheet->id + "\"");
             }
+        } else {
+            LogError("DrawSprite: \"" + id + "\" doesn't exist");
         }
     }
 

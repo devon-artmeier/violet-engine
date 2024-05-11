@@ -18,17 +18,19 @@ namespace Violet
 
     static GLenum GetBppFormat(const uint bpp, const std::string& id)
     {
-        if (Assert(bpp >= 1 && bpp <= 4, "Invalid bits per pixel \"" + std::to_string(bpp) + "\" used when loading data into texture \"" + id + "\"")) {
-            switch (bpp) {
-                case 1:
-                    return GL_RED;
-                case 2:
-                    return GL_RG;
-                case 3:
-                    return GL_RGB;
-                case 4:
-                    return GL_RGBA;
-            }
+        if (bpp < 1 || bpp > 4) {
+            LogError("Invalid bits per pixel \"" + std::to_string(bpp) + "\" used when loading data into texture \"" + id + "\"");
+        }
+
+        switch (bpp) {
+            case 1:
+                return GL_RED;
+            case 2:
+                return GL_RG;
+            case 3:
+                return GL_RGB;
+            case 4:
+                return GL_RGBA;
         }
         return GL_RGBA;
     }
@@ -43,7 +45,9 @@ namespace Violet
         this->size.X() = static_cast<uint>(width);
         this->size.Y() = static_cast<uint>(height);
 
-        if (Assert(data != nullptr, "Failed to load texture \"" + this->id + "\"" + (stbi_failure_reason() != nullptr ? (std::string)":\n" + stbi_failure_reason() : ""))) {
+        if (data == nullptr) {
+            LogError("Failed to load texture \"" + this->id + "\"" + (stbi_failure_reason() != nullptr ? (std::string)":\n" + stbi_failure_reason() : ""));
+        } else {
             glGenTextures(1, &this->texture);
             this->Bind();
 
@@ -177,27 +181,33 @@ namespace Violet
 
     void LoadTexture(const std::string& id, const std::string& path)
     {
-        if (Assert(GetTexture(id) == nullptr, "LoadTexture: \"" + id + "\" is already loaded")) {
+        if (GetTexture(id) == nullptr) {
             Pointer<Texture> texture = new Texture(id, path);
 
             if (texture->texture != 0) {
                 texture_group->textures.insert({ id, texture });
             }
+        } else {
+            LogError("LoadTexture: \"" + id + "\" is already loaded");
         }
     }
 
     void LoadTexture(const std::string& id, const void* const data, const UIVector2& size, const uint bpp)
     {
-        if (Assert(GetTexture(id) == nullptr, "LoadTexture: \"" + id + "\" is already loaded")) {
+        if (GetTexture(id) == nullptr) {
             Pointer<Texture> texture = new Texture(id, data, size, bpp);
             texture_group->textures.insert({ id, texture });
+        } else {
+            LogError("LoadTexture: \"" + id + "\" is already loaded");
         }
     }
 
     void DestroyTexture(const std::string& id)
     {
-        if (Assert(GetTexture(id) != nullptr, "DestroyTexture: \"" + id + "\" doesn't exist")) {
+        if (GetTexture(id) != nullptr) {
             texture_group->textures.erase(id);
+        } else {
+            LogError("DestroyTexture: \"" + id + "\" doesn't exist");
         }
     }
 
@@ -210,8 +220,10 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (Assert(texture != nullptr, "BindTexture: \"" + id + "\" doesn't exist")) {
+        if (texture != nullptr) {
             texture->Bind();
+        } else {
+            LogError("BindTexture: \"" + id + "\" doesn't exist");
         }
     }
 
@@ -219,7 +231,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureWidth: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureWidth: \"" + id + "\" doesn't exist");
             return 0;
         }
 
@@ -230,7 +243,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureHeight: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureHeight: \"" + id + "\" doesn't exist");
             return 0;
         }
 
@@ -241,7 +255,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureSize: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureSize: \"" + id + "\" doesn't exist");
             return 0;
         }
 
@@ -252,7 +267,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureFilter: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureFilter: \"" + id + "\" doesn't exist");
             return TextureFilter::Nearest;
         }
 
@@ -263,8 +279,10 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (Assert(texture != nullptr, "SetTextureFilter: \"" + id + "\" doesn't exist")) {
+        if (texture != nullptr) {
             texture->SetFilter(filter);
+        } else {
+            LogError("SetTextureFilter: \"" + id + "\" doesn't exist");
         }
     }
 
@@ -272,7 +290,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureWrapX: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureWrapX: \"" + id + "\" doesn't exist");
             return TextureWrap::Repeat;
         }
 
@@ -283,7 +302,8 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (!Assert(texture != nullptr, "GetTextureWrapY: \"" + id + "\" doesn't exist")) {
+        if (texture == nullptr) {
+            LogError("GetTextureWrapY: \"" + id + "\" doesn't exist");
             return TextureWrap::Repeat;
         }
 
@@ -294,8 +314,10 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (Assert(texture != nullptr, "SetTextureWrapX: \"" + id + "\" doesn't exist")) {
+        if (texture != nullptr) {
             texture->SetWrapX(wrap);
+        } else {
+            LogError("SetTextureWrapX: \"" + id + "\" doesn't exist");
         }
     }
     
@@ -303,8 +325,10 @@ namespace Violet
     {
         const Pointer<Texture>& texture = GetTexture(id);
 
-        if (Assert(texture != nullptr, "SetTextureWrapY: \"" + id + "\" doesn't exist")) {
+        if (texture != nullptr) {
             texture->SetWrapY(wrap);
+        } else {
+            LogError("SetTextureWrapY: \"" + id + "\" doesn't exist");
         }
     }
 }

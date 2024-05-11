@@ -56,12 +56,16 @@ namespace Violet
 
         Pointer<File> file = new File(path, false);
 
-        if (Assert(file->IsOpen(), "Failed to open file for font \"" + this->id + "\"")) {
+        if (!file->IsOpen()) {
+            LogError("Failed to open file for font \"" + this->id + "\"");
+        } else {
             Pointer<uchar> file_buffer = new uchar[file->GetSize()];
 
             file->ReadBuffer(file_buffer.Raw(), file->GetSize());
 
-            if (Assert(!file->Failed(), "Failed to read data for font \"" + this->id + "\"")) {
+            if (file->Failed()) {
+                LogError("Failed to read data for font \"" + this->id + "\"");
+            } else {
                 stbtt_InitFont(&font, file_buffer.Raw(), stbtt_GetFontOffsetForIndex(file_buffer.Raw(), 0));
 
                 Pointer<uchar>     atlas = new uchar[AtlasWidth * AtlasHeight * 4];
@@ -146,19 +150,23 @@ namespace Violet
 
     void LoadFont(const std::string& id, const std::string& path)
     {
-        if (Assert(GetFont(id) == nullptr, "LoadFont: \"" + id + "\" is already loaded")) {
+        if (GetFont(id) == nullptr) {
             Pointer<Font> font = new Font(id, path);
 
             if (font->loaded) {
                 font_group->fonts.insert({ id, font });
             }
+        } else {
+            LogError("LoadFont: \"" + id + "\" is already loaded");
         }
     }
 
     void DestroyFont(const std::string& id)
     {
-        if (Assert(GetFont(id) != nullptr, "DestroyFont: \"" + id + "\" doesn't exist")) {
+        if (GetFont(id) != nullptr) {
             font_group->fonts.erase(id);
+        } else {
+            LogError("DestroyFont: \"" + id + "\" doesn't exist");
         }
     }
 
@@ -171,10 +179,14 @@ namespace Violet
     {
         Pointer<Font> font = GetFont(id);
 
-        if (Assert(font != nullptr, "DrawText: \"" + id + "\" doesn't exist")) {
-            if (Assert(size > 0 && size < font->packs.size() - 1, "DrawText: Attempted to draw text at invalid size " + std::to_string(size) + " with \"" + id + "\"")) {
+        if (font != nullptr) {
+            if (font->packs.find(size) != font->packs.end()) {
                 font->draw_queue[layer].push_back({ text, size, pos, color });
+            } else {
+                LogError("DrawText: Attempted to draw text at invalid size " + std::to_string(size) + " with \"" + id + "\"");
             }
+        } else {
+            LogError("DrawText: \"" + id + "\" doesn't exist");
         }
     }
 

@@ -1,5 +1,4 @@
 #include "violet_engine_internal.hpp"
-#include <cassert>
 
 #ifdef WIN32
 #ifdef APIENTRY
@@ -156,17 +155,5 @@ namespace Violet
     void Fatal(const std::string& message)
     {
         throw std::runtime_error(message);
-    }
-
-    bool Assert(const bool condition, const std::string& message, const bool show_box)
-    {
-        if (!condition) {
-            if (show_box) {
-                MessageBoxError(message);
-            } else {
-                LogError(message);
-            }
-        }
-        return condition;
     }
 }
