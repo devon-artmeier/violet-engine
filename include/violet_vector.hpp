@@ -41,6 +41,14 @@ namespace Violet
             const float& X() const;
             float&       Y();
             const float& Y() const;
+            float&       R();
+            const float& R() const;
+            float&       G();
+            const float& G() const;
+            float&       S();
+            const float& S() const;
+            float&       T();
+            const float& T() const;
             
             float   Dot      (const Vector2& vec) const;
             float   Length   () const;
@@ -78,6 +86,14 @@ namespace Violet
             const int& X() const;
             int&       Y();
             const int& Y() const;
+            int&       R();
+            const int& R() const;
+            int&       G();
+            const int& G() const;
+            int&       S();
+            const int& S() const;
+            int&       T();
+            const int& T() const;
             
             int     Dot      (const IVector2& vec) const;
             float   Length   () const;
@@ -116,6 +132,14 @@ namespace Violet
             const uint& X() const;
             uint&       Y();
             const uint& Y() const;
+            uint&       R();
+            const uint& R() const;
+            uint&       G();
+            const uint& G() const;
+            uint&       S();
+            const uint& S() const;
+            uint&       T();
+            const uint& T() const;
             
             uint    Dot      (const UIVector2& vec) const;
             float   Length   () const;
@@ -157,6 +181,18 @@ namespace Violet
             const float& Y() const;
             float&       Z();
             const float& Z() const;
+            float&       R();
+            const float& R() const;
+            float&       G();
+            const float& G() const;
+            float&       B();
+            const float& B() const;
+            float&       S();
+            const float& S() const;
+            float&       T();
+            const float& T() const;
+            float&       P();
+            const float& P() const;
             
             float   Dot      (const Vector3& vec) const;
             Vector3 Cross    (const Vector3& vec) const;
@@ -198,6 +234,18 @@ namespace Violet
             const int& Y() const;
             int&       Z();
             const int& Z() const;
+            int&       R();
+            const int& R() const;
+            int&       G();
+            const int& G() const;
+            int&       B();
+            const int& B() const;
+            int&       S();
+            const int& S() const;
+            int&       T();
+            const int& T() const;
+            int&       P();
+            const int& P() const;
             
             int      Dot      (const IVector3& vec) const;
             IVector3 Cross    (const IVector3& vec) const;
@@ -240,6 +288,18 @@ namespace Violet
             const uint& Y() const;
             uint&       Z();
             const uint& Z() const;
+            uint&       R();
+            const uint& R() const;
+            uint&       G();
+            const uint& G() const;
+            uint&       B();
+            const uint& B() const;
+            uint&       S();
+            const uint& S() const;
+            uint&       T();
+            const uint& T() const;
+            uint&       P();
+            const uint& P() const;
             
             uint      Dot      (const UIVector3& vec) const;
             UIVector3 Cross    (const UIVector3& vec) const;
@@ -285,6 +345,22 @@ namespace Violet
             const float& Z() const;
             float&       W();
             const float& W() const;
+            float&       R();
+            const float& R() const;
+            float&       G();
+            const float& G() const;
+            float&       B();
+            const float& B() const;
+            float&       A();
+            const float& A() const;
+            float&       S();
+            const float& S() const;
+            float&       T();
+            const float& T() const;
+            float&       P();
+            const float& P() const;
+            float&       Q();
+            const float& Q() const;
 
             float   Dot      (const Vector4& vec) const;
             float   Length   () const;
@@ -328,6 +404,22 @@ namespace Violet
             const int& Z() const;
             int&       W();
             const int& W() const;
+            int&       R();
+            const int& R() const;
+            int&       G();
+            const int& G() const;
+            int&       B();
+            const int& B() const;
+            int&       A();
+            const int& A() const;
+            int&       S();
+            const int& S() const;
+            int&       T();
+            const int& T() const;
+            int&       P();
+            const int& P() const;
+            int&       Q();
+            const int& Q() const;
 
             int     Dot      (const IVector4& vec) const;
             float   Length   () const;
@@ -372,6 +464,22 @@ namespace Violet
             const uint& Z() const;
             uint&       W();
             const uint& W() const;
+            uint&       R();
+            const uint& R() const;
+            uint&       G();
+            const uint& G() const;
+            uint&       B();
+            const uint& B() const;
+            uint&       A();
+            const uint& A() const;
+            uint&       S();
+            const uint& S() const;
+            uint&       T();
+            const uint& T() const;
+            uint&       P();
+            const uint& P() const;
+            uint&       Q();
+            const uint& Q() const;
 
             uint    Dot      (const UIVector4& vec) const;
             float   Length   () const;

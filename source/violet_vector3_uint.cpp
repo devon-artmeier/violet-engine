@@ -161,6 +161,66 @@ namespace Violet
         return this->data[2];
     }
 
+    uint& UIVector3::R()
+    {
+        return this->data[0];
+    }
+
+    const uint& UIVector3::R() const
+    {
+        return this->data[0];
+    }
+
+    uint& UIVector3::G()
+    {
+        return this->data[1];
+    }
+
+    const uint& UIVector3::G() const
+    {
+        return this->data[1];
+    }
+
+    uint& UIVector3::B()
+    {
+        return this->data[2];
+    }
+
+    const uint& UIVector3::B() const
+    {
+        return this->data[2];
+    }
+
+    uint& UIVector3::S()
+    {
+        return this->data[0];
+    }
+
+    const uint& UIVector3::S() const
+    {
+        return this->data[0];
+    }
+
+    uint& UIVector3::T()
+    {
+        return this->data[1];
+    }
+
+    const uint& UIVector3::T() const
+    {
+        return this->data[1];
+    }
+
+    uint& UIVector3::P()
+    {
+        return this->data[2];
+    }
+
+    const uint& UIVector3::P() const
+    {
+        return this->data[2];
+    }
+
     uint UIVector3::Dot(const UIVector3& vec) const
     {
         return (this->data[0] * vec[0]) +

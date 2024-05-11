@@ -9,7 +9,7 @@ namespace Violet
 		std::string text;
 		uint        size;
 		Vector2     pos;
-		Color       color;
+		Vector4     color;
 	};
 
 	class Font

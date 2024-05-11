@@ -179,7 +179,7 @@ namespace Violet
         font_group->fonts.clear();
     }
 
-    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2& pos, const Color color)
+    void DrawText(const std::string& font_id, const uint size, const std::string& text, const uint layer, const Vector2& pos, const Vector4& color)
     {
         Pointer<Font> font = GetFont(font_id);
         if (font != nullptr) {
@@ -236,37 +236,37 @@ namespace Violet
 
                             *(vertex_data++) = char_quad.x0;
                             *(vertex_data++) = char_quad.y0;
-                            *(vertex_data++) = draw.color.red / 255.0f;
-                            *(vertex_data++) = draw.color.green / 255.0f;
-                            *(vertex_data++) = draw.color.blue / 255.0f;
-                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = draw.color.R();
+                            *(vertex_data++) = draw.color.G();
+                            *(vertex_data++) = draw.color.B();
+                            *(vertex_data++) = draw.color.A();
                             *(vertex_data++) = char_quad.s0;
                             *(vertex_data++) = char_quad.t0;
 
                             *(vertex_data++) = char_quad.x1;
                             *(vertex_data++) = char_quad.y0;
-                            *(vertex_data++) = draw.color.red / 255.0f;
-                            *(vertex_data++) = draw.color.green / 255.0f;
-                            *(vertex_data++) = draw.color.blue / 255.0f;
-                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = draw.color.R();
+                            *(vertex_data++) = draw.color.G();
+                            *(vertex_data++) = draw.color.B();
+                            *(vertex_data++) = draw.color.A();
                             *(vertex_data++) = char_quad.s1;
                             *(vertex_data++) = char_quad.t0;
 
                             *(vertex_data++) = char_quad.x0;
                             *(vertex_data++) = char_quad.y1;
-                            *(vertex_data++) = draw.color.red / 255.0f;
-                            *(vertex_data++) = draw.color.green / 255.0f;
-                            *(vertex_data++) = draw.color.blue / 255.0f;
-                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = draw.color.R();
+                            *(vertex_data++) = draw.color.G();
+                            *(vertex_data++) = draw.color.B();
+                            *(vertex_data++) = draw.color.A();
                             *(vertex_data++) = char_quad.s0;
                             *(vertex_data++) = char_quad.t1;
 
                             *(vertex_data++) = char_quad.x1;
                             *(vertex_data++) = char_quad.y1;
-                            *(vertex_data++) = draw.color.red / 255.0f;
-                            *(vertex_data++) = draw.color.green / 255.0f;
-                            *(vertex_data++) = draw.color.blue / 255.0f;
-                            *(vertex_data++) = draw.color.alpha / 255.0f;
+                            *(vertex_data++) = draw.color.R();
+                            *(vertex_data++) = draw.color.G();
+                            *(vertex_data++) = draw.color.B();
+                            *(vertex_data++) = draw.color.A();
                             *(vertex_data++) = char_quad.s1;
                             *(vertex_data++) = char_quad.t1;
 
