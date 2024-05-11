@@ -44,8 +44,8 @@ namespace Violet
 #ifdef VIOLET_DEBUG
         LogInfo(this->id + ": Loading \"" + path + "\"");
 #endif
-        this->size.X() = width;
-        this->size.Y() = height;
+        this->size.X() = static_cast<uint>(width);
+        this->size.Y() = static_cast<uint>(height);
 
         if (data == nullptr) {
 #ifdef VIOLET_DEBUG
@@ -129,6 +129,7 @@ namespace Violet
     {
         if (this->filter != filter) {
             this->filter = filter;
+
             this->Bind();
             switch (filter) {
                 case TextureFilter::Nearest:
@@ -160,6 +161,7 @@ namespace Violet
     {
         if (this->wrap_x != wrap) {
             this->wrap_x = wrap;
+
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetGlWrapValue(wrap));
         }
@@ -169,6 +171,7 @@ namespace Violet
     {
         if (this->wrap_y != wrap) {
             this->wrap_y = wrap;
+
             this->Bind();
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGlWrapValue(wrap));
         }

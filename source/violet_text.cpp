@@ -5,8 +5,8 @@
 
 namespace Violet
 {
-    constexpr int AtlasWidth  = 1024;
-    constexpr int AtlasHeight = 1024;
+    constexpr uint AtlasWidth  = 1024;
+    constexpr uint AtlasHeight = 1024;
 
     static const char* text_shader_vertex =
         "#version 330 core\n"
@@ -95,10 +95,10 @@ namespace Violet
                     break;
                 }
             }
-
+            
+            stbtt_aligned_quad char_quad = { 0 };
             float              char_x    = 0;
             float              char_y    = 0;
-            stbtt_aligned_quad char_quad = { 0 };
             float              min_y     = 0;
             float              max_y     = 0;
 
