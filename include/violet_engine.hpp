@@ -17,6 +17,7 @@
 #include "violet_file.hpp"
 #include "violet_math.hpp"
 #include "violet_message.hpp"
+#include "violet_scene.hpp"
 #include "violet_video.hpp"
 #include "violet_window.hpp"
 

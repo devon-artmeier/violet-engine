@@ -1,0 +1,9 @@
+#ifndef VIOLET_ENGINE_SCENE_HPP
+#define VIOLET_ENGINE_SCENE_HPP
+
+namespace Violet
+{
+
+}
+
+#endif // VIOLET_ENGINE_SCENE_HPP

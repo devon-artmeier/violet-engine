@@ -19,6 +19,7 @@ list(APPEND VIOLET_SRC
     "source/violet_matrix_4x3.cpp"
     "source/violet_matrix_4x4.cpp"
     "source/violet_message.cpp"
+    "source/violet_scene.cpp"
     "source/violet_shader.cpp"
     "source/violet_sprite.cpp"
     "source/violet_text.cpp"
